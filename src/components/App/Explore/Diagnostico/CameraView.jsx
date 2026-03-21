@@ -182,25 +182,20 @@ export default function CameraView({ videoRef, onCapture, onCancel }) {
     }
   }, [isMobile, handleMouseMove, handleMouseUp])
 
-  // Para mobile, mantém tela cheia com design simplificado
+  // Para mobile - versão simplificada (sem gradientes e sem botões extras)
   if (isMobile) {
     return (
       <div className="camera-view-container mobile-fullscreen">
-        {/* Gradientes */}
-        <div className="camera-top-gradient"></div>
-        <div className="camera-bottom-gradient"></div>
-        
-        {/* Header mobile */}
-        <div className="camera-header-mobile">
-          <div className="camera-header-content-mobile">
-            <button className="camera-back-btn-mobile" onClick={onCancel}>
+        {/* Header mobile simplificado */}
+        <div className="camera-header-mobile-simple">
+          <div className="camera-header-content-mobile-simple">
+            <button className="camera-back-btn-mobile-simple" onClick={onCancel}>
               <span className="material-symbols-outlined">close</span>
             </button>
-            <div className="camera-header-info">
-              <span className="camera-title-mobile">Tirar Foto</span>
-              <span className="camera-badge-mobile">Ao vivo</span>
+            <div className="camera-header-info-simple">
+              <span className="camera-title-mobile-simple">Tirar Foto</span>
             </div>
-            <div className="camera-placeholder"></div>
+            <div className="camera-placeholder-simple"></div>
           </div>
         </div>
         
@@ -212,33 +207,25 @@ export default function CameraView({ videoRef, onCapture, onCancel }) {
           className="camera-video-mobile"
         />
         
-        {/* Controles inferiores mobile */}
-        <div className="camera-controls-mobile">
-          <button className="camera-switch-btn-mobile">
-            <span className="material-symbols-outlined">flip_camera_android</span>
-          </button>
-          
+        {/* Botão de capturar apenas */}
+        <div className="camera-controls-mobile-simple">
           <button 
             ref={captureRef}
-            className="camera-capture-btn-mobile" 
+            className="camera-capture-btn-mobile-simple" 
             onClick={onCapture}
           >
-            <div className="capture-outer-ring-mobile">
-              <div className="capture-inner-ring-mobile">
+            <div className="capture-outer-ring-mobile-simple">
+              <div className="capture-inner-ring-mobile-simple">
                 <span className="material-symbols-outlined">photo_camera</span>
               </div>
             </div>
-          </button>
-          
-          <button className="camera-gallery-btn-mobile">
-            <span className="material-symbols-outlined">photo_library</span>
           </button>
         </div>
       </div>
     )
   }
 
-  // Para PC, janela redimensionável (mantido exatamente como antes)
+  // Para PC, janela redimensionável (mantido igual)
   return (
     <>
       <div className="camera-overlay-backdrop"></div>

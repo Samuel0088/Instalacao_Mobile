@@ -221,7 +221,6 @@ export default function DiagnosticoTab() {
     <div className="diagnostic-container">
       <div className="diagnostic-header">
         <div className="header-glow"></div>
-        <span className="header-badge">IA Powered</span>
         <h1>Diagnóstico</h1>
         <p>
           Identifique doenças em plantas com{" "}
@@ -333,7 +332,7 @@ export default function DiagnosticoTab() {
           <span className="material-symbols-outlined">
             tips_and_updates
           </span>
-          <h4>Dica do dia</h4>
+          <h4>Dica</h4>
         </div>
         <p>
           Fotografe a folha com boa iluminação e mantenha a câmera

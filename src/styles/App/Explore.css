@@ -2806,8 +2806,8 @@ body {
   }
 }
 
-/* VERSAO DE PC DA CAMERA */
-/* ===== CAMERA MOBILE - DESIGN SIMPLIFICADO ===== */
+/* VERSAO DE MOBILE DA CAMERA */
+/* ===== CAMERA MOBILE - VERSÃO SIMPLIFICADA ===== */
 .mobile-fullscreen {
   position: fixed;
   top: 0;
@@ -2820,104 +2820,6 @@ body {
   flex-direction: column;
 }
 
-/* Gradientes */
-.camera-top-gradient {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 120px;
-  background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 100%);
-  z-index: 2;
-  pointer-events: none;
-}
-
-.camera-bottom-gradient {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 180px;
-  background: linear-gradient(0deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 100%);
-  z-index: 2;
-  pointer-events: none;
-}
-
-/* Header mobile */
-.camera-header-mobile {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  padding: 12px 16px;
-  z-index: 10;
-  background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%);
-}
-
-.camera-header-content-mobile {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.camera-back-btn-mobile {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: rgba(0,0,0,0.5);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.camera-back-btn-mobile span {
-  font-size: 24px;
-  color: white;
-}
-
-.camera-back-btn-mobile:active {
-  transform: scale(0.95);
-  background: rgba(0,0,0,0.7);
-}
-
-.camera-header-info {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.camera-title-mobile {
-  font-size: 16px;
-  font-weight: 600;
-  color: white;
-  background: rgba(0,0,0,0.4);
-  backdrop-filter: blur(10px);
-  padding: 6px 16px;
-  border-radius: 30px;
-}
-
-.camera-badge-mobile {
-  font-size: 10px;
-  color: var(--primary);
-  background: rgba(0, 255, 136, 0.2);
-  padding: 4px 10px;
-  border-radius: 30px;
-  border: 1px solid rgba(0, 255, 136, 0.3);
-  animation: livePulse 1.5s infinite;
-}
-
-.camera-placeholder {
-  width: 44px;
-  height: 44px;
-  opacity: 0;
-}
-
 /* Vídeo mobile */
 .camera-video-mobile {
   width: 100%;
@@ -2925,27 +2827,30 @@ body {
   object-fit: cover;
 }
 
-/* Controles inferiores mobile */
-.camera-controls-mobile {
+/* Header mobile simplificado - sem gradiente */
+.camera-header-mobile-simple {
   position: absolute;
-  bottom: 30px;
+  top: 0;
   left: 0;
   right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  padding: 0 30px;
+  padding: 16px 20px;
   z-index: 10;
 }
 
-.camera-switch-btn-mobile,
-.camera-gallery-btn-mobile {
-  width: 56px;
-  height: 56px;
+.camera-header-content-mobile-simple {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.camera-back-btn-mobile-simple {
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2953,19 +2858,52 @@ body {
   transition: all 0.2s;
 }
 
-.camera-switch-btn-mobile span,
-.camera-gallery-btn-mobile span {
-  font-size: 28px;
+.camera-back-btn-mobile-simple span {
+  font-size: 24px;
   color: white;
 }
 
-.camera-switch-btn-mobile:active,
-.camera-gallery-btn-mobile:active {
+.camera-back-btn-mobile-simple:active {
   transform: scale(0.95);
-  background: rgba(0,0,0,0.7);
+  background: rgba(0, 0, 0, 0.7);
 }
 
-.camera-capture-btn-mobile {
+.camera-header-info-simple {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.camera-title-mobile-simple {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  padding: 8px 20px;
+  border-radius: 30px;
+}
+
+.camera-placeholder-simple {
+  width: 44px;
+  height: 44px;
+  opacity: 0;
+}
+
+/* Controles inferiores mobile simplificado - apenas botão de captura */
+.camera-controls-mobile-simple {
+  position: absolute;
+  bottom: 30px;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  z-index: 10;
+}
+
+.camera-capture-btn-mobile-simple {
   background: none;
   border: none;
   cursor: pointer;
@@ -2973,22 +2911,22 @@ body {
   transition: transform 0.1s;
 }
 
-.camera-capture-btn-mobile:active {
+.camera-capture-btn-mobile-simple:active {
   transform: scale(0.95);
 }
 
-.capture-outer-ring-mobile {
+.capture-outer-ring-mobile-simple {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(5px);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.capture-inner-ring-mobile {
+.capture-inner-ring-mobile-simple {
   width: 68px;
   height: 68px;
   border-radius: 50%;
@@ -2999,97 +2937,61 @@ body {
   box-shadow: 0 0 20px var(--primary-glow);
 }
 
-.capture-inner-ring-mobile span {
+.capture-inner-ring-mobile-simple span {
   font-size: 32px;
   color: #000;
 }
 
 /* Responsividade mobile */
 @media (max-width: 480px) {
-  .camera-title-mobile {
-    font-size: 14px;
-    padding: 5px 14px;
-  }
-  
-  .camera-badge-mobile {
-    font-size: 9px;
-    padding: 3px 8px;
-  }
-  
-  .camera-back-btn-mobile {
+  .camera-back-btn-mobile-simple {
     width: 40px;
     height: 40px;
   }
   
-  .camera-back-btn-mobile span {
+  .camera-back-btn-mobile-simple span {
     font-size: 20px;
   }
   
-  .camera-switch-btn-mobile,
-  .camera-gallery-btn-mobile {
-    width: 48px;
-    height: 48px;
+  .camera-title-mobile-simple {
+    font-size: 14px;
+    padding: 6px 16px;
   }
   
-  .camera-switch-btn-mobile span,
-  .camera-gallery-btn-mobile span {
-    font-size: 24px;
-  }
-  
-  .capture-outer-ring-mobile {
+  .capture-outer-ring-mobile-simple {
     width: 70px;
     height: 70px;
   }
   
-  .capture-inner-ring-mobile {
+  .capture-inner-ring-mobile-simple {
     width: 58px;
     height: 58px;
   }
   
-  .capture-inner-ring-mobile span {
+  .capture-inner-ring-mobile-simple span {
     font-size: 28px;
   }
 }
 
 @media (max-width: 380px) {
-  .camera-controls-mobile {
+  .camera-controls-mobile-simple {
     bottom: 20px;
-    padding: 0 20px;
   }
   
-  .camera-switch-btn-mobile,
-  .camera-gallery-btn-mobile {
-    width: 44px;
-    height: 44px;
-  }
-  
-  .capture-outer-ring-mobile {
+  .capture-outer-ring-mobile-simple {
     width: 64px;
     height: 64px;
   }
   
-  .capture-inner-ring-mobile {
+  .capture-inner-ring-mobile-simple {
     width: 52px;
     height: 52px;
   }
   
-  .capture-inner-ring-mobile span {
+  .capture-inner-ring-mobile-simple span {
     font-size: 24px;
   }
 }
-
-/* Animações */
-@keyframes livePulse {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(1.05);
-  }
-}
-
 /* ===== PREVIEW MODERN - DESIGN ATUALIZADO ===== */
 .preview-container-modern {
   position: fixed;
