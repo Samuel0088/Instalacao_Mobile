@@ -3337,3 +3337,131 @@ body {
     justify-content: center;
   }
 }
+
+
+/* EXPLORE TABS */
+/* ===== EXPLORE TABS - APENAS BOTÕES MODERNOS ===== */
+.explore-tabs-modern {
+  display: flex;
+  gap: 8px;
+  padding: 20px 20px 0 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+  z-index: 10;
+}
+
+.explore-tabs-modern::-webkit-scrollbar {
+  display: none;
+}
+
+/* Botões das tabs */
+.explore-tab {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  background: rgba(18, 22, 28, 0.6);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 40px;
+  color: #9aaebf;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.explore-tab-icon {
+  font-size: 20px;
+  transition: all 0.2s ease;
+}
+
+.explore-tab-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* Hover effect */
+.explore-tab:hover {
+  background: rgba(0, 255, 136, 0.1);
+  border-color: rgba(0, 255, 136, 0.3);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.explore-tab:hover .explore-tab-icon {
+  transform: scale(1.05);
+  color: #00ff88;
+}
+
+/* Active state */
+.explore-tab.active {
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.15), rgba(0, 102, 255, 0.1));
+  border-color: rgba(0, 255, 136, 0.4);
+  color: #fff;
+}
+
+.explore-tab.active .explore-tab-icon {
+  color: #00ff88;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .explore-tabs-modern {
+    padding: 16px 16px 0 16px;
+    gap: 6px;
+  }
+
+  .explore-tab {
+    padding: 8px 16px;
+    gap: 8px;
+  }
+
+  .explore-tab-icon {
+    font-size: 18px;
+  }
+
+  .explore-tab-label {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .explore-tabs-modern {
+    padding: 12px 12px 0 12px;
+    gap: 4px;
+  }
+
+  .explore-tab {
+    padding: 6px 12px;
+    gap: 6px;
+  }
+
+  .explore-tab-icon {
+    font-size: 16px;
+  }
+
+  .explore-tab-label {
+    font-size: 0.7rem;
+  }
+}
+
+/* Animação de entrada */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.explore-tabs-modern {
+  animation: fadeSlideUp 0.3s ease-out;
+}

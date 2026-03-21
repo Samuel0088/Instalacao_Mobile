@@ -70,7 +70,6 @@ export default function ClimaTab() {
           temperature: Math.round(weather.main.temp),
           feelsLike: Math.round(weather.main.feels_like),
 
-          // 🔥 AGORA CORRETO
           tempMin: Math.round(minTempDay),
           tempMax: Math.round(maxTempDay),
 
@@ -130,6 +129,97 @@ export default function ClimaTab() {
 
   const retry = () => fetchWeather()
 
+  // Gerar recomendações
+  const getRecommendations = () => {
+    if (!weatherData) return []
+
+    const recommendations = []
+
+    // Solo seco
+    if (weatherData.humidity < 50 && weatherData.rain === 0) {
+      recommendations.push({
+        type: "warning",
+        icon: "water_drop",
+        title: "Solo seco",
+        message: "Irrigação recomendada"
+      })
+    }
+
+    // Alta umidade
+    if (weatherData.humidity > 80) {
+      recommendations.push({
+        type: "warning",
+        icon: "humidity_high",
+        title: "Alta umidade",
+        message: "Risco de fungos. Monitore as plantas"
+      })
+    }
+
+    // Calor intenso
+    if (weatherData.temperature > 32) {
+      recommendations.push({
+        type: "warning",
+        icon: "whatshot",
+        title: "Calor intenso",
+        message: "Proteja plantas sensíveis do sol forte"
+      })
+    }
+
+    // Temperatura baixa
+    if (weatherData.temperature < 15) {
+      recommendations.push({
+        type: "warning",
+        icon: "ac_unit",
+        title: "Temperatura baixa",
+        message: "Risco de geada. Proteja as plantas"
+      })
+    }
+
+    // Vento forte
+    if (weatherData.windSpeed > 8) {
+      recommendations.push({
+        type: "warning",
+        icon: "wind_power",
+        title: "Vento forte",
+        message: "Evite pulverização e verifique estruturas"
+      })
+    }
+
+    // Chuva forte
+    if (weatherData.rain > 5) {
+      recommendations.push({
+        type: "info",
+        icon: "rainy",
+        title: "Chuva forte",
+        message: "Suspenda irrigação e verifique drenagem"
+      })
+    }
+
+    // Condições ideais
+    if (weatherData.humidity >= 50 && weatherData.humidity <= 70 && 
+        weatherData.temperature >= 20 && weatherData.temperature <= 30 && 
+        weatherData.windSpeed <= 5 && weatherData.rain === 0) {
+      recommendations.push({
+        type: "success",
+        icon: "sentiment_satisfied",
+        title: "Condições ideais",
+        message: "Perfeito para atividades no campo"
+      })
+    }
+
+    // 🌟 RECOMENDAÇÃO PADRÃO - Sempre mostrar pelo menos uma recomendação
+    if (recommendations.length === 0) {
+      recommendations.push({
+        type: "info",
+        icon: "agriculture",
+        title: "Clima estável",
+        message: "Condições normais para as atividades agrícolas"
+      })
+    }
+
+    return recommendations
+  }
+
   // LOADING
   if (loading || farmLoading) {
     return (
@@ -167,6 +257,8 @@ export default function ClimaTab() {
       </div>
     )
   }
+
+  const recommendations = getRecommendations()
 
   return (
     <div style={styles.container}>
@@ -294,7 +386,7 @@ export default function ClimaTab() {
         </div>
       </div>
 
-      {/* RECOMENDAÇÕES */}
+      {/* RECOMENDAÇÕES - AGORA SEMPRE APARECE */}
       <div style={styles.recommendationsCard}>
         <h3 style={styles.recommendationsTitle}>
           <span className="material-symbols-outlined" style={{ fontSize: '24px', color: 'var(--primary)' }}>psychology</span>
@@ -302,77 +394,23 @@ export default function ClimaTab() {
         </h3>
         
         <div style={styles.recommendationsList}>
-          {weatherData.humidity < 50 && weatherData.rain === 0 && (
-            <div style={styles.recommendation}>
-              <span className="material-symbols-outlined" style={styles.recommendationIcon}>water_drop</span>
+          {recommendations.map((rec, index) => (
+            <div 
+              key={index} 
+              style={{
+                ...styles.recommendation,
+                ...(rec.type === "warning" ? styles.recommendationWarning : {}),
+                ...(rec.type === "success" ? styles.recommendationSuccess : {}),
+                ...(rec.type === "info" ? styles.recommendationInfo : {})
+              }}
+            >
+              <span className="material-symbols-outlined" style={styles.recommendationIcon}>{rec.icon}</span>
               <div style={styles.recommendationText}>
-                <strong>Solo seco</strong>
-                <p>Irrigação recomendada</p>
+                <strong>{rec.title}</strong>
+                <p>{rec.message}</p>
               </div>
             </div>
-          )}
-
-          {weatherData.humidity > 80 && (
-            <div style={{...styles.recommendation, ...styles.recommendationWarning}}>
-              <span className="material-symbols-outlined" style={styles.recommendationIcon}>humidity_high</span>
-              <div style={styles.recommendationText}>
-                <strong>Alta umidade</strong>
-                <p>Risco de fungos</p>
-              </div>
-            </div>
-          )}
-
-          {weatherData.temperature > 32 && (
-            <div style={{...styles.recommendation, ...styles.recommendationWarning}}>
-              <span className="material-symbols-outlined" style={styles.recommendationIcon}>whatshot</span>
-              <div style={styles.recommendationText}>
-                <strong>Calor intenso</strong>
-                <p>Proteja plantas sensíveis</p>
-              </div>
-            </div>
-          )}
-
-          {weatherData.temperature < 15 && (
-            <div style={{...styles.recommendation, ...styles.recommendationWarning}}>
-              <span className="material-symbols-outlined" style={styles.recommendationIcon}>ac_unit</span>
-              <div style={styles.recommendationText}>
-                <strong>Temperatura baixa</strong>
-                <p>Risco de geada</p>
-              </div>
-            </div>
-          )}
-
-          {weatherData.windSpeed > 8 && (
-            <div style={{...styles.recommendation, ...styles.recommendationWarning}}>
-              <span className="material-symbols-outlined" style={styles.recommendationIcon}>wind_power</span>
-              <div style={styles.recommendationText}>
-                <strong>Vento forte</strong>
-                <p>Evite pulverização</p>
-              </div>
-            </div>
-          )}
-
-          {weatherData.rain > 5 && (
-            <div style={styles.recommendation}>
-              <span className="material-symbols-outlined" style={styles.recommendationIcon}>rainy</span>
-              <div style={styles.recommendationText}>
-                <strong>Chuva forte</strong>
-                <p>Suspenda irrigação</p>
-              </div>
-            </div>
-          )}
-
-          {weatherData.humidity >= 50 && weatherData.humidity <= 70 && 
-           weatherData.temperature >= 20 && weatherData.temperature <= 30 && 
-           weatherData.windSpeed <= 5 && (
-            <div style={styles.recommendation}>
-              <span className="material-symbols-outlined" style={styles.recommendationIcon}>sentiment_satisfied</span>
-              <div style={styles.recommendationText}>
-                <strong>Condições ideais</strong>
-                <p>Perfeito para campo</p>
-              </div>
-            </div>
-          )}
+          ))}
         </div>
       </div>
 
@@ -594,6 +632,14 @@ const styles = {
   recommendationWarning: {
     borderLeft: '4px solid #ffaa00',
     background: 'rgba(255,170,0,0.05)',
+  },
+  recommendationSuccess: {
+    borderLeft: '4px solid #00ff88',
+    background: 'rgba(0,255,136,0.05)',
+  },
+  recommendationInfo: {
+    borderLeft: '4px solid #0066ff',
+    background: 'rgba(0,102,255,0.05)',
   },
   recommendationIcon: {
     fontSize: '22px',

@@ -1,4 +1,28 @@
+import { useEffect } from "react"
+
 export default function ImagePreview({ image, onBack, onAnalyze }) {
+  // Esconder o menu bar quando o componente montar
+  useEffect(() => {
+    const menuBar = document.querySelector('.menu-bar')
+    if (menuBar) {
+      menuBar.style.display = 'none'
+    }
+    
+    // Prevenir scroll
+    document.body.style.overflow = 'hidden'
+    
+    return () => {
+      // Restaurar menu bar quando desmontar
+      const menuBar = document.querySelector('.menu-bar')
+      if (menuBar) {
+        menuBar.style.display = 'flex'
+      }
+      
+      // Restaurar scroll
+      document.body.style.overflow = 'auto'
+    }
+  }, [])
+
   return (
     <div className="preview-container-modern">
       <div className="preview-card">

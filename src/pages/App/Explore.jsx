@@ -12,14 +12,13 @@ import ParticleBackground from "../../components/App/Home/ParticleBackground"
 import "../../styles/App/Explore.css"
 
 const tabs = [
-  { id: "diagnostico", label: "Diagnóstico", icon: "🌱" },
-  { id: "clima", label: "Clima", icon: "🌦️" },
-  { id: "diario", label: "Diário", icon: "📒" },
-  { id: "mapa", label: "Mapa", icon: "🗺️" },
-  { id: "estoque", label: "Estoque", icon: "📦" },
-  { id: "atividades", label: "Atividades", icon: "✅" }
+  { id: "diagnostico", label: "Diagnóstico", icon: "eco" },
+  { id: "clima", label: "Clima", icon: "cloud" },
+  { id: "diario", label: "Diário", icon: "menu_book" },
+  { id: "mapa", label: "Mapa", icon: "map" },
+  { id: "estoque", label: "Estoque", icon: "inventory" },
+  { id: "atividades", label: "Atividades", icon: "assignment" }
 ]
-
 
 export default function Explore() {
   const [activeTab, setActiveTab] = useState("diagnostico")
@@ -27,30 +26,38 @@ export default function Explore() {
   const renderTab = () => {
     switch(activeTab) {
       case "diagnostico": 
-         return <DiagnosticoTab active={activeTab === "diagnostico"} />
-      case "clima": return <ClimaTab />
-      case "diario": return <DiarioTab />
-      case "mapa": return <MapaTab />
-      case "estoque": return <EstoqueTab />
-      case "atividades": return <AtividadesTab />
-      default: return <DiagnosticoTab />
+        return <DiagnosticoTab active={activeTab === "diagnostico"} />
+      case "clima": 
+        return <ClimaTab />
+      case "diario": 
+        return <DiarioTab />
+      case "mapa": 
+        return <MapaTab />
+      case "estoque": 
+        return <EstoqueTab />
+      case "atividades": 
+        return <AtividadesTab />
+      default: 
+        return <DiagnosticoTab />
     }
   }
 
   return (
     <div className="explore-container">
-       <ParticleBackground />
+      <ParticleBackground />
       <AppHeader title="Explorar" showNotification={true} />
 
-      <div className="tabs-container">
-        {tabs.map(tab => (
+      <div className="explore-tabs-modern">
+        {tabs.map((tab) => (
           <button
             key={tab.id}
-            className={`tab-btn ${activeTab === tab.id ? "active" : ""}`}
+            className={`explore-tab ${activeTab === tab.id ? "active" : ""}`}
             onClick={() => setActiveTab(tab.id)}
           >
-            <span className="tab-icon">{tab.icon}</span>
-            <span className="tab-label">{tab.label}</span>
+            <span className="explore-tab-icon material-symbols-outlined">
+              {tab.icon}
+            </span>
+            <span className="explore-tab-label">{tab.label}</span>
           </button>
         ))}
       </div>
