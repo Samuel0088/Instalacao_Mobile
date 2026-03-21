@@ -16,7 +16,7 @@ export default function CameraView({ videoRef, onCapture, onCancel }) {
   // Detectar se é mobile
   const isMobile = window.innerWidth <= 768
 
-  // Calcular posição central quando o componente montar
+  // Calcular posição central quando o componente montar (apenas para PC)
   useEffect(() => {
     if (!isMobile && !isInitialized) {
       const centerX = (window.innerWidth - size.width) / 2
@@ -182,50 +182,65 @@ export default function CameraView({ videoRef, onCapture, onCancel }) {
     }
   }, [isMobile, handleMouseMove, handleMouseUp])
 
-  // Para mobile, mantém tela cheia
+  // Para mobile, mantém tela cheia com design simplificado
   if (isMobile) {
     return (
       <div className="camera-view-container mobile-fullscreen">
+        {/* Gradientes */}
         <div className="camera-top-gradient"></div>
         <div className="camera-bottom-gradient"></div>
         
-        <div className="camera-header">
-          <div className="camera-header-content">
-            <span className="camera-header-title">Tirar Foto</span>
-            <span className="camera-header-badge">Ao vivo</span>
+        {/* Header mobile */}
+        <div className="camera-header-mobile">
+          <div className="camera-header-content-mobile">
+            <button className="camera-back-btn-mobile" onClick={onCancel}>
+              <span className="material-symbols-outlined">close</span>
+            </button>
+            <div className="camera-header-info">
+              <span className="camera-title-mobile">Tirar Foto</span>
+              <span className="camera-badge-mobile">Ao vivo</span>
+            </div>
+            <div className="camera-placeholder"></div>
           </div>
         </div>
         
+        {/* Vídeo */}
         <video
           ref={videoRef}
           autoPlay
           playsInline
-          className="camera-video"
+          className="camera-video-mobile"
         />
         
-        <button 
-          ref={captureRef}
-          className="camera-capture-btn" 
-          onClick={onCapture}
-        >
-          <div className="capture-outer-ring">
-            <div className="capture-inner-ring">
-              <span className="material-symbols-outlined">photo_camera</span>
+        {/* Controles inferiores mobile */}
+        <div className="camera-controls-mobile">
+          <button className="camera-switch-btn-mobile">
+            <span className="material-symbols-outlined">flip_camera_android</span>
+          </button>
+          
+          <button 
+            ref={captureRef}
+            className="camera-capture-btn-mobile" 
+            onClick={onCapture}
+          >
+            <div className="capture-outer-ring-mobile">
+              <div className="capture-inner-ring-mobile">
+                <span className="material-symbols-outlined">photo_camera</span>
+              </div>
             </div>
-          </div>
-        </button>
-        
-        <button className="camera-back-btn" onClick={onCancel}>
-          <span className="material-symbols-outlined">close</span>
-        </button>
+          </button>
+          
+          <button className="camera-gallery-btn-mobile">
+            <span className="material-symbols-outlined">photo_library</span>
+          </button>
+        </div>
       </div>
     )
   }
 
-  // Para PC, janela redimensionável sem backdrop clicável
+  // Para PC, janela redimensionável (mantido exatamente como antes)
   return (
     <>
-      {/* Backdrop sem função de fechar - apenas visual */}
       <div className="camera-overlay-backdrop"></div>
       <div 
         ref={containerRef}
@@ -239,7 +254,7 @@ export default function CameraView({ videoRef, onCapture, onCancel }) {
           transform: 'translateZ(0)'
         }}
       >
-        {/* Barra de título para arrastar */}
+        {/* Barra de título */}
         <div className="camera-window-header" onMouseDown={handleMouseDown}>
           <div className="camera-window-title">
             <span className="material-symbols-outlined">photo_camera</span>
@@ -250,7 +265,7 @@ export default function CameraView({ videoRef, onCapture, onCancel }) {
           </button>
         </div>
         
-        {/* Conteúdo da câmera */}
+        {/* Conteúdo */}
         <div className="camera-window-content">
           <video
             ref={videoRef}
@@ -259,7 +274,6 @@ export default function CameraView({ videoRef, onCapture, onCancel }) {
             className="camera-video-window"
           />
           
-          {/* Botão de capturar dentro da janela */}
           <button 
             ref={captureRef}
             className="camera-capture-btn-window" 
@@ -273,7 +287,7 @@ export default function CameraView({ videoRef, onCapture, onCancel }) {
           </button>
         </div>
         
-        {/* Handles para redimensionar - mais suaves */}
+        {/* Handles */}
         <div className="resize-handle resize-se" onMouseDown={(e) => startResize('se', e)}></div>
         <div className="resize-handle resize-e" onMouseDown={(e) => startResize('e', e)}></div>
         <div className="resize-handle resize-s" onMouseDown={(e) => startResize('s', e)}></div>
