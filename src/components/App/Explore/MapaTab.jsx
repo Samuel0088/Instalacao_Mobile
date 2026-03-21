@@ -3,11 +3,18 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useFarm } from "./hooks/useFarm"
 import "../../../styles/App/MapaTab.css"
 
-// Importar Leaflet
+// Importar Leaflet e plugins CORRETAMENTE
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
+
+// Importar leaflet-draw de forma compatível
 import "leaflet-draw/dist/leaflet.draw.css"
 import "leaflet-draw"
+
+// Garantir que o leaflet-draw está disponível
+if (typeof window !== 'undefined' && !window.L) {
+  window.L = L
+}
 
 // Configurar ícones do Leaflet
 delete L.Icon.Default.prototype._getIconUrl
@@ -21,7 +28,7 @@ export default function MapaTab() {
   const { farmData, loading: farmLoading } = useFarm()
   const mapContainerRef = useRef(null)
   const drawnItemsRef = useRef(null)
-  const [map, setMap] = useState(null)
+  const mapInstanceRef = useRef(null)
   const [areas, setAreas] = useState([])
   const [selectedArea, setSelectedArea] = useState(null)
   const [locationStatus, setLocationStatus] = useState("loading")
@@ -42,7 +49,7 @@ export default function MapaTab() {
     localStorage.setItem("farmPolygons", JSON.stringify(newAreas))
     
     // Atualizar camadas no mapa
-    if (map && drawnItemsRef.current) {
+    if (mapInstanceRef.current && drawnItemsRef.current) {
       drawnItemsRef.current.clearLayers()
       newAreas.forEach(area => {
         const polygon = L.polygon(area.coordinates, {
@@ -74,8 +81,8 @@ export default function MapaTab() {
         const lat = parseFloat(data[0].lat)
         const lng = parseFloat(data[0].lon)
         
-        if (map) {
-          map.setView([lat, lng], 16)
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.setView([lat, lng], 16)
         }
         
         setLocationStatus("success")
@@ -112,14 +119,16 @@ export default function MapaTab() {
     }
   }
 
-  // Inicializar mapa
+  // Inicializar mapa - usando useEffect com cleanup adequado
   useEffect(() => {
-    if (!mapContainerRef.current || map) return
+    // Verificar se o container existe e o mapa já foi inicializado
+    if (!mapContainerRef.current || mapInstanceRef.current) return
 
-    // Criar mapa com centro padrão (Brasil)
+    // Criar mapa
     const mapInstance = L.map(mapContainerRef.current).setView([-15.7934, -47.8823], 4)
+    mapInstanceRef.current = mapInstance
     
-    // Adicionar camada de tiles (OpenStreetMap)
+    // Adicionar camada de tiles
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       maxZoom: 19
@@ -129,37 +138,43 @@ export default function MapaTab() {
     const drawnItems = L.featureGroup().addTo(mapInstance)
     drawnItemsRef.current = drawnItems
 
-    // Configurar controles de desenho
-    const drawControl = L.Control.draw({
-      position: "topleft",
-      draw: {
-        polygon: {
-          shapeOptions: {
-            color: "#00ff88",
-            weight: 3,
-            opacity: 0.8,
-            fillOpacity: 0.3
+    // Verificar se L.Control.draw existe
+    if (L.Control.Draw) {
+      // Configurar controles de desenho
+      const drawControl = new L.Control.Draw({
+        position: "topleft",
+        draw: {
+          polygon: {
+            shapeOptions: {
+              color: "#00ff88",
+              weight: 3,
+              opacity: 0.8,
+              fillOpacity: 0.3
+            },
+            allowIntersection: false,
+            drawError: {
+              color: "#ff4444",
+              message: "Não é permitido cruzamento de linhas!"
+            },
+            showArea: true,
+            showLength: false,
+            metric: true
           },
-          allowIntersection: false,
-          drawError: {
-            color: "#ff4444",
-            message: "Não é permitido cruzamento de linhas!"
-          },
-          showArea: true,
-          showLength: false,
-          metric: true
+          rectangle: false,
+          circle: false,
+          circlemarker: false,
+          marker: false,
+          polyline: false
         },
-        rectangle: false,
-        circle: false,
-        circlemarker: false,
-        marker: false,
-        polyline: false
-      },
-      edit: {
-        featureGroup: drawnItems,
-        remove: true
-      }
-    }).addTo(mapInstance)
+        edit: {
+          featureGroup: drawnItems,
+          remove: true
+        }
+      })
+      drawControl.addTo(mapInstance)
+    } else {
+      console.warn("L.Control.Draw não disponível")
+    }
 
     // Carregar áreas salvas
     const savedAreas = localStorage.getItem("farmPolygons")
@@ -250,8 +265,6 @@ export default function MapaTab() {
       })
     })
 
-    setMap(mapInstance)
-
     // Tentar localizar a fazenda pelo CEP
     const locateFarm = async () => {
       if (farmData?.cep) {
@@ -260,9 +273,9 @@ export default function MapaTab() {
         if (!location) {
           setLocationStatus("error")
         }
-      } else if (farmData?.cidade && farmData?.uf) {
+      } else if (farmData?.municipio && farmData?.uf) {
         setLocationStatus("loading")
-        const location = await searchLocation(`${farmData.cidade}, ${farmData.uf}`)
+        const location = await searchLocation(`${farmData.municipio}, ${farmData.uf}`)
         if (!location) {
           setLocationStatus("error")
         }
@@ -275,12 +288,14 @@ export default function MapaTab() {
       locateFarm()
     }
 
+    // Cleanup
     return () => {
-      if (mapInstance) {
-        mapInstance.remove()
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove()
+        mapInstanceRef.current = null
       }
     }
-  }, [farmData, farmLoading])
+  }, [farmData, farmLoading]) // Dependências corretas
 
   const deleteArea = (id) => {
     if (window.confirm("Tem certeza que deseja remover esta área?")) {
@@ -403,9 +418,9 @@ export default function MapaTab() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
                 onClick={() => {
-                  if (map) {
+                  if (mapInstanceRef.current) {
                     const bounds = L.latLngBounds(area.coordinates.map(p => [p[0], p[1]]))
-                    map.fitBounds(bounds, { padding: [50, 50] })
+                    mapInstanceRef.current.fitBounds(bounds, { padding: [50, 50] })
                   }
                   setSelectedArea(area)
                 }}
@@ -481,9 +496,9 @@ export default function MapaTab() {
               </div>
               <div className="detail-actions">
                 <button className="action-btn" onClick={() => {
-                  if (map) {
+                  if (mapInstanceRef.current) {
                     const bounds = L.latLngBounds(selectedArea.coordinates.map(p => [p[0], p[1]]))
-                    map.fitBounds(bounds, { padding: [50, 50] })
+                    mapInstanceRef.current.fitBounds(bounds, { padding: [50, 50] })
                     setSelectedArea(null)
                   }
                 }}>
