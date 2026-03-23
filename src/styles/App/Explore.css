@@ -1853,74 +1853,47 @@ body {
   animation: fadeSlideUp 0.3s ease-out;
 }
 
-/* ===== FORÇAR COR DOS ÍCONES NO CLIMATAB PARA #00ffaa ===== */
+/* ===== FORÇAR TODOS OS ÍCONES MATERIAL SYMBOLS ===== */
 
-/* Ícones do card principal */
-.clima-tab-main-card .material-symbols-outlined,
-.clima-tab-header-content .material-symbols-outlined,
-.clima-tab-stat-item .material-symbols-outlined,
-.clima-tab-recommendations .material-symbols-outlined {
+/* Forçar ícones específicos do clima por estilo inline */
+span[style*="color: var(--primary)"] {
   color: #00ffaa !important;
 }
 
-/* Ícones do grid de estatísticas */
-.statCard .material-symbols-outlined,
-.stats-grid .material-symbols-outlined {
+/* Forçar ícones no loading e erro */
+.loadingIcon .material-symbols-outlined,
+.errorIcon .material-symbols-outlined {
   color: #00ffaa !important;
 }
 
-/* Ícone do termômetro na sensação térmica */
-.tempDetail .material-symbols-outlined {
+/* Forçar ícones nos cards de estatística */
+.statCard .material-symbols-outlined {
   color: #00ffaa !important;
 }
 
-/* Ícones das setas de temperatura */
+/* Forçar ícones nas recomendações */
+.recommendation .material-symbols-outlined {
+  color: #00ffaa !important;
+}
+
+/* Forçar ícone do título de recomendações */
+.recommendationsTitle .material-symbols-outlined {
+  color: #00ffaa !important;
+}
+
+/* Forçar ícone da data */
+.date .material-symbols-outlined {
+  color: #00ffaa !important;
+}
+
+/* Forçar ícones de temperatura */
+.tempDetail .material-symbols-outlined,
 .tempMin .material-symbols-outlined,
 .tempMax .material-symbols-outlined {
   color: #00ffaa !important;
 }
 
-/* Ícone do calendário na data */
-.date .material-symbols-outlined {
-  color: #00ffaa !important;
-}
-
-/* Ícone do ícone de clima */
-.weatherIcon .material-symbols-outlined {
-  color: #00ffaa !important;
-}
-
-/* Ícones das recomendações */
-.recommendation .material-symbols-outlined {
-  color: #00ffaa !important;
-}
-
-/* Ícone do título de recomendações */
-.recommendationsTitle .material-symbols-outlined {
-  color: #00ffaa !important;
-}
-
-/* Ícone de atualização no footer */
+/* Forçar ícone do footer */
 .footer .material-symbols-outlined {
-  color: #00ffaa !important;
-}
-
-/* Forçar todos os ícones Material Symbols na página de clima */
-.clima-tab-container .material-symbols-outlined,
-div[style*="clima"] .material-symbols-outlined {
-  color: #00ffaa !important;
-}
-
-/* Ícones específicos por classe */
-.stat-icon {
-  color: #00ffaa !important;
-}
-
-.recommendation-icon {
-  color: #00ffaa !important;
-}
-
-/* Ícone de loading */
-.loadingIcon .material-symbols-outlined {
   color: #00ffaa !important;
 }
