@@ -221,7 +221,7 @@ export default function DiagnosticoTab() {
     <div className="diagnostic-container">
       <div className="diagnostic-header">
         <div className="header-glow"></div>
-        <h1>Diagnóstico</h1>
+        <h1 className="diagnostico-title">Diagnóstico</h1>
         <p>
           Identifique doenças em plantas com{" "}
           <span className="highlight">inteligência artificial</span>

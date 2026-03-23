@@ -21,17 +21,17 @@ export default function FarmInfoCard({ farmData }) {
       <div className="farm-stats">
         <div className="stat-item">
           <span className="stat-label">Área Total</span>
-          <span className="stat-value">{farmData.area_total}</span>
+          <span className="stat-value-teste">{farmData.area_total}</span>
         </div>
         <div className="stat-divider"></div>
         <div className="stat-item">
           <span className="stat-label">Setores</span>
-          <span className="stat-value">4</span>
+          <span className="stat-value-teste">4</span>
         </div>
         <div className="stat-divider"></div>
         <div className="stat-item">
           <span className="stat-label">Sensores</span>
-          <span className="stat-value">12</span>
+          <span className="stat-value-teste">12</span>
         </div>
       </div>
     </div>

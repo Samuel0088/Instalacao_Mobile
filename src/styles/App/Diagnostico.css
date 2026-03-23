@@ -834,16 +834,6 @@
   backdrop-filter: blur(10px);
 }
 
-.diagnostic-header h1 {
-  font-size: 42px;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 12px;
-  letter-spacing: -1px;
-}
 
 .diagnostic-header p {
   font-size: 15px;
@@ -1175,7 +1165,7 @@
 .tips-header h4 {
   font-size: 14px;
   font-weight: 600;
-  color: var(--primary);
+  color: var(--primary) ;
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -1418,4 +1408,103 @@
   .empty-action {
     justify-content: center;
   }
+}
+
+
+/* ===== FORÇAR COR DOS ÍCONES PARA #00ffaa ===== */
+
+/* Ícones dos cards principais */
+.option-icon span {
+  color: #00ffaa !important;
+}
+
+/* Ícone do histórico no título */
+.section-title span {
+  color: #00ffaa !important;
+}
+
+/* Ícones dos itens do histórico */
+.history-icon span {
+  color: #00ffaa !important;
+}
+
+/* Ícone da dica */
+.tips-header span {
+  color: #00ffaa !important;
+}
+
+.tips-header h4 {
+  color: #00ffaa !important;
+}
+
+/* Ícone do histórico vazio */
+.empty-icon span {
+  color: #00ffaa !important;
+}
+
+/* Setas e links */
+.section-link {
+  color: #00ffaa !important;
+}
+
+.section-link span {
+  color: #00ffaa !important;
+}
+
+.card-action {
+  color: #00ffaa !important;
+}
+
+/* Texto destacado */
+.highlight {
+  color: #00ffaa !important;
+}
+
+/* Badge do header */
+.header-badge {
+  color: #00ffaa !important;
+  border-color: rgba(0, 255, 170, 0.2) !important;
+}
+
+/* Valores de confiança */
+.confidence-value {
+  color: #00ffaa !important;
+}
+
+/* Botões de ação secundários */
+.empty-action.secondary {
+  color: #00ffaa !important;
+}
+
+.empty-action.secondary span {
+  color: #00ffaa !important;
+}
+
+/* Hover dos botões secundários */
+.empty-action.secondary:hover {
+  border-color: #00ffaa !important;
+  color: #00ffaa !important;
+}
+
+/* Cor do título */
+.Definindo_cor_diagnostico {
+  color: #00ffaa !important;
+}
+
+/* Efeito de glow */
+.header-glow {
+  background: radial-gradient(circle, rgba(0, 255, 170, 0.4) 0%, transparent 70%) !important;
+}
+
+/* Barra de confiança */
+.confidence-fill {
+  background: linear-gradient(90deg, #00ffaa, #0066ff) !important;
+}
+
+.diagnostico-title {
+  font-size: 42px !important;
+  font-weight: 700 !important;
+  color: #00ffaa !important;
+  margin-bottom: 12px !important;
+  letter-spacing: -1px !important;
 }

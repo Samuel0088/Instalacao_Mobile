@@ -639,13 +639,6 @@ body {
   color: var(--primary);
 }
 
-.stat-card h3 {
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 4px;
-}
-
 .stat-card p {
   font-size: 12px;
   color: var(--text-secondary);
@@ -1858,4 +1851,76 @@ body {
 
 .explore-tabs-modern {
   animation: fadeSlideUp 0.3s ease-out;
+}
+
+/* ===== FORÇAR COR DOS ÍCONES NO CLIMATAB PARA #00ffaa ===== */
+
+/* Ícones do card principal */
+.clima-tab-main-card .material-symbols-outlined,
+.clima-tab-header-content .material-symbols-outlined,
+.clima-tab-stat-item .material-symbols-outlined,
+.clima-tab-recommendations .material-symbols-outlined {
+  color: #00ffaa !important;
+}
+
+/* Ícones do grid de estatísticas */
+.statCard .material-symbols-outlined,
+.stats-grid .material-symbols-outlined {
+  color: #00ffaa !important;
+}
+
+/* Ícone do termômetro na sensação térmica */
+.tempDetail .material-symbols-outlined {
+  color: #00ffaa !important;
+}
+
+/* Ícones das setas de temperatura */
+.tempMin .material-symbols-outlined,
+.tempMax .material-symbols-outlined {
+  color: #00ffaa !important;
+}
+
+/* Ícone do calendário na data */
+.date .material-symbols-outlined {
+  color: #00ffaa !important;
+}
+
+/* Ícone do ícone de clima */
+.weatherIcon .material-symbols-outlined {
+  color: #00ffaa !important;
+}
+
+/* Ícones das recomendações */
+.recommendation .material-symbols-outlined {
+  color: #00ffaa !important;
+}
+
+/* Ícone do título de recomendações */
+.recommendationsTitle .material-symbols-outlined {
+  color: #00ffaa !important;
+}
+
+/* Ícone de atualização no footer */
+.footer .material-symbols-outlined {
+  color: #00ffaa !important;
+}
+
+/* Forçar todos os ícones Material Symbols na página de clima */
+.clima-tab-container .material-symbols-outlined,
+div[style*="clima"] .material-symbols-outlined {
+  color: #00ffaa !important;
+}
+
+/* Ícones específicos por classe */
+.stat-icon {
+  color: #00ffaa !important;
+}
+
+.recommendation-icon {
+  color: #00ffaa !important;
+}
+
+/* Ícone de loading */
+.loadingIcon .material-symbols-outlined {
+  color: #00ffaa !important;
 }
