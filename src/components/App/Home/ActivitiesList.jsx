@@ -34,65 +34,48 @@ export default function ActivitiesList({ hasFarm, onViewAll, onRegister }) {
     )
   }
 
-  // Função para navegar para o último diagnóstico específico
-  const goToLastDiagnostic = () => {
-    if (recentDiagnostics.length > 0) {
-      const lastDiagnostic = recentDiagnostics[0]
-      // Salvar o diagnóstico no localStorage para ser recuperado
-      localStorage.setItem("selectedDiagnostic", JSON.stringify(lastDiagnostic))
-      // Navegar para o diagnóstico com o resultado
-      navigate("/explore", { 
-        state: { 
-          activeTab: "diagnostico", 
-          showResult: true,
-          diagnosticData: lastDiagnostic
-        } 
-      })
-    } else {
-      navigate("/explore", { state: { activeTab: "diagnostico" } })
-    }
+  // Função para navegar para a página de atividades
+  const goToActivities = () => {
+    navigate("/explore", { state: { activeTab: "atividades" } })
   }
 
-  // Função para navegar para o histórico completo
+  // Função para navegar para o histórico completo de diagnósticos
   const goToHistory = () => {
     navigate("/explore", { state: { activeTab: "diagnostico", showHistory: true } })
   }
 
   return (
     <div className="activities-list">
-      {/* Último Diagnóstico */}
+      {/* Último Diagnóstico - Agora vai para Atividades */}
       {recentDiagnostics.length > 0 && (
-        <div className="activity-card glass" onClick={goToLastDiagnostic}>
+        <div className="activity-card glass" onClick={goToActivities}>
           <div className="activity-icon relatorio">
-            <span className="material-symbols-outlined">science</span>
+            <span className="material-symbols-outlined">assignment</span>
             <div className="icon-pulse"></div>
           </div>
           <div className="activity-content">
             <div className="activity-header">
-              <h4 className="activity-title">Último Diagnóstico</h4>
-              <span className="activity-time">{recentDiagnostics[0]?.date}</span>
+              <h4 className="activity-title">Atividades do Campo</h4>
+              <span className="activity-time">Gerencie suas tarefas</span>
             </div>
             <p className="activity-description">
-              <strong>{recentDiagnostics[0]?.disease || "Nenhum diagnóstico"}</strong>
-              {recentDiagnostics[0]?.confidence && ` • ${recentDiagnostics[0]?.confidence}% de confiança`}
+              Visualize e gerencie todas as atividades da sua fazenda
             </p>
             <div className="activity-metrics">
               <div className="metric">
-                <span className="material-symbols-outlined">eco</span>
-                <span>{recentDiagnostics[0]?.disease || "Sem dados"}</span>
+                <span className="material-symbols-outlined">checklist</span>
+                <span>Tarefas pendentes</span>
               </div>
-              {recentDiagnostics[0]?.confidence && (
-                <div className="metric">
-                  <span className="material-symbols-outlined">trending_up</span>
-                  <span>{recentDiagnostics[0]?.confidence}% confiança</span>
-                </div>
-              )}
+              <div className="metric">
+                <span className="material-symbols-outlined">chevron_right</span>
+                <span>Clique para acessar</span>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Mais Diagnósticos */}
+      {/* Mais Diagnósticos - Vai para o histórico */}
       {recentDiagnostics.length > 1 && (
         <div className="activity-card glass" onClick={goToHistory}>
           <div className="activity-icon relatorio">
@@ -126,7 +109,7 @@ export default function ActivitiesList({ hasFarm, onViewAll, onRegister }) {
         </div>
       )}
 
-      {/* Voo de Mapeamento (exemplo) */}
+      {/* Voo de Mapeamento - Vai para o mapa */}
       <div className="activity-card glass" onClick={() => navigate("/explore", { state: { activeTab: "mapa" } })}>
         <div className="activity-icon voo">
           <span className="material-symbols-outlined">flight_takeoff</span>

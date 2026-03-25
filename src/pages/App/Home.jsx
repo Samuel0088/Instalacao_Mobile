@@ -111,7 +111,10 @@ export default function Home() {
               Atividades Recentes
             </h2>
             {hasFarm && (
-              <button className="view-all-btn" onClick={() => navigate("/atividades")}>
+              <button 
+                className="view-all-btn" 
+                onClick={() => navigate("/explore", { state: { activeTab: "atividades" } })}
+              >
                 <span>Ver todas</span>
                 <span className="material-symbols-outlined">arrow_forward</span>
                 <div className="btn-glow"></div>
@@ -121,7 +124,7 @@ export default function Home() {
 
           <ActivitiesList 
             hasFarm={hasFarm}
-            onViewAll={() => navigate("/atividades")}
+            onViewAll={() => navigate("/explore", { state: { activeTab: "atividades" } })}
             onRegister={() => navigate("/cadastrar-fazenda")}
           />
         </section>
