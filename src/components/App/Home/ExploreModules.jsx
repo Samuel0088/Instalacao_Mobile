@@ -1,14 +1,70 @@
 // components/Home/ExploreModules.jsx
+import { useNavigate } from "react-router-dom"
+
 const modules = [
-  { path: "/explore", icon: "eco", label: "Diagnóstico", sublabel: "Análise de plantas", type: "diagnose" },
-  { path: "/explore", icon: "cloud", label: "Clima", sublabel: "Previsão 7 dias", type: "weather" },
-  { path: "/explore", icon: "menu_book", label: "Diário", sublabel: "Registros da plantação", type: "diary" },
-  { path: "/explore", icon: "map", label: "Mapa", sublabel: "Visualização 3D", type: "map" },
-  { path: "/explore", icon: "inventory", label: "Estoque", sublabel: "Insumos e materiais", type: "stock" },
-  { path: "/explore", icon: "assessment", label: "Relatórios", sublabel: "Dados e métricas", type: "reports" }
+  { 
+    id: "diagnostico",
+    path: "/explore", 
+    tab: "diagnostico",
+    icon: "eco", 
+    label: "Diagnóstico", 
+    sublabel: "Análise de plantas", 
+    type: "diagnose" 
+  },
+  { 
+    id: "clima",
+    path: "/explore", 
+    tab: "clima",
+    icon: "cloud", 
+    label: "Clima", 
+    sublabel: "Previsão 7 dias", 
+    type: "weather" 
+  },
+  { 
+    id: "diario",
+    path: "/explore", 
+    tab: "diario",
+    icon: "menu_book", 
+    label: "Diário", 
+    sublabel: "Registros da plantação", 
+    type: "diary" 
+  },
+  { 
+    id: "mapa",
+    path: "/explore", 
+    tab: "mapa",
+    icon: "map", 
+    label: "Mapa", 
+    sublabel: "Visualização 3D", 
+    type: "map" 
+  },
+  { 
+    id: "estoque",
+    path: "/explore", 
+    tab: "estoque",
+    icon: "inventory", 
+    label: "Estoque", 
+    sublabel: "Insumos e materiais", 
+    type: "stock" 
+  },
+  { 
+    id: "atividades",
+    path: "/explore", 
+    tab: "atividades",
+    icon: "assignment", 
+    label: "Atividades", 
+    sublabel: "Tarefas do campo", 
+    type: "reports"  // ← Mantendo "reports" para não quebrar o CSS
+  }
 ]
 
 export default function ExploreModules({ onNavigate }) {
+  const navigate = useNavigate()
+
+  const handleNavigate = (module) => {
+    navigate(module.path, { state: { activeTab: module.tab } })
+  }
+
   return (
     <section className="explore-section">
       <h2 className="section-title">
@@ -19,9 +75,9 @@ export default function ExploreModules({ onNavigate }) {
       <div className="explore-grid">
         {modules.map((module) => (
           <button
-            key={module.path}
+            key={module.id}
             className="explore-card glass"
-            onClick={() => onNavigate(module.path)}
+            onClick={() => handleNavigate(module)}
           >
             <div className={`explore-icon ${module.type}`}>
               <span className="material-symbols-outlined">{module.icon}</span>

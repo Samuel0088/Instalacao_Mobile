@@ -1,4 +1,6 @@
-import { useState } from "react"
+// pages/App/Explore.jsx
+import { useState, useEffect } from "react"
+import { useLocation } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import AppHeader from "../../components/App/Global/AppHeader"
 import MenuBar from "../../components/App/Global/MenuBar"
@@ -21,7 +23,16 @@ const tabs = [
 ]
 
 export default function Explore() {
+  const location = useLocation()
   const [activeTab, setActiveTab] = useState("diagnostico")
+
+  // Verificar se veio uma tab específica do estado de navegação
+  useEffect(() => {
+    console.log("Location state:", location.state) // Para debug
+    if (location.state?.activeTab) {
+      setActiveTab(location.state.activeTab)
+    }
+  }, [location])
 
   const renderTab = () => {
     switch(activeTab) {

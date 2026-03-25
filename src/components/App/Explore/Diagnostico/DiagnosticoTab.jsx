@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react"
+import { useLocation } from "react-router-dom" // ← Adicionar esta importação
 import CameraView from "./CameraView"
 import ImagePreview from "./ImagePreview"
 import AnalysisLoader from "./AnalysisLoader"
@@ -11,12 +12,36 @@ const API_URL = "https://octaviorezendesilva-api-doencas-soja.hf.space/predict"
 export default function DiagnosticoTab() {
   const videoRef = useRef(null)
   const fileInputRef = useRef(null)
+  const location = useLocation() // ← Adicionar esta linha
 
   const [step, setStep] = useState("start")
   const [image, setImage] = useState(null)
   const [result, setResult] = useState(null)
   const [history, setHistory] = useState([])
   const [showAllHistory, setShowAllHistory] = useState(false)
+
+  // ==============================
+  // VERIFICAR ESTADO DA NAVEGAÇÃO
+  // ==============================
+  useEffect(() => {
+    // Se veio do link "Ver todos" dos diagnósticos recentes
+    if (location.state?.showHistory) {
+      setShowAllHistory(true)
+    }
+    
+    // Se veio do link do último diagnóstico
+    if (location.state?.showResult && location.state?.diagnosticData) {
+      const diagnostic = location.state.diagnosticData
+      // Criar um objeto no formato que o DiagnosisResult espera
+      const resultData = {
+        resultado: diagnostic.disease,
+        confianca: diagnostic.confidence,
+        probabilidades: {}
+      }
+      setResult(resultData)
+      setStep("result")
+    }
+  }, [location])
 
   // ==============================
   // CARREGAR HISTÓRICO
