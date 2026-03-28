@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef, useCallback } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { useState, useEffect, useRef } from "react"
 import { useFarm } from "./hooks/useFarm"
 import "../../../styles/App/MapaTab.css"
 
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
 
+// corrigir ícones
 delete L.Icon.Default.prototype._getIconUrl
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
@@ -13,6 +13,13 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 })
 
+// formatar área
+function formatArea(areaHa) {
+  if (areaHa < 1) return `${(areaHa * 10000).toFixed(0)} m²`
+  return `${areaHa.toFixed(2)} ha`
+}
+
+// calcular área
 function calculateArea(latLngs) {
   if (!latLngs || latLngs.length < 3) return 0
   const points = latLngs.map(p => [p.lat, p.lng])
@@ -29,457 +36,251 @@ function calculateArea(latLngs) {
 }
 
 export default function MapaTab() {
-  const { farmData, loading: farmLoading } = useFarm()
+  const { farmData } = useFarm()
 
   const mapContainerRef = useRef(null)
   const mapInstanceRef = useRef(null)
+
   const isDrawingRef = useRef(false)
+  const currentPointsRef = useRef([])
+
+  const polygonsRef = useRef({})
+  const lineRef = useRef(null)
+  const tooltipRef = useRef(null)
 
   const [areas, setAreas] = useState([])
-  const [selectedArea, setSelectedArea] = useState(null)
-  const [locationStatus, setLocationStatus] = useState("loading")
-  const [searchAddress, setSearchAddress] = useState("")
-  const [searching, setSearching] = useState(false)
+  const [selectedAreaId, setSelectedAreaId] = useState(null)
+
   const [isDrawing, setIsDrawing] = useState(false)
   const [currentPoints, setCurrentPoints] = useState([])
-  const [currentPolygon, setCurrentPolygon] = useState(null)
-  const [tempMarkers, setTempMarkers] = useState([])
   const [currentArea, setCurrentArea] = useState(0)
 
-  // manter ref sincronizada
+  // 🔍 busca
+  const [searchAddress, setSearchAddress] = useState("")
+  const [searching, setSearching] = useState(false)
+
+  // sync refs
   useEffect(() => {
     isDrawingRef.current = isDrawing
   }, [isDrawing])
 
-  // carregar áreas com segurança
+  useEffect(() => {
+    currentPointsRef.current = currentPoints
+  }, [currentPoints])
+
+  // carregar áreas
   useEffect(() => {
     const saved = localStorage.getItem("farmPolygons")
     if (saved) {
       try {
-        const parsed = JSON.parse(saved)
-        const safeAreas = parsed.map(area => ({
-          ...area,
-          areaHa: area.areaHa ?? 0
-        }))
-        setAreas(safeAreas)
+        setAreas(JSON.parse(saved))
       } catch {
         setAreas([])
       }
     }
   }, [])
 
-  const saveAreas = useCallback((newAreas) => {
-    const safeAreas = newAreas.map(area => ({
-      ...area,
-      areaHa: area.areaHa ?? 0
-    }))
-    setAreas(safeAreas)
-    localStorage.setItem("farmPolygons", JSON.stringify(safeAreas))
-    
-    // Atualizar polígonos no mapa
-    if (mapInstanceRef.current) {
-      // Remover polígonos existentes
-      mapInstanceRef.current.eachLayer(layer => {
-        if (layer.options && layer.options.isAreaPolygon) {
-          mapInstanceRef.current.removeLayer(layer)
-        }
-      })
-      
-      // Adicionar polígonos salvos
-      safeAreas.forEach(area => {
-        if (area.coordinates && area.coordinates.length >= 3) {
-          const polygon = L.polygon(area.coordinates, {
-            color: area.color || "#00ffaa",
-            weight: 3,
-            opacity: 0.8,
-            fillOpacity: 0.3,
-            isAreaPolygon: true
-          })
-          polygon.bindPopup(`
-            <strong>${area.name || "Área"}</strong><br>
-            Cultura: ${area.crop || "Soja"}<br>
-            Área: ${(area.areaHa ?? 0).toFixed(2)} ha
-          `)
-          polygon.addTo(mapInstanceRef.current)
-        }
-      })
-    }
-  }, [])
+  const saveAreas = (newAreas) => {
+    setAreas(newAreas)
+    localStorage.setItem("farmPolygons", JSON.stringify(newAreas))
+  }
 
-  const addPoint = useCallback((latlng) => {
+  // desenhar áreas salvas
+  useEffect(() => {
+    if (!mapInstanceRef.current) return
+
+    Object.values(polygonsRef.current).forEach(p => p.remove())
+    polygonsRef.current = {}
+
+    areas.forEach(area => {
+      if (!area.coordinates || area.coordinates.length < 3) return
+
+      const polygon = L.polygon(area.coordinates, {
+        color: "#00ffaa",
+        fillOpacity: 0.3
+      })
+
+      polygon.on("click", () => setSelectedAreaId(area.id))
+
+      polygon.addTo(mapInstanceRef.current)
+      polygonsRef.current[area.id] = polygon
+    })
+  }, [areas])
+
+  // destacar selecionado
+  useEffect(() => {
+    Object.entries(polygonsRef.current).forEach(([id, polygon]) => {
+      polygon.setStyle({
+        color: Number(id) === selectedAreaId ? "#ffff00" : "#00ffaa",
+        fillOpacity: Number(id) === selectedAreaId ? 0.6 : 0.3,
+        weight: Number(id) === selectedAreaId ? 4 : 2
+      })
+    })
+  }, [selectedAreaId])
+
+  // adicionar ponto
+  const addPoint = (latlng) => {
     if (!isDrawingRef.current || !mapInstanceRef.current) return
 
-    const newPoints = [...currentPoints, latlng]
+    const newPoints = [...currentPointsRef.current, latlng]
     setCurrentPoints(newPoints)
-    
-    // Adicionar marcador temporário
-    const marker = L.marker(latlng, {
-      icon: L.divIcon({
-        className: 'temp-marker',
-        html: `<div style="background: #00ffaa; width: 10px; height: 10px; border-radius: 50%; border: 2px solid white;"></div>`,
-        iconSize: [14, 14]
-      })
+
+    L.circleMarker(latlng, {
+      radius: 5,
+      color: "#00ffaa",
+      fillColor: "#00ffaa",
+      fillOpacity: 1
     }).addTo(mapInstanceRef.current)
-    setTempMarkers(prev => [...prev, marker])
-    
-    // Remover polígono anterior
-    if (currentPolygon) {
-      mapInstanceRef.current.removeLayer(currentPolygon)
+
+    if (lineRef.current) {
+      mapInstanceRef.current.removeLayer(lineRef.current)
     }
-    
-    // Criar novo polígono se tiver pelo menos 3 pontos
+
+    lineRef.current = L.polyline(newPoints, {
+      color: "#00ffaa"
+    }).addTo(mapInstanceRef.current)
+
     if (newPoints.length >= 3) {
       const area = calculateArea(newPoints)
       setCurrentArea(area)
-      
-      const polygon = L.polygon(newPoints, {
-        color: '#00ffaa',
-        weight: 3,
-        opacity: 0.8,
-        fillOpacity: 0.3,
-        dashArray: '5, 5'
+
+      if (tooltipRef.current) {
+        mapInstanceRef.current.removeLayer(tooltipRef.current)
+      }
+
+      tooltipRef.current = L.marker(newPoints[0], {
+        icon: L.divIcon({
+          html: `<div style="background:#00ffaa;padding:4px 8px;border-radius:6px;color:#000;font-weight:bold;">
+            ${formatArea(area)}
+          </div>`
+        })
       }).addTo(mapInstanceRef.current)
-      
-      polygon.bindTooltip(`Área: ${area.toFixed(2)} ha`, { permanent: true, direction: 'center' })
-      setCurrentPolygon(polygon)
-    } else {
-      setCurrentArea(0)
     }
-  }, [currentPoints, currentPolygon])
+  }
 
   const startDrawing = () => {
     setIsDrawing(true)
     setCurrentPoints([])
+    currentPointsRef.current = []
     setCurrentArea(0)
-    setCurrentPolygon(null)
-    setTempMarkers([])
   }
 
   const finishDrawing = () => {
-    if (currentPoints.length >= 3) {
-      const areaHa = calculateArea(currentPoints)
-      
-      // Perguntar nome da área
-      const areaName = prompt("Nome da área:", `Área ${areas.length + 1}`)
-      if (areaName) {
-        const crop = prompt("Cultura plantada:", "Soja")
-        
-        const newArea = {
-          id: Date.now(),
-          name: areaName,
-          crop: crop || "Soja",
-          coordinates: currentPoints.map(p => [p.lat, p.lng]),
-          areaHa: areaHa ?? 0,
-          color: "#" + Math.floor(Math.random()*16777215).toString(16),
-          createdAt: new Date().toISOString()
-        }
-        
-        saveAreas([...areas, newArea])
-      }
+    const points = currentPointsRef.current
+
+    if (points.length < 3) {
+      alert("Adicione pelo menos 3 pontos!")
+      return
     }
-    
-    // Limpar desenho
-    tempMarkers.forEach(m => m.remove())
-    if (currentPolygon) mapInstanceRef.current?.removeLayer(currentPolygon)
-    
+
+    const newArea = {
+      id: Date.now(),
+      coordinates: points.map(p => [p.lat, p.lng]),
+      areaHa: calculateArea(points)
+    }
+
+    saveAreas([...areas, newArea])
+
     setIsDrawing(false)
     setCurrentPoints([])
-    setCurrentPolygon(null)
-    setTempMarkers([])
-    setCurrentArea(0)
+    currentPointsRef.current = []
   }
 
-  const cancelDrawing = () => {
-    tempMarkers.forEach(m => m.remove())
-    if (currentPolygon) mapInstanceRef.current?.removeLayer(currentPolygon)
-    
-    setIsDrawing(false)
-    setCurrentPoints([])
-    setCurrentPolygon(null)
-    setTempMarkers([])
-    setCurrentArea(0)
-  }
-
-  // Centralizar na área
-  const centerOnArea = useCallback((area) => {
-    if (mapInstanceRef.current && area.coordinates && area.coordinates.length >= 3) {
-      const bounds = L.latLngBounds(area.coordinates.map(p => [p[0], p[1]]))
-      mapInstanceRef.current.fitBounds(bounds, { padding: [50, 50] })
-    }
-  }, [])
-
-  // MAPA (roda só uma vez)
-  useEffect(() => {
-    if (!mapContainerRef.current || mapInstanceRef.current) return
-
-    const map = L.map(mapContainerRef.current).setView([-15.7934, -47.8823], 4)
-    mapInstanceRef.current = map
-
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '&copy; OpenStreetMap',
-      maxZoom: 19
-    }).addTo(map)
-
-    map.on("click", (e) => {
-      if (isDrawingRef.current) {
-        addPoint(e.latlng)
-      }
-    })
-
-    return () => {
-      map.remove()
-      mapInstanceRef.current = null
-    }
-  }, [addPoint])
-
-  // localização da fazenda
-  useEffect(() => {
-    const locate = async () => {
-      if (!mapInstanceRef.current) return
-
-      if (farmData?.municipio) {
-        setLocationStatus("loading")
-        try {
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(farmData.municipio + ", " + (farmData.uf || ""))}&format=json&limit=1`
-          )
-          const data = await response.json()
-
-          if (data.length > 0) {
-            const lat = parseFloat(data[0].lat)
-            const lng = parseFloat(data[0].lon)
-            mapInstanceRef.current.setView([lat, lng], 13)
-            setLocationStatus("success")
-          } else {
-            setLocationStatus("error")
-          }
-        } catch {
-          setLocationStatus("error")
-        }
-      } else {
-        setLocationStatus("no-location")
-      }
-    }
-
-    if (!farmLoading && farmData) {
-      locate()
-    }
-  }, [farmData, farmLoading])
-
-  // Buscar por endereço
+  // 🔍 buscar endereço / CEP
   const handleSearch = async (e) => {
     e.preventDefault()
     if (!searchAddress.trim()) return
-    
+
     setSearching(true)
+
     try {
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchAddress)}&format=json&limit=1`
       )
+
       const data = await response.json()
-      
+
       if (data.length > 0 && mapInstanceRef.current) {
         const lat = parseFloat(data[0].lat)
         const lng = parseFloat(data[0].lon)
+
         mapInstanceRef.current.setView([lat, lng], 16)
-        setLocationStatus("success")
+
+        L.marker([lat, lng]).addTo(mapInstanceRef.current)
       } else {
-        setLocationStatus("not-found")
+        alert("Endereço não encontrado")
       }
     } catch {
-      setLocationStatus("error")
+      alert("Erro ao buscar endereço")
     } finally {
       setSearching(false)
     }
   }
 
-  const deleteArea = (id) => {
-    if (window.confirm("Remover esta área?")) {
-      saveAreas(areas.filter(area => area.id !== id))
-    }
-  }
+  // MAPA (corrigido)
+  useEffect(() => {
+    if (!mapContainerRef.current || mapInstanceRef.current) return
 
-  const totalArea = areas.reduce((sum, a) => sum + (a.areaHa ?? 0), 0)
+    const timeout = setTimeout(() => {
+      if (!mapContainerRef.current) return
+
+      const map = L.map(mapContainerRef.current).setView([-15, -47], 4)
+      mapInstanceRef.current = map
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map)
+
+      map.on("click", (e) => {
+        if (isDrawingRef.current) addPoint(e.latlng)
+      })
+
+      setTimeout(() => map.invalidateSize(), 200)
+    }, 300)
+
+    return () => {
+      clearTimeout(timeout)
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove()
+        mapInstanceRef.current = null
+      }
+    }
+  }, [])
+
+  const totalArea = areas.reduce((sum, a) => sum + (a.areaHa || 0), 0)
 
   return (
     <div className="mapa-container">
-      <div className="mapa-header">
-        <h2>Mapa da Fazenda</h2>
-        <p>Clique no mapa para adicionar pontos e desenhar sua área</p>
-      </div>
+      <h2>Mapa da Fazenda</h2>
 
-      {/* Barra de busca */}
+      {/* 🔍 BUSCA */}
       <form className="mapa-search" onSubmit={handleSearch}>
         <input
           type="text"
-          placeholder="Buscar endereço, cidade ou CEP..."
+          placeholder="Digite CEP ou endereço..."
           value={searchAddress}
           onChange={(e) => setSearchAddress(e.target.value)}
         />
-        <button type="submit" disabled={searching}>
-          <span className="material-symbols-outlined">search</span>
-          Buscar
+        <button type="submit">
+          {searching ? "Buscando..." : "Buscar"}
         </button>
       </form>
 
-      {/* Botões de controle */}
       {!isDrawing ? (
         <button className="draw-area-btn" onClick={startDrawing}>
-          <span className="material-symbols-outlined">draw</span>
-          Desenhar nova área
+          Desenhar área
         </button>
       ) : (
         <div className="drawing-controls">
-          <div className="drawing-info">
-            <span>✏️ Desenhando: clique no mapa para adicionar pontos</span>
-            {currentPoints.length >= 3 && (
-              <span className="current-area">Área atual: {currentArea.toFixed(2)} ha</span>
-            )}
-            <div className="drawing-buttons">
-              <button className="finish-btn" onClick={finishDrawing}>
-                ✅ Finalizar
-              </button>
-              <button className="cancel-btn" onClick={cancelDrawing}>
-                ❌ Cancelar
-              </button>
-            </div>
-          </div>
+          <p>Pontos: {currentPoints.length}</p>
+          <strong>Área: {formatArea(currentArea)}</strong>
+          <button onClick={finishDrawing}>Finalizar</button>
         </div>
       )}
 
-      {/* Status */}
-      {locationStatus === "loading" && (
-        <div className="location-status loading">Buscando localização...</div>
-      )}
-      {locationStatus === "error" && (
-        <div className="location-status error">Localização não encontrada</div>
-      )}
-      {locationStatus === "no-location" && (
-        <div className="location-status info">Digite um endereço para localizar</div>
-      )}
-
-      {/* Mapa */}
       <div className="mapa-area">
         <div ref={mapContainerRef} className="map-container"></div>
       </div>
 
-      {/* Resumo */}
-      <div className="mapa-summary">
-        <div className="summary-card">
-          <span className="material-symbols-outlined">agriculture</span>
-          <div>
-            <strong>{areas.length}</strong>
-            <p>Áreas demarcadas</p>
-          </div>
-        </div>
-        <div className="summary-card">
-          <span className="material-symbols-outlined">square_foot</span>
-          <div>
-            <strong>{totalArea.toFixed(2)} ha</strong>
-            <p>Área total</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Lista de áreas */}
-      {areas.length > 0 && (
-        <div className="mapa-areas-list">
-          <h3>Minhas Áreas de Plantio</h3>
-          <div className="areas-grid">
-            {areas.map((area, index) => (
-              <motion.div
-                key={area.id}
-                className="area-card"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-                onClick={() => {
-                  centerOnArea(area)
-                  setSelectedArea(area)
-                }}
-              >
-                <div className="area-color" style={{ background: area.color || "#00ffaa" }}></div>
-                <div className="area-info">
-                  <h4>{area.name || "Área sem nome"}</h4>
-                  <div className="area-details">
-                    <span className="crop-badge">
-                      <span className="material-symbols-outlined">eco</span>
-                      {area.crop || "Soja"}
-                    </span>
-                    <span className="area-size">{(area.areaHa ?? 0).toFixed(2)} ha</span>
-                  </div>
-                </div>
-                <button
-                  className="delete-area"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    deleteArea(area.id)
-                  }}
-                >
-                  <span className="material-symbols-outlined">delete</span>
-                </button>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Modal detalhes */}
-      <AnimatePresence>
-        {selectedArea && (
-          <motion.div
-            className="mapa-modal"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setSelectedArea(null)}
-          >
-            <motion.div
-              className="area-detail-modal"
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button className="close-btn" onClick={() => setSelectedArea(null)}>
-                <span className="material-symbols-outlined">close</span>
-              </button>
-              <div className="detail-header">
-                <div className="detail-color" style={{ background: selectedArea.color || "#00ffaa" }}></div>
-                <div>
-                  <h3>{selectedArea.name || "Área sem nome"}</h3>
-                  <p>Cultura: {selectedArea.crop || "Soja"}</p>
-                </div>
-              </div>
-              <div className="detail-stats">
-                <div className="detail-stat">
-                  <span className="material-symbols-outlined">square_foot</span>
-                  <div>
-                    <strong>{(selectedArea.areaHa ?? 0).toFixed(2)} ha</strong>
-                    <p>Área total</p>
-                  </div>
-                </div>
-                <div className="detail-stat">
-                  <span className="material-symbols-outlined">calendar_today</span>
-                  <div>
-                    <strong>{selectedArea.createdAt ? new Date(selectedArea.createdAt).toLocaleDateString() : new Date().toLocaleDateString()}</strong>
-                    <p>Data de cadastro</p>
-                  </div>
-                </div>
-              </div>
-              <div className="detail-actions">
-                <button className="action-btn" onClick={() => {
-                  centerOnArea(selectedArea)
-                  setSelectedArea(null)
-                }}>
-                  <span className="material-symbols-outlined">center_focus_strong</span>
-                  Centralizar
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <h3>Total: {formatArea(totalArea)}</h3>
     </div>
   )
 }
