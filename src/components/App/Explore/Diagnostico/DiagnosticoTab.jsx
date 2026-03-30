@@ -7,7 +7,7 @@ import DiagnosisResult from "./DiagnosisResult"
 import AllHistory from "./AllHistory"
 import "../../../../styles/App/Diagnostico.css"
 
-const API_URL = "https://octaviorezendesilva-api-doencas-soja.hf.space/predict"
+const API_URL = "https://tccamsamericana-api-doencas-soja.hf.space/predict"
 
 export default function DiagnosticoTab() {
   const videoRef = useRef(null)
