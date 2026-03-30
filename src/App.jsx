@@ -112,6 +112,7 @@ function App() {
     }
   }, [isAndroid])
 
+
   return (
     <BrowserRouter>
       <AnimatePresence mode="wait">
