@@ -112,47 +112,6 @@ function App() {
     }
   }, [isAndroid])
 
-  const handleInstall = async () => {
-    if (!deferredPrompt) {
-      // Se não tem o prompt, mostrar instruções manuais
-      if (isIOS) {
-        alert('📱 Para instalar no iPhone/iPad:\n\n' +
-              '1. Toque no botão Compartilhar (📤)\n' +
-              '2. Role para baixo e escolha "Adicionar à Tela de Início"\n' +
-              '3. Toque em "Adicionar" no canto superior direito')
-      } else if (isAndroid) {
-        alert('📱 Para instalar no Android:\n\n' +
-              '1. Toque no menu ⋮ (3 pontos)\n' +
-              '2. Selecione "Instalar app" ou "Adicionar à tela inicial"\n' +
-              '3. Confirme a instalação')
-      } else {
-        alert('💻 No computador:\n\n' +
-              'Clique no ícone de instalação (⬇️) na barra de endereços do navegador')
-      }
-      return
-    }
-
-    try {
-      // Mostrar o prompt nativo
-      deferredPrompt.prompt()
-      const { outcome } = await deferredPrompt.userChoice
-      
-      if (outcome === 'accepted') {
-        console.log('✅ Usuário aceitou instalar')
-        setShowInstallPrompt(false)
-        
-        // Não precisa fazer mais nada, o evento 'appinstalled' será disparado
-      } else {
-        console.log('❌ Usuário cancelou')
-        setShowInstallPrompt(false)
-      }
-      
-      setDeferredPrompt(null)
-    } catch (error) {
-      console.error('Erro na instalação:', error)
-    }
-  }
-
   return (
     <BrowserRouter>
       <AnimatePresence mode="wait">
