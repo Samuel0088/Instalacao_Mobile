@@ -228,7 +228,17 @@ export default function CadastroCompleto() {
               type="text"
               name="document"
               value={userData.document}
-              onChange={handleUserChange}
+              onChange={(e) => {
+                const max = userData.type === "CPF" ? 14 : 19
+                const value = e.target.value.slice(0, max)
+
+                handleUserChange({
+                  target: {
+                    name: "document",
+                    value
+                  }
+                })
+              }}
               placeholder={userData.type === "CPF" ? "000.000.000-00" : "00.000.000/0000-00"}
             />
           </div>
