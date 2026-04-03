@@ -73,6 +73,25 @@ function App() {
       }
     }
 
+    const handleInstall = async () => {
+  if (!deferredPrompt) {
+    console.log('❌ Prompt não disponível')
+    return
+  }
+
+  deferredPrompt.prompt()
+
+  const choiceResult = await deferredPrompt.userChoice
+
+  if (choiceResult.outcome === 'accepted') {
+    console.log('✅ Usuário aceitou instalar')
+  } else {
+    console.log('❌ Usuário recusou')
+  }
+
+  setDeferredPrompt(null)
+}
+
     // Quando o app for instalado
     const handleAppInstalled = (e) => {
       console.log('🎉 App instalado com sucesso!', e)
