@@ -28,6 +28,8 @@ function App() {
   const [isIOS, setIsIOS] = useState(false)
   const [isAndroid, setIsAndroid] = useState(false)
 
+  
+  
   useEffect(() => {
     // Detectar dispositivo
     const userAgent = navigator.userAgent
@@ -73,7 +75,29 @@ function App() {
       }
     }
 
-    const handleInstall = async () => {
+    
+
+    // Quando o app for instalado
+    const handleAppInstalled = (e) => {
+      console.log('🎉 App instalado com sucesso!', e)
+      setIsInstalled(true)
+      setShowInstallPrompt(false)
+      setShowInstallSuccess(true)
+      setDeferredPrompt(null)
+      
+    }
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+    window.addEventListener('appinstalled', handleAppInstalled)
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+      window.removeEventListener('appinstalled', handleAppInstalled)
+    }
+  }, [])
+
+
+const handleInstall = async () => {
   if (!deferredPrompt) {
     console.log('❌ Prompt não disponível')
     return
@@ -91,46 +115,6 @@ function App() {
 
   setDeferredPrompt(null)
 }
-
-    // Quando o app for instalado
-    const handleAppInstalled = (e) => {
-      console.log('🎉 App instalado com sucesso!', e)
-      setIsInstalled(true)
-      setShowInstallPrompt(false)
-      setShowInstallSuccess(true)
-      setDeferredPrompt(null)
-      
-      // Tentar fechar a janela após 2 segundos (se possível)
-      setTimeout(() => {
-        try {
-          // Só tenta fechar se não estiver em modo standalone
-          if (!window.matchMedia('(display-mode: standalone)').matches) {
-            // No Android, tentar redirecionar para o app
-            if (isAndroid) {
-              const packageName = 'com.agrovoo.app' // Substitua pelo seu package name
-              const intentUrl = `intent://${window.location.host}#Intent;scheme=https;package=${packageName};end;`
-              window.location.href = intentUrl
-            }
-            
-            // Não é possível fechar programaticamente por segurança,
-            // mas podemos dar instruções
-            console.log('✅ App instalado! Feche esta aba e abra o app da área de trabalho.')
-          }
-        } catch (error) {
-          console.log('Erro ao tentar redirecionar:', error)
-        }
-      }, 3000)
-    }
-
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
-    window.addEventListener('appinstalled', handleAppInstalled)
-
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
-      window.removeEventListener('appinstalled', handleAppInstalled)
-    }
-  }, [isAndroid])
-
 
   return (
     <BrowserRouter>
