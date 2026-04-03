@@ -639,13 +639,6 @@ body {
   color: var(--primary);
 }
 
-.stat-card h3 {
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 4px;
-}
-
 .stat-card p {
   font-size: 12px;
   color: var(--text-secondary);
@@ -1858,4 +1851,49 @@ body {
 
 .explore-tabs-modern {
   animation: fadeSlideUp 0.3s ease-out;
+}
+
+/* ===== FORÇAR TODOS OS ÍCONES MATERIAL SYMBOLS ===== */
+
+/* Forçar ícones específicos do clima por estilo inline */
+span[style*="color: var(--primary)"] {
+  color: #00ffaa !important;
+}
+
+/* Forçar ícones no loading e erro */
+.loadingIcon .material-symbols-outlined,
+.errorIcon .material-symbols-outlined {
+  color: #00ffaa !important;
+}
+
+/* Forçar ícones nos cards de estatística */
+.statCard .material-symbols-outlined {
+  color: #00ffaa !important;
+}
+
+/* Forçar ícones nas recomendações */
+.recommendation .material-symbols-outlined {
+  color: #00ffaa !important;
+}
+
+/* Forçar ícone do título de recomendações */
+.recommendationsTitle .material-symbols-outlined {
+  color: #00ffaa !important;
+}
+
+/* Forçar ícone da data */
+.date .material-symbols-outlined {
+  color: #00ffaa !important;
+}
+
+/* Forçar ícones de temperatura */
+.tempDetail .material-symbols-outlined,
+.tempMin .material-symbols-outlined,
+.tempMax .material-symbols-outlined {
+  color: #00ffaa !important;
+}
+
+/* Forçar ícone do footer */
+.footer .material-symbols-outlined {
+  color: #00ffaa !important;
 }

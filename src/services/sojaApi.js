@@ -5,7 +5,7 @@ export async function diagnosticarSoja(file) {
   formData.append("file", file);
 
   const response = await fetch(
-    "https://octaviorezendesilva-api-doencas-soja.hf.space/predict",
+    "https://tccamsamericana-api-doencas-soja.hf.space/predict",
     {
       method: "POST",
       body: formData

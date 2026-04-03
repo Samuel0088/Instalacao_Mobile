@@ -402,7 +402,24 @@
   }
 }
 
-/* Barra de Busca */
+.mapa-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.mapa-header h2 {
+  font-size: 1.5rem;
+  margin-bottom: 4px;
+  color: #fff;
+}
+
+.mapa-header p {
+  color: #8b9eb0;
+  font-size: 0.85rem;
+  margin-bottom: 20px;
+}
+
 .mapa-search {
   display: flex;
   gap: 8px;
@@ -411,51 +428,212 @@
 
 .mapa-search input {
   flex: 1;
-  padding: 12px 16px;
+  padding: 12px;
   background: rgba(18, 22, 28, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 40px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
   color: #fff;
-  font-size: 0.9rem;
-  outline: none;
-  transition: all 0.2s;
-}
-
-.mapa-search input:focus {
-  border-color: #00ff88;
 }
 
 .mapa-search button {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0 20px;
-  background: rgba(0, 255, 136, 0.1);
-  border: 1px solid rgba(0, 255, 136, 0.3);
-  border-radius: 40px;
-  color: #00ff88;
+  padding: 12px 24px;
+  background: #00ff88;
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
   cursor: pointer;
-  transition: all 0.2s;
 }
 
-.mapa-search button:hover {
-  background: rgba(0, 255, 136, 0.2);
-}
-
-.mapa-search button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Status de Localização */
-.location-status.info {
-  background: rgba(0, 102, 255, 0.1);
-  border: 1px solid rgba(0, 102, 255, 0.3);
-  color: #0066ff;
+.draw-area-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #00ff88, #0066ff);
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
   margin-bottom: 16px;
-  padding: 12px 16px;
+}
+
+.drawing-controls {
+  background: rgba(0,0,0,0.8);
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.drawing-info {
+  color: #00ff88;
+}
+
+.drawing-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.finish-btn, .cancel-btn {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.finish-btn {
+  background: #00ff88;
+}
+
+.cancel-btn {
+  background: #ff4444;
+  color: white;
+}
+
+.location-status {
+  padding: 12px;
+  background: rgba(0,0,0,0.6);
+  border-radius: 8px;
+  margin-bottom: 16px;
+  text-align: center;
+  color: #ffaa00;
+}
+
+.location-status.error {
+  color: #ff4444;
+}
+
+.location-status.info {
+  color: #00ff88;
+}
+
+.mapa-area {
   border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.map-container {
+  width: 100%;
+  height: 400px;
+  background: #1a1a2e;
+}
+
+.mapa-summary {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.summary-card {
+  flex: 1;
   display: flex;
   align-items: center;
   gap: 12px;
+  padding: 16px;
+  background: rgba(18,22,28,0.6);
+  border-radius: 12px;
+}
+
+.summary-card span {
+  font-size: 32px;
+}
+
+.summary-card strong {
+  font-size: 1.2rem;
+  color: #fff;
+}
+
+.summary-card p {
+  font-size: 0.7rem;
+  color: #8b9eb0;
+  margin: 0;
+}
+
+.mapa-areas-list h3 {
+  margin-bottom: 12px;
+  font-size: 1rem;
+}
+
+.area-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(18,22,28,0.6);
+  border-radius: 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.area-color {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+}
+
+.area-info {
+  flex: 1;
+}
+
+.area-info h4 {
+  margin: 0 0 4px 0;
+  font-size: 0.9rem;
+}
+
+.area-info span {
+  font-size: 0.7rem;
+  color: #8b9eb0;
+}
+
+.delete-area {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  opacity: 0.5;
+}
+
+.delete-area:hover {
+  opacity: 1;
+}
+
+.mapa-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.area-detail-modal {
+  background: #0a0c0e;
+  padding: 24px;
+  border-radius: 20px;
+  min-width: 280px;
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .map-container {
+    height: 350px;
+  }
 }

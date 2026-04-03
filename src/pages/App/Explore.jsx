@@ -1,4 +1,6 @@
-import { useState } from "react"
+// pages/App/Explore.jsx
+import { useState, useEffect } from "react"
+import { useLocation } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import AppHeader from "../../components/App/Global/AppHeader"
 import MenuBar from "../../components/App/Global/MenuBar"
@@ -21,9 +23,43 @@ const tabs = [
 ]
 
 export default function Explore() {
-  const [activeTab, setActiveTab] = useState("diagnostico")
+  const location = useLocation()
+  const [activeTab, setActiveTab] = useState(() => {
+    // Tentar recuperar do localStorage
+    const savedTab = localStorage.getItem("activeExploreTab")
+    console.log("Tab salva no localStorage:", savedTab)
+    return savedTab || "diagnostico"
+  })
+
+  // Verificar se veio uma tab específica do estado de navegação
+  useEffect(() => {
+    console.log("=== EXPLORE: useEffect executando ===")
+    console.log("location.state completo:", location.state)
+    console.log("location.state?.activeTab:", location.state?.activeTab)
+    
+    // Prioridade: 1. state, 2. localStorage, 3. padrão
+    if (location.state?.activeTab) {
+      console.log("✅ Mudando para tab via state:", location.state.activeTab)
+      setActiveTab(location.state.activeTab)
+      localStorage.setItem("activeExploreTab", location.state.activeTab)
+    } else {
+      // Verificar se tem uma tab salva
+      const savedTab = localStorage.getItem("activeExploreTab")
+      if (savedTab && savedTab !== activeTab) {
+        console.log("✅ Mudando para tab via localStorage:", savedTab)
+        setActiveTab(savedTab)
+      }
+    }
+  }, [location])
+
+  // Salvar tab quando mudar manualmente
+  useEffect(() => {
+    console.log("Tab alterada para:", activeTab)
+    localStorage.setItem("activeExploreTab", activeTab)
+  }, [activeTab])
 
   const renderTab = () => {
+    console.log("Renderizando tab:", activeTab)
     switch(activeTab) {
       case "diagnostico": 
         return <DiagnosticoTab active={activeTab === "diagnostico"} />
