@@ -8,29 +8,40 @@ export default function MenuBar() {
   const isActive = (path) => location.pathname === path
 
   return (
-    <nav className="menu-bar">
+    <nav className="nav">
+      <ul className="nav__items">
 
-      <div
-        className={`menu-item ${isActive("/home") ? "active" : ""}`}
-        onClick={() => navigate("/home")}
-      >
-        <span className="material-symbols-outlined">home</span>
-      </div>
+        <li>
+          <button
+            className="nav__item-btn"
+            data-active={isActive("/home")}
+            onClick={() => navigate("/home")}
+          >
+            <span className="material-symbols-outlined">home</span>
+          </button>
+        </li>
 
-      <div
-        className={`menu-item ${isActive("/explore") ? "active" : ""}`}
-        onClick={() => navigate("/explore")}
-      >
-        <span className="material-symbols-outlined">explore</span>
-      </div>
+        <li>
+          <button
+            className="nav__item-btn"
+            data-active={isActive("/explore")}
+            onClick={() => navigate("/explore")}
+          >
+            <span className="material-symbols-outlined">grid_view</span>
+          </button>
+        </li>
 
-      <div
-        className={`menu-item ${isActive("/profile") ? "active" : ""}`}
-        onClick={() => navigate("/profile")}
-      >
-        <span className="material-symbols-outlined">person</span>
-      </div>
+        <li>
+          <button
+            className="nav__item-btn"
+            data-active={isActive("/profile")}
+            onClick={() => navigate("/profile")}
+          >
+            <span className="material-symbols-outlined">person</span>
+          </button>
+        </li>
 
+      </ul>
     </nav>
   )
 }
