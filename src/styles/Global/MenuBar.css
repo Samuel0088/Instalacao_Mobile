@@ -2,55 +2,101 @@
   position: fixed;
   bottom: 0;
   width: 100%;
-  padding: 10px;
-
-  background: #f5f5f5;
-
+  background: #1e5c3a;
   display: flex;
   justify-content: center;
-
-  z-index: 9999; /* 🔥 isso resolve 90% dos casos */
+  padding: 0 0 8px 0;
+  z-index: 9999;
 }
 
 .nav__items {
   display: flex;
   justify-content: space-around;
+  align-items: flex-end;
   width: 100%;
   max-width: 400px;
+  height: 64px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav__item {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  position: relative;
+  height: 100%;
 }
 
 .nav__item-btn {
-  width: 50px;
-  height: 50px;
-
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-
   border: none;
   background: transparent;
   border-radius: 50%;
-
   cursor: pointer;
+  position: relative;
+  z-index: 2;
+  margin-bottom: 6px;
+  transition: transform 0.25s ease,
+    background 0.25s ease,
+    width 0.25s ease,
+    height 0.25s ease,
+    margin-bottom 0.25s ease;
 }
 
-/* Ícone */
 .nav__item-btn span {
-  font-size: 26px;
-  transition: 0.3s;
+  font-size: 24px;
+  color: rgba(255, 255, 255, 0.55);
+  transition: color 0.25s ease,
+    font-size 0.25s ease;
 }
 
-/* 🔥 ATIVO = vira bolinha + sobe */
+.nav__item-btn:hover {
+  transform: translateY(-4px);
+}
+.nav__item-btn:hover span {
+  color: rgba(255, 255, 255, 0.9);
+}
+
 .nav__item-btn[data-active="true"] {
-  background: #00c46a;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+  background: white;
+  width: 54px;
+  height: 54px;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  transform: translateY(0);
 }
 
 .nav__item-btn[data-active="true"] span {
-  color: white;
+  color: #1e5c3a;
+  font-size: 26px;
 }
 
-/* hover */
-.nav__item-btn:hover {
-  transform: translateY(-10px);
+.nav__notch-left,
+.nav__notch-right {
+  position: absolute;
+  bottom: 0;
+  width: 20px;
+  height: 20px;
+  background: #1e5c3a;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.nav__notch-left {
+  left: calc(50% - 47px);
+  border-bottom-right-radius: 20px;
+  box-shadow: 6px 6px 0 6px white;
+}
+
+.nav__notch-right {
+  right: calc(50% - 47px);
+  border-bottom-left-radius: 20px;
+  box-shadow: -6px 6px 0 6px white;
 }

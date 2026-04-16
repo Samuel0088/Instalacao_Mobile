@@ -5,8 +5,8 @@
 :root {
   --primary: #00ff88;
   --primary-dark: #00cc6a;
-  --primary-glow: rgba(0, 255, 136, 0.4);
-  --primary-soft: rgba(0, 255, 136, 0.1);
+  --primary-glow: #00ff8866;
+  --primary-soft: #00ff881a;
   --secondary: #0066ff;
   --secondary-glow: rgba(0, 102, 255, 0.3);
   --background-dark: #0a0c0e;
