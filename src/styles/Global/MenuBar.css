@@ -1,58 +1,120 @@
-.menu-bar {
+.nav {
   position: fixed;
-  bottom: 20px;  /* ← ADICIONE ISSO */
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  background: transparent;
+  z-index: 9999;
+}
+
+.nav__notch-svg {
+  position: absolute;
+  bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 60%;
-  max-width: 450px;
-  height: 70px;
+  width: 100%;
+  max-width: 400px;
+  height: 80px;
+  z-index: 1;
+  pointer-events: none;
+}
 
+.nav__items {
+  position: relative;
+  z-index: 2;
   display: flex;
   justify-content: space-around;
-  align-items: center;
-
-  background: rgba(0, 255, 140, 0.08);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-
-  border-radius: 40px;
-  border: 1px solid rgba(0,255,140,0.2);
-
-  box-shadow:
-    0 10px 30px rgba(0,0,0,0.3),
-    inset 0 0 10px rgba(0,255,140,0.15);
-
-  padding: 0 20px;
-  z-index: 1000;
+  align-items: flex-end;
+  width: 100%;
+  max-width: 400px;
+  height: 80px;
+  list-style: none;
+  margin: 0;
+  padding: 0 0 10px 0;
 }
 
-.menu-item {
+.nav__item {
+  flex: 1;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  height: 100%;
+  position: relative;
+}
+
+.nav__item-btn {
+  width: 50px;
+  height: 50px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-
+  border: none;
+  background: transparent;
+  border-radius: 50%;
   cursor: pointer;
-  color: #fff;
-  font-size: 12px;
-  transition: 0.3s;
+  position: relative;
+  z-index: 2;
+  margin-bottom: 4px;
+  transition:
+    margin-bottom 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    background    0.25s ease,
+    box-shadow    0.25s ease,
+    width         0.25s ease,
+    height        0.25s ease,
+    transform     0.25s ease;
 }
 
-.menu-item span.material-symbols-outlined {
-  font-size: 26px;
-  transition: 0.3s;
+.nav__item-btn .material-symbols-outlined {
+  font-size: 24px;
+  color: rgba(255, 255, 255, 0.55);
+  transition: color 0.25s ease, font-size 0.25s ease;
 }
 
-.menu-item:hover {
+.nav__item-btn:hover {
   transform: translateY(-3px);
-  color: #00ff8c;
+}
+.nav__item-btn:hover .material-symbols-outlined {
+  color: rgba(255, 255, 255, 0.85);
 }
 
-.menu-item.active {
-  color: #00ff8c;
+.nav__item-btn--active {
+  width: 54px;
+  height: 54px;
+  background: #016c3a;
+  margin-bottom: 25px;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.22),
+    0 1px 6px  rgba(0, 0, 0, 0.14);
+
+  transform: none;
 }
 
-.menu-item.active span.material-symbols-outlined {
-  font-variation-settings: 'FILL' 1;
+/* Ícone ativo */
+.nav__item-btn--active .material-symbols-outlined {
+  font-size: 26px;
+  color: #00FF90;
+}
+
+/* Remove o hover-lift no item ativo */
+.nav__item-btn--active:hover {
+  transform: none;
+}
+.nav__item-btn--active:hover .material-symbols-outlined {
+  color: #fff;
+}
+
+/* ---------- Safe area (iPhone com home indicator) ---------- */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .nav {
+    height: calc(80px + env(safe-area-inset-bottom));
+  }
+  .nav__notch-svg {
+    height: calc(80px + env(safe-area-inset-bottom));
+  }
+  .nav__items {
+    height: calc(80px + env(safe-area-inset-bottom));
+  }
 }
