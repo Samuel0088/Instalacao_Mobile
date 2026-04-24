@@ -33,6 +33,19 @@ function calculateArea(latLngs) {
   return areaM2 / 10000
 }
 
+// 🔥 status dinâmico
+function getAreaStatus() {
+  const rand = Math.random()
+
+  if (rand < 0.33) {
+    return { label: "Saudável", color: "#4CAF50" }
+  } else if (rand < 0.66) {
+    return { label: "Atenção", color: "#FFC107" }
+  } else {
+    return { label: "Crítico", color: "#F44336" }
+  }
+}
+
 export default function MapaTab() {
   const { farmData } = useFarm()
 
@@ -113,7 +126,8 @@ export default function MapaTab() {
       if (!area.coordinates || area.coordinates.length < 3) return
 
       const polygon = L.polygon(area.coordinates, {
-        color: "#2E7D32",
+        color: area.color || "#2E7D32",
+        fillColor: area.color || "#2E7D32",
         fillOpacity: 0.25,
         weight: 2,
         smoothFactor: 1
@@ -128,7 +142,7 @@ export default function MapaTab() {
           .setLatLng(center)
           .setContent(`
             <div style="
-              background:#2E7D32;
+              background:${area.color || "#2E7D32"};
               padding:8px 12px;
               border-radius:12px;
               color:#fff;
@@ -137,7 +151,8 @@ export default function MapaTab() {
               font-size:14px;
               font-family:'Inter', sans-serif;
             ">
-              🌱 ${formatArea(area.areaHa)}
+              🌱 ${formatArea(area.areaHa)}<br/>
+              ${area.status || "Saudável"}
             </div>
           `)
           .openOn(mapInstanceRef.current)
@@ -152,12 +167,12 @@ export default function MapaTab() {
   useEffect(() => {
     Object.entries(polygonsRef.current).forEach(([id, polygon]) => {
       polygon.setStyle({
-        color: Number(id) === selectedAreaId ? "#4CAF50" : "#2E7D32",
+        color: Number(id) === selectedAreaId ? "#4CAF50" : (areas.find(a => a.id == id)?.color || "#2E7D32"),
         fillOpacity: Number(id) === selectedAreaId ? 0.4 : 0.25,
         weight: Number(id) === selectedAreaId ? 3 : 2
       })
     })
-  }, [selectedAreaId])
+  }, [selectedAreaId, areas])
 
   const addPoint = (latlng) => {
     if (!isDrawingRef.current || !mapInstanceRef.current) return
@@ -218,10 +233,14 @@ export default function MapaTab() {
       return
     }
 
+    const statusData = getAreaStatus()
+
     const newArea = {
       id: Date.now(),
       coordinates: points.map(p => [p.lat, p.lng]),
-      areaHa: calculateArea(points)
+      areaHa: calculateArea(points),
+      status: statusData.label,
+      color: statusData.color
     }
 
     saveAreas([...areas, newArea])
@@ -244,7 +263,7 @@ export default function MapaTab() {
     currentPointsRef.current = []
   }
 
-  // busca
+  // busca (mantida igual)
   const handleSearch = async (e) => {
     e.preventDefault()
     if (!searchAddress.trim()) return
@@ -290,7 +309,7 @@ export default function MapaTab() {
     }
   }
 
-  // iniciar mapa
+  // mapa init (igual)
   useEffect(() => {
     if (!mapContainerRef.current || mapInstanceRef.current) return
 
@@ -368,7 +387,6 @@ export default function MapaTab() {
         <div ref={mapContainerRef} className="map-container"></div>
       </div>
 
-      {/* Cards - Design moderno e clean */}
       <div className="areas-grid">
         <div className="areas-header">
           <h3>📌 Áreas cadastradas</h3>
@@ -413,9 +431,9 @@ export default function MapaTab() {
                   <div className="stat-divider"></div>
                   <div className="stat">
                     <span className="stat-label">Status</span>
-                    <span className="stat-value status-healthy">
+                    <span className="stat-value">
                       <span className="status-dot"></span>
-                      Saudável
+                      {area.status || "Saudável"}
                     </span>
                   </div>
                 </div>
