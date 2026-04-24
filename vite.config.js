@@ -14,8 +14,8 @@ export default defineConfig({
         cleanupOutdatedCaches: true,
       },
      manifest: {
-  name: 'AgroVoo',
-  short_name: 'AgroVoo',
+  name: 'Zenith',
+  short_name: 'Zenith',
   start_url: '/',
   display: 'standalone',
   theme_color: '#1B5E20',

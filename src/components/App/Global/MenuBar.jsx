@@ -2,10 +2,10 @@ import { useNavigate, useLocation } from "react-router-dom"
 import "../../../styles/Global/MenuBar.css"
 
 const NAV_W    = 400  // nav width
-const NAV_H    = 55  // nav height
-const NOTCH_R  = 40   // raio do arco
-const NOTCH_SW = 16  // distancia do arco até o centro do botão
-const BTR      = 0   // border radius do nav
+const NAV_H    = 30
+const NOTCH_R  = 28
+const NOTCH_SW = 25  // distancia do arco até o centro do botão
+const BTR      = 5   // border radius do nav
 
 // Centro X de cada um dos 3 itens
 const ITEM_CENTERS = [NAV_W / 6, NAV_W / 2, (NAV_W * 5) / 6]
@@ -45,9 +45,6 @@ function buildNotchPath(activeIdx) {
   ].join(" ")
 }
 
-/* ------------------------------------------------------------------ */
-/*  Componente principal                                               */
-/* ------------------------------------------------------------------ */
 export default function MenuBar() {
   const navigate  = useNavigate()
   const location  = useLocation()
