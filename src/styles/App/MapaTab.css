@@ -637,3 +637,475 @@
     height: 350px;
   }
 }
+
+/* MapaTab.css - Versão Moderna e Clean */
+
+.mapa-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px;
+}
+
+/* Header */
+.mapa-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.mapa-header h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.total-area-badge {
+  background: var(--primary-soft);
+  padding: 8px 20px;
+  border-radius: 100px;
+  text-align: center;
+  border: 1px solid var(--glass-border);
+}
+
+.total-area-badge span {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.total-area-badge strong {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* Search */
+.mapa-search {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.search-wrapper {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 16px;
+  font-size: 18px;
+  color: var(--text-muted);
+}
+
+.mapa-search input {
+  flex: 1;
+  padding: 14px 16px 14px 48px;
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  font-size: 14px;
+  background: var(--background-card);
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.mapa-search input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.search-btn {
+  padding: 0 24px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.search-btn:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+}
+
+/* Draw Button */
+.draw-area-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border: none;
+  border-radius: 20px;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.draw-area-btn .btn-icon {
+  font-size: 20px;
+}
+
+.draw-area-btn .btn-hint {
+  position: absolute;
+  right: 20px;
+  font-size: 12px;
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+.draw-area-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--neon-shadow);
+}
+
+/* Drawing Controls */
+.drawing-controls {
+  background: var(--background-card);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.drawing-info {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.info-badge {
+  background: var(--primary-soft);
+  color: var(--primary);
+  padding: 6px 12px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.info-points {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.info-area {
+  color: var(--primary);
+  font-size: 16px;
+}
+
+.finish-draw-btn {
+  background: var(--success);
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.finish-draw-btn:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+}
+
+/* Mapa */
+.mapa-area {
+  margin-bottom: 32px;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--card-shadow);
+}
+
+.map-container {
+  width: 100%;
+  height: 400px;
+  background: #e8f0e8;
+}
+
+/* Áreas Grid */
+.areas-grid {
+  margin-top: 16px;
+}
+
+.areas-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 20px;
+}
+
+.areas-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.areas-count {
+  font-size: 13px;
+  color: var(--text-muted);
+  background: var(--glass-bg);
+  padding: 4px 12px;
+  border-radius: 100px;
+}
+
+/* Cards Grid */
+.areas-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+/* Card Moderno */
+.area-card-modern {
+  background: var(--background-card);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--card-shadow);
+}
+
+.area-card-modern:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+  box-shadow: 0 8px 24px rgba(46, 125, 50, 0.12);
+}
+
+.area-card-modern.selected {
+  border-color: var(--primary);
+  background: linear-gradient(135deg, var(--background-card), var(--primary-soft));
+  box-shadow: 0 4px 16px rgba(46, 125, 50, 0.15);
+}
+
+/* Card Header */
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.card-icon {
+  width: 48px;
+  height: 48px;
+  background: var(--primary-soft);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.card-title h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 4px 0;
+}
+
+.card-date {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* Card Stats */
+.card-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--glass-bg);
+  border-radius: 16px;
+  padding: 12px 16px;
+  margin-bottom: 18px;
+}
+
+.stat {
+  flex: 1;
+  text-align: center;
+}
+
+.stat-label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.stat-divider {
+  width: 1px;
+  height: 30px;
+  background: var(--glass-border);
+}
+
+.status-healthy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--success);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--success);
+  border-radius: 50%;
+  display: inline-block;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Card Footer */
+.card-footer-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.view-btn {
+  flex: 1;
+  padding: 10px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-btn:hover {
+  background: var(--primary-soft);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.delete-btn-modern {
+  flex: 1;
+  padding: 10px;
+  background: rgba(220, 53, 69, 0.08);
+  border: 1px solid rgba(220, 53, 69, 0.2);
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--danger);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-btn-modern:hover {
+  background: rgba(220, 53, 69, 0.15);
+  border-color: var(--danger);
+}
+
+/* Empty State */
+.empty-areas {
+  text-align: center;
+  padding: 60px 20px;
+  background: var(--glass-bg);
+  border-radius: 24px;
+  border: 1px dashed var(--glass-border);
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-areas p {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.empty-areas span {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .mapa-container {
+    padding: 16px;
+  }
+
+  .mapa-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .areas-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .drawing-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .draw-area-btn .btn-hint {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-stats {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .stat-divider {
+    width: 100%;
+    height: 1px;
+  }
+
+  .card-footer-actions {
+    flex-direction: column;
+  }
+}
