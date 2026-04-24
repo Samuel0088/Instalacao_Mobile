@@ -33,7 +33,7 @@ function calculateArea(latLngs) {
   return areaM2 / 10000
 }
 
-// 🔥 status dinâmico
+// status dinâmico
 function getAreaStatus() {
   const rand = Math.random()
 
@@ -44,6 +44,26 @@ function getAreaStatus() {
   } else {
     return { label: "Crítico", color: "#F44336" }
   }
+}
+
+function generateZones(points) {
+  // ✅ agora aceita a partir de 3 pontos
+  if (!points || points.length < 3) return []
+
+  const half = Math.floor(points.length / 2)
+
+  return [
+    {
+      coordinates: points.slice(0, half).map(p => [p.lat, p.lng]),
+      color: "#2196F3",
+      status: "Precisa de água"
+    },
+    {
+      coordinates: points.slice(half).map(p => [p.lat, p.lng]),
+      color: "#FF5722",
+      status: "Solo fraco"
+    }
+  ]
 }
 
 export default function MapaTab() {
@@ -115,6 +135,27 @@ export default function MapaTab() {
     }
   }
 
+  // cancelar desenho
+  const cancelDrawing = () => {
+    markersRef.current.forEach(m => m.remove())
+    markersRef.current = []
+
+    if (lineRef.current) {
+      mapInstanceRef.current.removeLayer(lineRef.current)
+      lineRef.current = null
+    }
+
+    if (tooltipRef.current) {
+      mapInstanceRef.current.removeLayer(tooltipRef.current)
+      tooltipRef.current = null
+    }
+
+    setIsDrawing(false)
+    setCurrentPoints([])
+    currentPointsRef.current = []
+    setCurrentArea(0)
+  }
+
   // desenhar áreas
   useEffect(() => {
     if (!mapInstanceRef.current) return
@@ -123,6 +164,36 @@ export default function MapaTab() {
     polygonsRef.current = {}
 
     areas.forEach(area => {
+      // 🔥 ZONAS INTERNAS
+      if (area.zones && area.zones.length > 0) {
+        area.zones.forEach(zone => {
+          const zonePolygon = L.polygon(zone.coordinates, {
+            color: zone.color,
+            fillColor: zone.color,
+            fillOpacity: 0.5,
+            weight: 1
+          }).addTo(mapInstanceRef.current)
+
+          zonePolygon.on("click", () => {
+            const center = zonePolygon.getBounds().getCenter()
+
+            L.popup()
+              .setLatLng(center)
+              .setContent(`
+                <div style="
+                  background:${zone.color};
+                  padding:8px;
+                  border-radius:10px;
+                  color:#fff;
+                ">
+                  ${zone.status}
+                </div>
+              `)
+              .openOn(mapInstanceRef.current)
+          })
+        })
+      }
+      
       if (!area.coordinates || area.coordinates.length < 3) return
 
       const polygon = L.polygon(area.coordinates, {
@@ -138,21 +209,39 @@ export default function MapaTab() {
 
         const center = polygon.getBounds().getCenter()
 
+        // ✅ monta HTML das zonas
+        let zonesHtml = ""
+
+        if (area.zones && area.zones.length > 0) {
+          zonesHtml = area.zones.map(zone => `
+            <div style="
+              background:${zone.color};
+              padding:6px;
+              border-radius:8px;
+              margin-top:6px;
+              font-size:12px;
+            ">
+              📍 ${zone.status}
+            </div>
+          `).join("")
+        }
+
         L.popup()
           .setLatLng(center)
           .setContent(`
             <div style="
               background:${area.color || "#2E7D32"};
-              padding:8px 12px;
+              padding:10px 12px;
               border-radius:12px;
               color:#fff;
               font-weight:600;
-              text-align:center;
               font-size:14px;
               font-family:'Inter', sans-serif;
+              min-width:160px;
             ">
-              🌱 ${formatArea(area.areaHa)}<br/>
-              ${area.status || "Saudável"}
+              🌱 Área: ${formatArea(area.areaHa)}<br/>
+              📊 Status: ${area.status || "Saudável"}
+              ${zonesHtml}
             </div>
           `)
           .openOn(mapInstanceRef.current)
@@ -240,7 +329,8 @@ export default function MapaTab() {
       coordinates: points.map(p => [p.lat, p.lng]),
       areaHa: calculateArea(points),
       status: statusData.label,
-      color: statusData.color
+      color: statusData.color,
+      zones: generateZones(points) // 🔥 AQUI
     }
 
     saveAreas([...areas, newArea])
@@ -263,7 +353,6 @@ export default function MapaTab() {
     currentPointsRef.current = []
   }
 
-  // busca (mantida igual)
   const handleSearch = async (e) => {
     e.preventDefault()
     if (!searchAddress.trim()) return
@@ -309,7 +398,6 @@ export default function MapaTab() {
     }
   }
 
-  // mapa init (igual)
   useEffect(() => {
     if (!mapContainerRef.current || mapInstanceRef.current) return
 
@@ -343,10 +431,6 @@ export default function MapaTab() {
     <div className="mapa-container">
       <div className="mapa-header">
         <h2>🗺️ Mapa da Fazenda</h2>
-        <div className="total-area-badge">
-          <span>Área total</span>
-          <strong>{formatArea(totalArea)}</strong>
-        </div>
       </div>
 
       <form className="mapa-search" onSubmit={handleSearch}>
@@ -364,24 +448,30 @@ export default function MapaTab() {
         </button>
       </form>
 
-      {!isDrawing ? (
-        <button className="draw-area-btn" onClick={startDrawing}>
-          <span className="btn-icon">✏️</span>
-          Desenhar área
-          <span className="btn-hint">Clique no mapa para adicionar pontos</span>
-        </button>
-      ) : (
-        <div className="drawing-controls">
-          <div className="drawing-info">
-            <span className="info-badge">✏️ Modo desenho</span>
-            <span className="info-points">📍 Pontos: {currentPoints.length}</span>
-            <strong className="info-area">📐 Área: {formatArea(currentArea)}</strong>
-          </div>
-          <button onClick={finishDrawing} className="finish-draw-btn">
-            ✅ Finalizar
+      <div className="draw-button-container">
+        {!isDrawing ? (
+          <button className="draw-area-btn" onClick={startDrawing}>
+            <span className="btn-icon">✏️</span>
+            Desenhar área
           </button>
-        </div>
-      )}
+        ) : (
+          <div className="drawing-controls">
+            <div className="drawing-info">
+              <span className="info-badge">✏️ Modo desenho</span>
+              <span className="info-points">📍 Pontos: {currentPoints.length}</span>
+              <strong className="info-area">📐 Área: {formatArea(currentArea)}</strong>
+            </div>
+            <div className="drawing-buttons">
+              <button onClick={finishDrawing} className="finish-draw-btn">
+                ✅ Finalizar
+              </button>
+              <button onClick={cancelDrawing} className="cancel-draw-btn">
+                ❌ Cancelar
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
 
       <div className="mapa-area">
         <div ref={mapContainerRef} className="map-container"></div>
