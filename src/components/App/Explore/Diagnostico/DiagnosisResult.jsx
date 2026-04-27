@@ -1,11 +1,39 @@
 export default function DiagnosisResult({ result, onRestart }) {
 
-  const disease = result?.doenca || "Não identificado"
-  const confidence = result?.confianca || 0
+  // 🔍 Descobrir doença automaticamente se não vier da API
+  const getMainDisease = () => {
+    if (result?.doenca) return result.doenca
 
-  // Se o valor já estiver entre 0-100, não multiplica
-  // Se o valor for maior que 1, provavelmente já é porcentagem
-  const percent = confidence > 1 ? confidence.toFixed(2) : (confidence * 100).toFixed(2)
+    if (result?.probabilidades) {
+      const sorted = Object.entries(result.probabilidades)
+        .sort((a, b) => b[1] - a[1])
+
+      return sorted[0]?.[0] || "Não identificado"
+    }
+
+    return "Não identificado"
+  }
+
+  const disease = getMainDisease()
+
+  // 🔢 Confiança principal
+  const getConfidence = () => {
+    if (result?.confianca !== undefined) return result.confianca
+
+    if (result?.probabilidades && disease !== "Não identificado") {
+      return result.probabilidades[disease] || 0
+    }
+
+    return 0
+  }
+
+  const confidence = getConfidence()
+
+  // 📊 Percentual tratado corretamente (sempre número)
+  const percent =
+    confidence > 1
+      ? Number(confidence.toFixed(2))
+      : Number((confidence * 100).toFixed(2))
 
   return (
     <div className="result-container">
@@ -22,9 +50,10 @@ export default function DiagnosisResult({ result, onRestart }) {
             <span className="confidence-percent">{percent}%</span>
             <span className="confidence-label">Confiança</span>
           </div>
+
           <div className="confidence-bar-large">
-            <div 
-              className="confidence-fill-large" 
+            <div
+              className="confidence-fill-large"
               style={{ width: `${Math.min(100, percent)}%` }}
             ></div>
           </div>
@@ -33,25 +62,33 @@ export default function DiagnosisResult({ result, onRestart }) {
         {result?.probabilidades && (
           <div className="probabilities">
             <h3>Probabilidades</h3>
+
             {Object.entries(result.probabilidades)
               .sort((a, b) => b[1] - a[1])
               .map(([name, value]) => {
-                // Ajustar o valor da porcentagem
-                const percentValue = value > 1 ? value : value * 100
+                const percentValue =
+                  value > 1
+                    ? Number(value.toFixed(1))
+                    : Number((value * 100).toFixed(1))
+
                 return (
                   <div key={name} className="probability-item">
                     <div className="probability-name">
                       <span className="material-symbols-outlined">grass</span>
                       <span>{name.replaceAll("_", " ")}</span>
                     </div>
+
                     <div className="probability-bar-container">
                       <div className="probability-bar">
-                        <div 
-                          className="probability-fill" 
+                        <div
+                          className="probability-fill"
                           style={{ width: `${Math.min(100, percentValue)}%` }}
                         ></div>
                       </div>
-                      <span className="probability-value">{percentValue.toFixed(1)}%</span>
+
+                      <span className="probability-value">
+                        {percentValue}%
+                      </span>
                     </div>
                   </div>
                 )
