@@ -7,7 +7,7 @@ export default function AppFooter() {
         <div className="footer-section">
           <div className="footer-logo">
             <span className="material-symbols-outlined">agriculture</span>
-            <span>AgriTech</span>
+            <span>Zenith</span>
           </div>
           <p className="footer-description">
             Tecnologia de ponta para agricultura de precisão, monitoramento em tempo real e análise de dados.
@@ -56,7 +56,7 @@ export default function AppFooter() {
           <span>📊 1M+ análises processadas</span>
         </div>
         <div className="footer-copyright">
-          <p>© 2026 AgriTech. Todos os direitos reservados.</p>
+          <p>© 2026 Zenith. Todos os direitos reservados.</p>
           <p>Versão 2.0.1 • Desenvolvido com precision agriculture</p>
         </div>
       </div>

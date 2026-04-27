@@ -86,7 +86,7 @@ export default function Home() {
       <ParticleBackground />
       <MouseGlow />
       
-      <AppHeader title="AgriTech" showLogo={true} showNotification={true} />
+      <AppHeader title="Zenith" showLogo={true} showNotification={true} />
       
       <div className="home-container">
         <WelcomeSection 

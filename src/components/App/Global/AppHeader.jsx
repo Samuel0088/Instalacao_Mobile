@@ -57,7 +57,7 @@ export default function AppHeader({ title, showLogo = true, showNotification = t
     if (title) return title
     if (location.pathname === '/home') return 'Início'
     if (location.pathname === '/profile') return 'Perfil'
-    return 'AgroVoo'
+    return 'Zenith'
   }
 
   return (
@@ -66,7 +66,7 @@ export default function AppHeader({ title, showLogo = true, showNotification = t
         {showLogo && (
           <img
             src="/assets/image/Logo.png"
-            alt="AgroVoo"
+            alt="Zenith"
             className="header-logo"
           />
         )}
