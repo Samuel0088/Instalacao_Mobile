@@ -5,7 +5,7 @@ const NAV_W    = 400  // nav width
 const NAV_H    = 30
 const NOTCH_R  = 28
 const NOTCH_SW = 25  // distancia do arco até o centro do botão
-const BTR      = 5   // border radius do nav
+const BTR      = 3   // border radius do nav
 
 // Centro X de cada um dos 3 itens
 const ITEM_CENTERS = [NAV_W / 6, NAV_W / 2, (NAV_W * 5) / 6]

@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
 import AppHeader from "../../components/App/Global/AppHeader";
-// import MenuBar from "../../components/App/Global/MenuBar";
+import MenuBar from "../../components/App/Global/MenuBar";
 
 import DiagnosticoTab from "../../components/App/Explore/Diagnostico/DiagnosticoTab";
 import MonitoramentoView from "../../components/App/Explore/Monitoramento/MonitoramentoView"; // ✅ NOVO
@@ -122,7 +122,7 @@ export default function Explore() {
         </motion.div>
       </AnimatePresence>
 
-      {/* <MenuBar /> */}
+      <MenuBar />
     </div>
   );
 }
