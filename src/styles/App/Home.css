@@ -1622,3 +1622,237 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(135deg, var(--primary-dark), #0055cc);
 }
+
+
+
+
+
+/* ===== CORES DOS ÍCONES DOS MÓDULOS - FORÇADAS ===== */
+
+/* Diagnóstico - Verde */
+.explore-icon.diagnose {
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.25), rgba(0, 255, 136, 0.1)) !important;
+  color: #00ffaa !important;
+}
+
+.explore-icon.diagnose span {
+  color: #00ffaa !important;
+}
+
+.explore-icon.diagnose .icon-glow {
+  background: radial-gradient(circle at center, rgba(0, 255, 136, 0.6), transparent 70%) !important;
+}
+
+/* Clima - Azul */
+.explore-icon.weather {
+  background: linear-gradient(135deg, rgba(0, 102, 255, 0.25), rgba(0, 102, 255, 0.1)) !important;
+  color: #0066ff !important;
+}
+
+.explore-icon.weather span {
+  color: #0066ff !important;
+}
+
+.explore-icon.weather .icon-glow {
+  background: radial-gradient(circle at center, rgba(0, 102, 255, 0.6), transparent 70%) !important;
+}
+
+/* Diário - Amarelo/Dourado */
+.explore-icon.diary {
+  background: linear-gradient(135deg, rgba(255, 170, 0, 0.25), rgba(255, 170, 0, 0.1)) !important;
+  color: #ffaa00 !important;
+}
+
+.explore-icon.diary span {
+  color: #ffaa00 !important;
+}
+
+.explore-icon.diary .icon-glow {
+  background: radial-gradient(circle at center, rgba(255, 170, 0, 0.6), transparent 70%) !important;
+}
+
+/* Mapa - Roxo */
+.explore-icon.map {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(139, 92, 246, 0.1)) !important;
+  color: #8b5cf6 !important;
+}
+
+.explore-icon.map span {
+  color: #8b5cf6 !important;
+}
+
+.explore-icon.map .icon-glow {
+  background: radial-gradient(circle at center, rgba(139, 92, 246, 0.6), transparent 70%) !important;
+}
+
+/* Estoque - Rosa */
+.explore-icon.stock {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(236, 72, 153, 0.1)) !important;
+  color: #ec4899 !important;
+}
+
+.explore-icon.stock span {
+  color: #ec4899 !important;
+}
+
+.explore-icon.stock .icon-glow {
+  background: radial-gradient(circle at center, rgba(236, 72, 153, 0.6), transparent 70%) !important;
+}
+
+/* Atividades - Vermelho */
+.explore-icon.reports {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(239, 68, 68, 0.1)) !important;
+  color: #ef4444 !important;
+}
+
+.explore-icon.reports span {
+  color: #ef4444 !important;
+}
+
+.explore-icon.reports .icon-glow {
+  background: radial-gradient(circle at center, rgba(239, 68, 68, 0.6), transparent 70%) !important;
+}
+
+/* Garantir que o ícone dentro do explore-icon tenha a cor correta */
+.explore-icon span.material-symbols-outlined {
+  font-size: 28px !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* Efeito hover para os ícones */
+.explore-card:hover .explore-icon.diagnose {
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.3) !important;
+}
+
+.explore-card:hover .explore-icon.weather {
+  box-shadow: 0 0 20px rgba(0, 102, 255, 0.3) !important;
+}
+
+.explore-card:hover .explore-icon.diary {
+  box-shadow: 0 0 20px rgba(255, 170, 0, 0.3) !important;
+}
+
+.explore-card:hover .explore-icon.map {
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.3) !important;
+}
+
+.explore-card:hover .explore-icon.stock {
+  box-shadow: 0 0 20px rgba(236, 72, 153, 0.3) !important;
+}
+
+.explore-card:hover .explore-icon.reports {
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.3) !important;
+}
+
+
+
+/* ===== CORES DOS ÍCONES DAS ATIVIDADES ===== */
+
+/* Atividades - Azul */
+.activity-icon.atividades {
+  background: linear-gradient(135deg, rgba(0, 102, 255, 0.25), rgba(0, 102, 255, 0.1)) !important;
+  color: #0066ff !important;
+}
+
+.activity-icon.atividades span {
+  color: #0066ff !important;
+}
+
+.activity-icon.atividades .icon-pulse {
+  background: radial-gradient(circle at center, rgba(0, 102, 255, 0.6), transparent 70%) !important;
+}
+
+.activity-card:hover .activity-icon.atividades {
+  box-shadow: 0 0 20px rgba(0, 102, 255, 0.3) !important;
+}
+
+/* Diagnósticos - Verde */
+.activity-icon.diagnosticos {
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.25), rgba(0, 255, 136, 0.1)) !important;
+  color: #00ffaa !important;
+}
+
+.activity-icon.diagnosticos span {
+  color: #00ffaa !important;
+}
+
+.activity-icon.diagnosticos .icon-pulse {
+  background: radial-gradient(circle at center, rgba(0, 255, 136, 0.6), transparent 70%) !important;
+}
+
+.activity-card:hover .activity-icon.diagnosticos {
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.3) !important;
+}
+
+/* Mapeamento - Roxo */
+.activity-icon.mapeamento {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(139, 92, 246, 0.1)) !important;
+  color: #8b5cf6 !important;
+}
+
+.activity-icon.mapeamento span {
+  color: #8b5cf6 !important;
+}
+
+.activity-icon.mapeamento .icon-pulse {
+  background: radial-gradient(circle at center, rgba(139, 92, 246, 0.6), transparent 70%) !important;
+}
+
+.activity-card:hover .activity-icon.mapeamento {
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.3) !important;
+}
+
+/* Manter a classe relatorio para compatibilidade se necessário */
+.activity-icon.relatorio {
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.25), rgba(0, 255, 136, 0.1)) !important;
+  color: #00ffaa !important;
+}
+
+.activity-icon.relatorio span {
+  color: #00ffaa !important;
+}
+
+/* Manter a classe voo para compatibilidade se necessário */
+.activity-icon.voo {
+  background: linear-gradient(135deg, rgba(0, 102, 255, 0.25), rgba(0, 102, 255, 0.1)) !important;
+  color: #0066ff !important;
+}
+
+.activity-icon.voo span {
+  color: #0066ff !important;
+}
+
+/* Garantir que todos os ícones das activities tenham tamanho correto */
+.activity-icon span.material-symbols-outlined {
+  font-size: 24px !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* Estilo base para todos os activity-icon */
+.activity-icon {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.activity-icon .icon-pulse {
+  position: absolute;
+  inset: -4px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  filter: blur(8px);
+}
+
+.activity-card:hover .icon-pulse {
+  opacity: 0.5;
+}
+

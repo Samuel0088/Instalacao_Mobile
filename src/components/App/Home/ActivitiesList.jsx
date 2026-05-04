@@ -49,7 +49,7 @@ export default function ActivitiesList({ hasFarm, onViewAll, onRegister }) {
       {/* Último Diagnóstico - Agora vai para Atividades */}
       {recentDiagnostics.length > 0 && (
         <div className="activity-card glass" onClick={goToActivities}>
-          <div className="activity-icon relatorio">
+          <div className="activity-icon atividades">
             <span className="material-symbols-outlined">assignment</span>
             <div className="icon-pulse"></div>
           </div>
@@ -78,7 +78,7 @@ export default function ActivitiesList({ hasFarm, onViewAll, onRegister }) {
       {/* Mais Diagnósticos - Vai para o histórico */}
       {recentDiagnostics.length > 1 && (
         <div className="activity-card glass" onClick={goToHistory}>
-          <div className="activity-icon relatorio">
+          <div className="activity-icon diagnosticos">
             <span className="material-symbols-outlined">history</span>
             <div className="icon-pulse"></div>
           </div>
@@ -111,7 +111,7 @@ export default function ActivitiesList({ hasFarm, onViewAll, onRegister }) {
 
       {/* Voo de Mapeamento - Vai para o mapa */}
       <div className="activity-card glass" onClick={() => navigate("/explore", { state: { activeTab: "mapa" } })}>
-        <div className="activity-icon voo">
+        <div className="activity-icon mapeamento">
           <span className="material-symbols-outlined">flight_takeoff</span>
           <div className="icon-pulse"></div>
         </div>

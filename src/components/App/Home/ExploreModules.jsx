@@ -54,7 +54,7 @@ const modules = [
     icon: "assignment", 
     label: "Atividades", 
     sublabel: "Tarefas do campo", 
-    type: "reports"  // ← Mantendo "reports" para não quebrar o CSS
+    type: "reports"
   }
 ]
 
@@ -62,7 +62,12 @@ export default function ExploreModules({ onNavigate }) {
   const navigate = useNavigate()
 
   const handleNavigate = (module) => {
-    navigate(module.path, { state: { activeTab: module.tab } })
+    // Se houver onNavigate prop, usa ela, senão usa navigate
+    if (onNavigate) {
+      onNavigate(module)
+    } else {
+      navigate(module.path, { state: { activeTab: module.tab } })
+    }
   }
 
   return (

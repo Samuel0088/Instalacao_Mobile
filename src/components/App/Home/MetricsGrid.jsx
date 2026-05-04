@@ -38,7 +38,13 @@ export default function MetricsGrid({ hasFarm, weather, farmData }) {
           weather={weather}
         />
 
-        <MetricCard type="drone" icon="flight" label="Drone" sublabel="DJI Phantom 4" hasFarm={hasFarm}>
+        <MetricCard 
+          type="drone" 
+          icon="flight" 
+          label="Drone" 
+          sublabel="DJI Phantom 4" 
+          hasFarm={hasFarm}
+        >
           <div className="drone-status">
             <div className="status-indicator online">
               <div className="pulse-ring"></div>
@@ -51,7 +57,7 @@ export default function MetricsGrid({ hasFarm, weather, farmData }) {
           </div>
         </MetricCard>
 
-       <MetricCard
+        <MetricCard
           type="area"
           icon="landscape"
           label="Área Total"
