@@ -150,7 +150,7 @@ body {
   position: relative;
   margin: 24px 0 32px;
   padding: 24px;
-  background: linear-gradient(135deg, var(--card-bg), rgba(18, 22, 28, 0.4));
+  background: linear-gradient(#326a38);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--glass-border);
