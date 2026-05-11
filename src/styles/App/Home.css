@@ -17,7 +17,7 @@
   --text-muted: #6b7280;
   --glass-border: rgba(255, 255, 255, 0.05);
   --glass-bg: #ffffff05;
-  --card-bg: rgba(18, 22, 28, 0.6);
+  --card-bg: #54a689;
   --danger: #ff4d4d;
   --warning: #ffaa00;
   --info: #00ccff;
@@ -263,7 +263,7 @@ body {
   position: relative;
   margin-bottom: 32px;
   padding: 20px;
-  background: linear-gradient(135deg, var(--card-bg), rgba(18, 22, 28, 0.4));
+  background: linear-gradient(#54a689);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--glass-border);
