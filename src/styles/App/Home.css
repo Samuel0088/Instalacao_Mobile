@@ -523,7 +523,7 @@ body {
   gap: 8px;
   font-size: 18px;
   font-weight: 600;
-  color: var(--background-dark);
+  color: var(--information-card);
 }
 
 .view-all-btn span {
@@ -1328,10 +1328,9 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-
   gap: 12px;
   padding: 20px 12px;
-  background: linear-gradient(135deg, var(--card-bg), rgba(18, 22, 28, 0.4));
+  background: linear-gradient(135deg, var(#F5F5F5), rgba(18, 22, 28, 0.4));
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--glass-border);
@@ -1339,6 +1338,7 @@ body {
   cursor: pointer;
   transition: all 0.3s ease;
   overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
 .explore-card::before {
@@ -1424,7 +1424,6 @@ body {
 .explore-label {
   font-size: 13px;
   font-weight: 600;
-  color: var(--text-primary);
 }
 
 .explore-sublabel {
