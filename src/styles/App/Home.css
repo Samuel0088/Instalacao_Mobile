@@ -17,7 +17,7 @@
   --text-muted: #6b7280;
   --glass-border: rgba(255, 255, 255, 0.05);
   --glass-bg: #ffffff05;
-  --card-bg: #54a689;
+  --card-bg: #6BBFA0;
   --danger: #ff4d4d;
   --warning: #ffaa00;
   --info: #00ccff;
@@ -70,73 +70,183 @@ body {
   transition: opacity 0.3s ease;
 }
 
-/* Loading Screen */
+/* =========================
+   LOADING SCREEN
+========================= */
+
 .loading-screen {
   position: fixed;
-  top: 0;
-  left: 0;
+  inset: 0;
+
   width: 100%;
-  height: 100%;
+  height: 100vh;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--background-darker);
+
+  overflow: hidden;
+
   z-index: 9999;
+
+  background:
+    linear-gradient(
+      180deg,
+      #003d21 0%,
+      #004b28 100%
+    );
 }
 
+/* Glow central */
+.loading-glow {
+  position: absolute;
+
+  width: 500px;
+  height: 500px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(0, 255, 140, 0.12),
+      transparent 70%
+    );
+
+  filter: blur(40px);
+}
+
+/* Conteúdo */
 .loading-content {
   position: relative;
   z-index: 2;
-  text-align: center;
-}
 
-.loading-logo {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 24px;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  border-radius: 24px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+}
+
+/* LOGO */
+.zenith-logo {
+  display: flex;
+  gap: 2px;
+
+  margin: 0;
+
+  font-size: 4rem;
+  font-weight: 800;
+
+  letter-spacing: -0.06em;
+
+  color: #12e67d;
+
+  text-transform: lowercase;
+}
+
+/* ANIMAÇÃO LETRA POR LETRA */
+.zenith-logo span {
+  opacity: 0;
+
+  transform: translateY(10px);
+
+  animation: typeLetter 0.45s forwards;
+}
+
+.zenith-logo span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.zenith-logo span:nth-child(2) {
+  animation-delay: 0.08s;
+}
+
+.zenith-logo span:nth-child(3) {
+  animation-delay: 0.16s;
+}
+
+.zenith-logo span:nth-child(4) {
+  animation-delay: 0.24s;
+}
+
+.zenith-logo span:nth-child(5) {
+  animation-delay: 0.32s;
+}
+
+.zenith-logo span:nth-child(6) {
+  animation-delay: 0.40s;
+}
+
+@keyframes typeLetter {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* LINHA */
+.loading-line {
+  width: 120px;
+  height: 4px;
+
+  margin-top: 24px;
+
+  border-radius: 999px;
+
+  overflow: hidden;
+
+  background: rgba(255, 255, 255, 0.08);
+
   position: relative;
-  animation: pulse 2s infinite;
 }
 
-.loading-logo span {
-  font-size: 48px;
-  color: #000;
-}
+.loading-line::before {
+  content: "";
 
-.loading-logo::before {
-  content: '';
   position: absolute;
-  inset: -4px;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  border-radius: 28px;
-  opacity: 0.5;
-  filter: blur(10px);
-  z-index: -1;
+  left: -40%;
+  top: 0;
+
+  width: 40%;
+  height: 100%;
+
+  border-radius: inherit;
+
+  background: #12e67d;
+
+  animation: loadingBar 1.4s infinite ease;
 }
 
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  margin: 20px auto;
-  border: 2px solid var(--glass-border);
-  border-top-color: var(--primary);
-  border-right-color: var(--secondary);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+@keyframes loadingBar {
+  0% {
+    left: -40%;
+  }
+
+  100% {
+    left: 100%;
+  }
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+/* TEXTO */
+.loading-text {
+  margin-top: 18px;
+
+  color: rgba(255, 255, 255, 0.72);
+
+  font-size: 0.95rem;
+  font-weight: 500;
+
+  letter-spacing: 0.02em;
 }
 
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+/* RESPONSIVO */
+@media (max-width: 480px) {
+  .zenith-logo {
+    font-size: 3.2rem;
+  }
+
+  .loading-line {
+    width: 100px;
+  }
 }
 
 /* Container Principal */
@@ -413,6 +523,11 @@ body {
   gap: 8px;
   font-size: 18px;
   font-weight: 600;
+  color: var(--information-card)
+}
+
+.view-all-btn span {
+  background: var(--icon);
 }
 
 .section-title span {
@@ -768,7 +883,7 @@ body {
 .flight-action-btn {
   position: relative;
   width: 100%;
-  background-color: #00ffaa !important;
+  background-color: var(--icon) !important;
   border-radius: 24px;
   cursor: pointer;
   overflow: hidden;
@@ -809,11 +924,15 @@ body {
   position: relative;
   width: 48px;
   height: 48px;
-  background-color: #0a6139;
+  background-color: #6BBFA0 !important;
   border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.btn-icon-wrapper span {
+  color: white;
 }
 
 .btn-icon {
@@ -845,7 +964,7 @@ body {
   display: block;
   font-size: 18px;
   font-weight: 600;
-  color: #000;
+  color: var(--text-primary);
   margin-bottom: 2px;
 }
 
@@ -858,7 +977,6 @@ body {
 .btn-arrow-wrapper {
   width: 40px;
   height: 40px;
-  background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   border-radius: 50%;
   display: flex;
@@ -869,7 +987,7 @@ body {
 
 .btn-arrow {
   font-size: 20px;
-  color: #000;
+  color: white;
   transition: transform 0.3s ease;
 }
 
@@ -1033,7 +1151,7 @@ body {
 .activity-title {
   font-size: 15px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--background-dark);
 }
 
 .activity-time {

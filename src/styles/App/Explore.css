@@ -1184,8 +1184,8 @@ body {
 .activity-card {
   display: flex;
   gap: 16px;
-  padding: 20px;
-  background: linear-gradient(135deg, var(--card-bg), rgba(18, 22, 28, 0.4));
+  padding: 16px;
+  background: #F5F5F5;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--glass-border);
@@ -1259,12 +1259,6 @@ body {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 8px;
-}
-
-.activity-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-primary);
 }
 
 .activity-time {
