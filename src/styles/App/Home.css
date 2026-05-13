@@ -523,7 +523,7 @@ body {
   gap: 8px;
   font-size: 18px;
   font-weight: 600;
-  color: var(--information-card)
+  color: var(--background-dark);
 }
 
 .view-all-btn span {
