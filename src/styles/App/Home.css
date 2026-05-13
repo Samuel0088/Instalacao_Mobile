@@ -3,7 +3,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0,1');
 
 :root {
-  --primary: #00ff88;
+  --primary: #00a651;
   --primary-dark: #00cc6a;
   --primary-glow: #00ff8866;
   --primary-soft: #00ff881a;
@@ -22,6 +22,9 @@
   --warning: #ffaa00;
   --info: #00ccff;
   --success: #00ff88;
+  --background: ##FFFFFF;
+  --icon: #00a651;
+  --information-card: #696e6e;
   
   --neon-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
   --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
@@ -179,7 +182,7 @@ body {
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
-  background: #20eb9d;
+  background: #79b688;
   border: 1px solid rgba(0, 255, 136, 0.2);
   border-radius: 30px;
   margin-bottom: 16px;
@@ -262,11 +265,9 @@ body {
 .farm-info-card {
   position: relative;
   margin-bottom: 32px;
+  margin-top: -50px;
   padding: 20px;
-  background: linear-gradient(#54a689);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--glass-border);
+  background: linear-gradient(#F8FAFA);
   border-radius: 24px;
   overflow: hidden;
 }
@@ -305,7 +306,7 @@ body {
 
 .farm-icon span {
   font-size: 32px;
-  color: #20eb9d;
+  color: var(--icon);
 }
 
 .icon-glow {
@@ -325,6 +326,7 @@ body {
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 4px;
+  color: var(--information-card);
 }
 
 .farm-location {
@@ -373,7 +375,7 @@ body {
 .farm-stats .stat-value-teste {
   font-size: 18px;
   font-weight: 600;
-  color: #00ffaa !important;
+  color: var(--icon) !important;
 }
 
 .stat-divider {

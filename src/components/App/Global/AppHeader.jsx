@@ -1,97 +1,117 @@
 // components/AppHeader.jsx
+
 import { useState, useEffect } from "react"
-import { useNavigate, useLocation } from "react-router-dom"
 import "../../../styles/Global/AppHeader.css"
 
-export default function AppHeader({ title, showLogo = true, showNotification = true }) {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const [isStandalone, setIsStandalone] = useState(false)
+export default function AppHeader({
+  userName,
+  hasFarm,
+  farmName,
+  onRegister,
+  showNotification = true,
+}) {
+
   const [deferredPrompt, setDeferredPrompt] = useState(null)
-  const [showInstallButton, setShowInstallButton] = useState(false)
 
-  // Detectar se está rodando como app instalado (PWA)
   useEffect(() => {
-    // Verifica se está em modo standalone (instalado)
-    const isInStandaloneMode = () => 
-      window.matchMedia('(display-mode: standalone)').matches || 
-      window.navigator.standalone || 
-      document.referrer.includes('android-app://')
 
-    setIsStandalone(isInStandaloneMode())
-
-    // Capturar evento de instalação do PWA
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault()
       setDeferredPrompt(e)
-      setShowInstallButton(true)
     }
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
-
-    // Verificar se já foi instalado
-    window.addEventListener('appinstalled', () => {
-      setIsStandalone(true)
-      setShowInstallButton(false)
-    })
+    window.addEventListener(
+      "beforeinstallprompt",
+      handleBeforeInstallPrompt
+    )
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt
+      )
     }
+
   }, [])
 
   const handleInstallClick = async () => {
+
     if (!deferredPrompt) return
-    
+
     deferredPrompt.prompt()
+
     const { outcome } = await deferredPrompt.userChoice
-    
-    if (outcome === 'accepted') {
+
+    if (outcome === "accepted") {
       setDeferredPrompt(null)
-      setShowInstallButton(false)
     }
   }
 
-  // Títulos dinâmicos baseados na rota
-  const getTitle = () => {
-    if (title) return title
-    if (location.pathname === '/home') return 'Início'
-    if (location.pathname === '/profile') return 'Perfil'
-    return 'Zenith'
-  }
-
   return (
-    <nav className="app-header">
-      <div className="header-left">
-        {showLogo && (
-          <img
-            src="/assets/image/Logo.png"
-            alt="Zenith"
-            className="header-logo"
-          />
-        )}
-        <h1 className="header-title">{getTitle()}</h1>
-      </div>
+    <header className="app-header">
 
-      <div className="header-right">
-        {/* Botão de download - só aparece no navegador e NÃO instalado */}
-        {!isStandalone && showInstallButton && (
-          <button 
-            className="install-btn"
-            onClick={handleInstallClick}
-          >
-            <span className="material-symbols-outlined">download</span>
-            <span className="install-text">Baixar App</span>
-          </button>
-        )}
+      {/* TOPO */}
+      <div className="header-top">
 
-        {/* Notificação - só aparece se não estiver mostrando o botão de download */}
-        {showNotification && !(!isStandalone && showInstallButton) && (
+        {showNotification && (
           <button className="notification-btn">
-            <span className="material-symbols-outlined">notifications</span>
+
+            <span className="material-symbols-outlined">
+              notifications
+            </span>
+
           </button>
         )}
+
+        <button
+          className="install-btn"
+          onClick={handleInstallClick}
+        >
+          Planos
+        </button>
+
       </div>
-    </nav>
+
+      {/* CONTEÚDO */}
+      <div className="header-content">
+
+        {/* TÍTULO */}
+        <h2 className="header-label">
+          Agricultura de Precisão
+        </h2>
+
+        {/* NOME DO USUÁRIO */}
+        <div className="balance-row">
+
+          <h1 className="header-balance">
+            Olá, {userName || "Agricultor"}
+          </h1>
+
+          <span className="material-symbols-outlined arrow-icon">
+            chevron_right
+          </span>
+
+        </div>
+
+        {/* STATUS */}
+        <button
+          className="coverage-btn"
+          onClick={!hasFarm ? onRegister : undefined}
+        >
+
+          {hasFarm
+            ? `Sistema online • ${farmName}`
+            : "Comece cadastrando sua fazenda"
+          }
+
+          <span className="material-symbols-outlined small-arrow">
+            chevron_right
+          </span>
+
+        </button>
+
+      </div>
+
+    </header>
   )
 }
