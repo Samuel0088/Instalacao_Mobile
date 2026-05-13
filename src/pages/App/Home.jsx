@@ -96,7 +96,6 @@ export default function Home() {
       
       <div className="home-container">
         
-
         {hasFarm && <FarmInfoCard farmData={farmData} />}
 
         <MetricsGrid hasFarm={hasFarm} weather={weather} farmData={farmData} />
