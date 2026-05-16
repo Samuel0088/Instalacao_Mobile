@@ -202,6 +202,12 @@
   font-size: 18px;
 }
 
+.app-header.compact {
+  min-height: auto;
+
+  padding-bottom: 18px;
+}
+
 /* RESPONSIVO */
 @media (max-width: 550px) {
   .app-header {

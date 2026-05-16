@@ -9,6 +9,7 @@ export default function AppHeader({
   farmName,
   onRegister,
   showNotification = true,
+  showHomeContent = false,
 }) {
 
   const [deferredPrompt, setDeferredPrompt] = useState(null)
@@ -48,7 +49,11 @@ export default function AppHeader({
   }
 
   return (
-    <header className="app-header">
+    <header
+      className={`app-header ${
+        !showHomeContent ? "compact" : ""
+      }`}
+    >
 
       {/* TOPO */}
       <div className="header-top">
@@ -72,45 +77,47 @@ export default function AppHeader({
 
       </div>
 
-      {/* CONTEÚDO */}
-      <div className="header-content">
+      {/* MOSTRAR SOMENTE NA HOME */}
+      {showHomeContent && (
+        <div className="header-content">
 
-        {/* TÍTULO */}
-        <h2 className="header-label">
-          Agricultura de Precisão
-        </h2>
+          {/* TÍTULO */}
+          <h2 className="header-label">
+            Agricultura de Precisão
+          </h2>
 
-        {/* NOME DO USUÁRIO */}
-        <div className="balance-row">
+          {/* NOME */}
+          <div className="balance-row">
 
-          <h1 className="header-balance">
-            Olá, {userName || "Agricultor"}
-          </h1>
+            <h1 className="header-balance">
+              Olá, {userName || "Agricultor"}
+            </h1>
 
-          <span className="material-symbols-outlined arrow-icon">
-            chevron_right
-          </span>
+            <span className="material-symbols-outlined arrow-icon">
+              chevron_right
+            </span>
+
+          </div>
+
+          {/* STATUS */}
+          <button
+            className="coverage-btn"
+            onClick={!hasFarm ? onRegister : undefined}
+          >
+
+            {hasFarm
+              ? `Sistema online • ${farmName}`
+              : "Comece cadastrando sua fazenda"
+            }
+
+            <span className="material-symbols-outlined small-arrow">
+              chevron_right
+            </span>
+
+          </button>
 
         </div>
-
-        {/* STATUS */}
-        <button
-          className="coverage-btn"
-          onClick={!hasFarm ? onRegister : undefined}
-        >
-
-          {hasFarm
-            ? `Sistema online • ${farmName}`
-            : "Comece cadastrando sua fazenda"
-          }
-
-          <span className="material-symbols-outlined small-arrow">
-            chevron_right
-          </span>
-
-        </button>
-
-      </div>
+      )}
 
     </header>
   )

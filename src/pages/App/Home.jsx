@@ -92,6 +92,7 @@ export default function Home() {
         farmName={farmData?.name}
         onRegister={() => navigate("/cadastrar-fazenda")}
         showNotification={true}
+        showHomeContent={true}
       />
       
       <div className="home-container">
