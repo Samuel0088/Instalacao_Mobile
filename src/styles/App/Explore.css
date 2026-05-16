@@ -223,18 +223,6 @@ body {
   color: var(--primary);
 }
 
-.section-badge {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  background: rgba(0, 255, 136, 0.1);
-  border: 1px solid rgba(0, 255, 136, 0.2);
-  border-radius: 30px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--primary);
-}
 .analysis-container {
   display: flex;
   justify-content: center;

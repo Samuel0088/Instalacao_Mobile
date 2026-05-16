@@ -536,16 +536,17 @@ body {
 }
 
 .section-badge {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 12px;
+  padding: 4px 20px;
   background: rgba(255, 68, 68, 0.1) !important;
   border: 1px solid rgba(255, 68, 68, 0.2) !important;
   border-radius: 30px;
   font-size: 11px;
   font-weight: 500;
   color: #ff4444 !important;
+  white-space: nowrap;
 }
 
 .live-dot {
@@ -573,16 +574,15 @@ body {
 .metric-card {
   position: relative;
   padding: 20px;
-  background: linear-gradient(135deg, var(--card-bg), rgba(18, 22, 28, 0.4)) !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--glass-border);
+  background: #F5F5F5;
   border-radius: 24px;
   transition: all 0.3s ease;
   overflow: hidden;
   min-height: 180px;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  color: var(--icon)
 }
 
 .metric-card::before {
@@ -638,23 +638,19 @@ body {
 }
 
 .card-icon.temperature {
-  background: linear-gradient(135deg, rgba(255, 68, 68, 0.2), rgba(255, 68, 68, 0.1));
-  color: #ff4444;
+  background: #ff4444;
 }
 
 .card-icon.humidity {
-  background: linear-gradient(135deg, rgba(0, 102, 255, 0.2), rgba(0, 102, 255, 0.1));
-  color: #0066ff;
+  background: #0066ff;
 }
 
 .card-icon.drone {
-  background: linear-gradient(135deg, rgba(255, 170, 0, 0.2), rgba(255, 170, 0, 0.1));
-  color: #ffaa00;
+  background: #ffaa00;
 }
 
 .card-icon.area {
-  background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 255, 136, 0.1));
-  color: var(--primary);
+  background: var(--primary);
 }
 
 .card-icon span {
@@ -669,13 +665,13 @@ body {
   display: block;
   font-size: 13px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--background-dark);
 }
 
 .card-sublabel {
   display: block;
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--background-dark);
 }
 
 .card-main {
@@ -689,7 +685,7 @@ body {
 .card-value {
   font-size: 36px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--background-dark);
   line-height: 1;
 }
 
@@ -1347,6 +1343,7 @@ body {
   inset: -2px;
   background: linear-gradient(135deg, var(--primary), var(--secondary));
   border-radius: 22px;
+  border: none;
   opacity: 0;
   transition: opacity 0.3s;
   z-index: -1;
@@ -1354,7 +1351,6 @@ body {
 
 .explore-card:hover {
   transform: translateY(-4px);
-  border-color: transparent;
 }
 
 .explore-card:hover::before {
