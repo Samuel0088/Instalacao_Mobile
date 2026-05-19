@@ -265,8 +265,10 @@ export default function Profile() {
       <ProfileParticleBackground />
       <ProfileMouseGlow />
       
-      <AppHeader title="Perfil" showLogo={true} showNotification={true} />
-      
+      {/*
+        <AppHeader title="Perfil" showLogo={true} showNotification={true} />
+      */}
+
       <div className="profile-container-tech">
         <ProfileHeader 
           profileIcon={formData.profileIcon}
