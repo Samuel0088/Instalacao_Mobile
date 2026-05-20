@@ -461,78 +461,182 @@ body {
 .iv-logo-card__deco span:nth-child(3) { width: 14px; }
 
 /* ═══════════════════════════════════════════════════
-   STATS  —  pills escalonados (fiel à imagem)
+   STATS  —  pills escalonados premium
 ═══════════════════════════════════════════════════ */
 .iv-stats {
   position: relative; z-index: 6;
   margin: 14px 18px 0;
 }
 
+/* Container glass — fundo verde escuro translúcido */
 .iv-stats__wrap {
-  background: rgba(18,40,26,0.55);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 22px;
-  padding: 10px;
+  position: relative;
+  background: linear-gradient(
+    160deg,
+    rgba(22,52,32,0.72) 0%,
+    rgba(14,34,22,0.80) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 26px;
+  padding: 12px 10px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 7px;
   box-shadow:
-    0 8px 32px rgba(0,0,0,0.3),
-    0 1px 0 rgba(255,255,255,0.06) inset;
+    0 12px 40px rgba(0,0,0,0.38),
+    0 1px 0 rgba(255,255,255,0.07) inset,
+    0 -1px 0 rgba(0,0,0,0.2) inset;
+  overflow: hidden;
 }
 
-/* Row wrapper para escalonamento */
-.iv-stat { display: flex; }
-.iv-stat--1 { justify-content: flex-end;   padding-right: 2px; }
-.iv-stat--2 { justify-content: flex-start; padding-left: 2px; }
-.iv-stat--3 { justify-content: flex-end;   padding-right: 2px; }
+/* Reflexo de luz no topo do container */
+.iv-stats__wrap::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,0.18),
+    transparent
+  );
+  pointer-events: none;
+}
 
-/* Pill branca */
+/* Brilho suave interno superior esquerdo */
+.iv-stats__wrap::after {
+  content: '';
+  position: absolute;
+  top: -40px; left: -40px;
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(80,200,130,0.1) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+/* ── Row: cada stat é uma linha posicionada ── */
+.iv-stat {
+  display: flex;
+  position: relative;
+}
+
+/* Pill 1: grande, alinhada à direita — termina no canto direito */
+.iv-stat--1 {
+  justify-content: flex-start;
+  animation: statIn 0.5s 0.32s var(--ease-spring) both;
+}
+/* Pill 2: menor, alinhada à esquerda — destaque amarelo-verde */
+.iv-stat--2 {
+  justify-content: flex-end;
+  animation: statIn 0.5s 0.42s var(--ease-spring) both;
+}
+/* Pill 3: grande, alinhada à direita — espelha a 1 */
+.iv-stat--3 {
+  justify-content: flex-start;
+  animation: statIn 0.5s 0.52s var(--ease-spring) both;
+}
+
+@keyframes statIn {
+  from { opacity: 0; transform: translateX(16px) scale(0.96); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── Pill — cápsula branca ── */
 .iv-stat__pill {
-  display: inline-flex;
+  position: relative;
+  display: flex;
   align-items: center;
-  gap: 0;
-  background: var(--stat-bg);
-  border-radius: 100px;
-  padding: 13px 22px;
-  min-width: 82%;
-  box-shadow:
-    0 4px 16px rgba(0,0,0,0.22),
-    0 1px 0 rgba(255,255,255,0.9) inset;
-  transition: transform 0.22s var(--ease-spring), box-shadow 0.22s ease;
-}
-.iv-stat__pill:hover {
-  transform: translateX(3px) scale(1.01);
-  box-shadow: 0 6px 22px rgba(0,0,0,0.3), 0 1px 0 rgba(255,255,255,0.9) inset;
+  gap: 0px;
+  padding: 14px 24px;
+  overflow: hidden;
+  cursor: default;
+  transition:
+    transform 0.28s var(--ease-spring),
+    box-shadow 0.28s ease;
 }
 
-/* Valor bold */
+/* Tamanhos e border-radius por posição */
+.iv-stat--1 .iv-stat__pill {
+  width: 88%;
+  border-radius: 18px 100px 100px 18px; /* canto esq quadrado, dir arredondado */
+  background: #4A775E;
+  color: #ffffff !important;
+}
+.iv-stat--2 .iv-stat__pill {
+  width: 76%;
+  border-radius: 100px 18px 18px 100px; /* canto dir quadrado, esq arredondado */
+    background: #ffffff;
+    color: #4A775E;
+}
+.iv-stat--3 .iv-stat__pill {
+  width: 88%;
+  border-radius: 18px 100px 100px 18px;
+    background: #4A775E;
+    color: #ffffff;  
+}
+
+.iv-stat__pill::before {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #3df09a, #1db86a);
+  border-radius: 0 2px 2px 0;
+  opacity: 0.7;
+}
+.iv-stat--1 .iv-stat__pill::before { left: 0; }
+.iv-stat--2 .iv-stat__pill::before {
+  right: 0; left: auto;
+  border-radius: 2px 0 0 2px;
+  background: linear-gradient(180deg, #f5d442, #d4a917);
+}
+.iv-stat--3 .iv-stat__pill::before { left: 0; }
+
+/* Shimmer sweep no hover */
+.iv-stat__pill::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -80%;
+  width: 60%; height: 100%;
+  background: linear-gradient(
+    90deg, transparent,
+    rgba(255,255,255,0.35),
+    transparent
+  );
+  transform: skewX(-18deg);
+  transition: left 0.45s ease;
+  pointer-events: none;
+}
+.iv-stat__pill:hover::after { left: 130%; }
+
+/* ── Texto: valor ── */
 .iv-stat__val {
   font-family: var(--font-d);
-  font-size: 1.08rem;
+  font-size: 1.12rem;
   font-weight: 900;
-  color: var(--stat-txt);
-  letter-spacing: -0.02em;
+  color: #102018;
+  letter-spacing: -0.03em;
   white-space: nowrap;
-  margin-right: 2px;
+  line-height: 1;
+  padding-left: 10px;
 }
-.iv-stat__val--green { color: #1a7a40; }
 
-/* Label */
+/* 24/7 em verde amarelado — exato da imagem */
+.iv-stat__val--green { color: #1c7a3a; }
+
+/* ── Texto: label ── */
 .iv-stat__lbl {
   font-family: var(--font-b);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 500;
-  color: #2a3d30;
+  color: #3a4e3e;
   white-space: nowrap;
+  padding-left: 1px;
+  line-height: 1;
 }
-
-/* Escalonamento alternado com margin */
-.iv-stat--1 .iv-stat__pill { border-radius: 100px 24px 24px 100px; }
-.iv-stat--2 .iv-stat__pill { border-radius: 24px 100px 100px 24px; }
-.iv-stat--3 .iv-stat__pill { border-radius: 100px 24px 24px 100px; }
 
 /* ═══════════════════════════════════════════════════
    CTA BUTTONS

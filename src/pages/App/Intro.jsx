@@ -2,7 +2,7 @@
 import { useNavigate } from "react-router-dom"
 import { useEffect, useRef, useState } from "react"
 import "../../styles/App/Intro.css"
-import Logo from "/public/assets/image/Logo.png"
+import Logo from "/public/assets/image/Logo-redonda.png"
 
 /* ── Partículas flutuantes ── */
 const PARTICLES = Array.from({ length: 22 }, (_, i) => {
@@ -130,7 +130,7 @@ export default function Intro() {
 
           <div className="iv-logo-card__info">
             <p className="iv-logo-card__name">Zenith</p>
-            <p className="iv-logo-card__tag">Parceiro certificado</p>
+            <p className="iv-logo-card__tag">Sua precisão agrícola no ponto mais alto</p>
           </div>
         </div>
 
@@ -143,19 +143,20 @@ export default function Intro() {
       {/* ══════════════════════════════
           STATS
       ══════════════════════════════ */}
-      <section className="iv-stats iv-anim iv-anim--3">
+      <section className="iv-stats iv-anim iv-anim--3" aria-label="Indicadores">
         <div className="iv-stats__wrap">
           {STATS.map((s, i) => (
-            <div
-              key={i}
-              className={`iv-stat iv-stat--${i + 1}${s.accent ? " iv-stat--accent" : ""}`}
-            >
-              <span className="iv-stat__pill">
+            <div key={i} className={`iv-stat iv-stat--${i + 1}`}>
+              <div
+                className="iv-stat__pill"
+                role="img"
+                aria-label={`${s.value} ${s.label}`}
+              >
                 <strong className={`iv-stat__val${s.accent ? " iv-stat__val--green" : ""}`}>
                   {s.value}
                 </strong>
-                <span className="iv-stat__lbl">{s.label}</span>
-              </span>
+                <span className="iv-stat__lbl">&nbsp;{s.label}</span>
+              </div>
             </div>
           ))}
         </div>
