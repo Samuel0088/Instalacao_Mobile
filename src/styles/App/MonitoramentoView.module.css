@@ -15,6 +15,23 @@
    VARIÁVEIS — herdadas por todos os filhos
    ============================================================ */
 .container {
+  --g0: #0a1a0f;
+  --g1: #0f2318;
+  --g2: #163020;
+  --g3: #1e4229;
+  --g4: #2d6140;
+  --g5: #3d8057;
+  --g6: #56a870;
+  --g7: #8ecfa0;
+  --g8: #c2e8cc;
+  --g9: #eaf6ed;
+  --cream: #f7f5f0;
+  --ink: #0f1a13;
+  --muted: #4a6254;
+  --border: rgba(45, 97, 64, 0.12);
+  --border-strong: rgba(45, 97, 64, 0.25);
+
+
   /* Cores base */
   --n-primary:          #00ffaa;
   --n-primary-dark:     #00cc88;
@@ -100,7 +117,7 @@
 .titulo {
   font-size: 1.9rem;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--n-primary), var(--n-secondary));
+  background: var(--g5);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -118,7 +135,7 @@
   transform: translateX(-50%);
   width: 60px;
   height: 3px;
-  background: linear-gradient(90deg, var(--n-primary), var(--n-secondary));
+  background: var(--g6);
   border-radius: 3px;
   filter: blur(1px);
 }
@@ -143,7 +160,8 @@
   padding: 36px 24px;
   border: 2px dashed var(--n-border-md);
   border-radius: var(--n-r-xl);
-  background: linear-gradient(135deg, var(--n-card), rgba(18, 22, 28, 0.4));
+  background: var(--background);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   cursor: pointer;
@@ -165,7 +183,7 @@
 
 .uploadArea:hover,
 .uploadArea:focus-visible {
-  border-color: var(--n-primary);
+  border-color: var(--g0);
   transform: translateY(-3px);
   box-shadow: var(--n-neon);
 }
@@ -175,8 +193,8 @@
 }
 
 .uploadArea_arrastando {
-  border-color: var(--n-primary);
-  box-shadow: var(--n-neon);
+  border-color: var(--g5);
+  box-shadow: var(--g5);
   transform: translateY(-3px);
 }
 
@@ -197,7 +215,7 @@
 .uploadTexto {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--n-text);
+  color: var(--g0);
   position: relative;
   z-index: 1;
 }

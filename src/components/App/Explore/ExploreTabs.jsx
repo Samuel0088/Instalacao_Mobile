@@ -23,3 +23,5 @@ export default function ExploreTabs({ activeTab, onTabChange }) {
     </div>
   );
 }
+
+1767

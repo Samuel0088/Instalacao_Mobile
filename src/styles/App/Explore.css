@@ -1765,7 +1765,7 @@ body {
 
 .explore-tab:hover .explore-tab-icon {
   transform: scale(1.05);
-  color: #00ff88;
+  color: blue;
 }
 
 /* Active state */
