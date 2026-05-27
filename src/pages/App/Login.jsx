@@ -1,40 +1,37 @@
 import { useState, useEffect, useCallback, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import { auth } from "../../services/firebase"
-import { signInWithEmailAndPassword } from "firebase/auth"
+import {
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  OAuthProvider,
+} from "firebase/auth"
 import "../../styles/App/Login.css"
 
-
-/** Regex básica de e-mail — evita round-trip desnecessário ao Firebase */
+/* ─────────────────────────────────────────
+   UTILS
+───────────────────────────────────────── */
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 function isValidEmail(value) {
   return EMAIL_REGEX.test(value.trim())
 }
 
-/** Log seguro — só aparece em desenvolvimento */
 function devLog(...args) {
-  if (process.env.NODE_ENV === "development") {
-    console.log(...args)
-  }
+  if (process.env.NODE_ENV === "development") console.log(...args)
 }
 
 /* ─────────────────────────────────────────
    FIREBASE ERROR MESSAGES
-   P-01: auth/invalid-credential cobre SDK v9+ (unifica user-not-found
-         e wrong-password por segurança). Os casos antigos são mantidos
-         como fallback para projetos em migração.
 ───────────────────────────────────────── */
 const FIREBASE_ERROR_MESSAGES = {
-  // SDK v9+ (Firebase Auth moderno)
   "auth/invalid-credential":
     "Email ou senha incorretos. Verifique e tente novamente. 🔒",
-  // SDK legado — mantidos como fallback
   "auth/user-not-found":
     "Usuário não encontrado! Você ainda não plantou sua conta. 🌱",
   "auth/wrong-password":
     "Senha incorreta! Verifique e tente novamente. 🔒",
-  // Demais erros
   "auth/invalid-email":
     "Email inválido! Digite um email válido. 📧",
   "auth/too-many-requests":
@@ -50,22 +47,13 @@ const FIREBASE_ERROR_DEFAULT = "Erro ao fazer login. Tente novamente mais tarde.
 ───────────────────────────────────────── */
 
 function FormInput({
-  id,
-  label,
-  type,
-  placeholder,
-  value,
-  onChange,
-  onKeyDown,
-  disabled,
-  autoComplete,
-  children,
+  id, label, type, placeholder,
+  value, onChange, onKeyDown,
+  disabled, autoComplete, children,
 }) {
   return (
     <div className="login__field">
-      <label className="login__label" htmlFor={id}>
-        {label}
-      </label>
+      <label className="login__label" htmlFor={id}>{label}</label>
       <div className="login__input-wrapper">
         <input
           id={id}
@@ -77,12 +65,9 @@ function FormInput({
           onKeyDown={onKeyDown}
           disabled={disabled}
           autoComplete={autoComplete ?? "off"}
-          /* CSS-04: outline visível como fallback de acessibilidade —
-             ver Login.css seção FORM FIELDS */
         />
         {children}
       </div>
-      <div className="login__input-line" />
     </div>
   )
 }
@@ -101,9 +86,7 @@ function PrimaryButton({ onClick, disabled, loading, children }) {
           <span className="login__spinner" aria-hidden="true" />
           <span className="login__btn-loading-text">Entrando...</span>
         </>
-      ) : (
-        children
-      )}
+      ) : children}
     </button>
   )
 }
@@ -111,9 +94,7 @@ function PrimaryButton({ onClick, disabled, loading, children }) {
 function SocialButton({ icon, label, onClick }) {
   return (
     <button className="login__btn-social" onClick={onClick} type="button">
-      <span className="login__btn-social-icon" aria-hidden="true">
-        {icon}
-      </span>
+      <span className="login__btn-social-icon" aria-hidden="true">{icon}</span>
       <span className="login__btn-social-label">{label}</span>
     </button>
   )
@@ -145,12 +126,18 @@ const GoogleIcon = () => (
   </svg>
 )
 
-const OutlookIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-    <rect x="4" y="10" width="22" height="28" rx="2" fill="#0078D4"/>
-    <path d="M26 18h14a2 2 0 012 2v8a2 2 0 01-2 2H26v-4l-4-3 4-3v-2z" fill="#0078D4"/>
-    <rect x="26" y="22" width="16" height="4" fill="#50B8F0"/>
-    <ellipse cx="15" cy="24" rx="6" ry="7" fill="white" opacity="0.9"/>
+const MicrosoftIcon = () => (
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    aria-hidden="true"
+  >
+    <rect x="1" y="1" width="10" height="10" fill="#F25022" />
+    <rect x="13" y="1" width="10" height="10" fill="#7FBA00" />
+    <rect x="1" y="13" width="10" height="10" fill="#00A4EF" />
+    <rect x="13" y="13" width="10" height="10" fill="#FFB900" />
   </svg>
 )
 
@@ -181,15 +168,13 @@ export default function Login({ setAppLoading }) {
   const [showPassword, setShowPassword] = useState(false)
   const [alert, setAlert]               = useState({ type: "", text: "" })
 
-  // P-03: ref para limpar o timeout pendente em desmontagem
   const navTimerRef = useRef(null)
 
-  /* ── useEffect: verificar sessão ativa + email salvo ── */
+  /* ── useEffect: verificar sessão + email salvo ── */
   useEffect(() => {
     const user = auth.currentUser
 
     if (user) {
-      // P-06: log protegido por NODE_ENV
       devLog("Usuário já está logado:", user.email)
       setAppLoading(true)
       navTimerRef.current = setTimeout(() => navigate("/home"), 2000)
@@ -202,31 +187,27 @@ export default function Login({ setAppLoading }) {
       setRememberMe(true)
     }
 
-    // P-03: cleanup — cancela timer se o componente desmontar antes de 2s
     return () => {
       if (navTimerRef.current) clearTimeout(navTimerRef.current)
     }
   }, [navigate, setAppLoading])
 
   /* ── Helpers de alerta ── */
-  const showAlertMsg = useCallback((type, text) => setAlert({ type, text }), [])
+  const showAlertMsg  = useCallback((type, text) => setAlert({ type, text }), [])
   const clearAlertMsg = useCallback(() => setAlert({ type: "", text: "" }), [])
 
-  /* ── P-04: useCallback em todos os handlers ── */
-
-  const handleEmailChange = useCallback((e) => setEmail(e.target.value), [])
-  const handlePasswordChange = useCallback((e) => setPassword(e.target.value), [])
+  /* ── Handlers ── */
+  const handleEmailChange     = useCallback((e) => setEmail(e.target.value), [])
+  const handlePasswordChange  = useCallback((e) => setPassword(e.target.value), [])
   const handleRememberMeChange = useCallback((e) => setRememberMe(e.target.checked), [])
-  const handleTogglePassword = useCallback(() => setShowPassword((v) => !v), [])
+  const handleTogglePassword  = useCallback(() => setShowPassword((v) => !v), [])
 
   const handleLogin = useCallback(async () => {
-    // Guarda 1: campos vazios
     if (!email || !password) {
       showAlertMsg("error", "Preencha todos os campos para entrar na fazenda! 🌾")
       return
     }
 
-    // P-02: validação de formato de email no cliente (evita round-trip)
     if (!isValidEmail(email)) {
       showAlertMsg("error", "Email inválido! Digite um email no formato correto. 📧")
       return
@@ -245,9 +226,7 @@ export default function Login({ setAppLoading }) {
       showAlertMsg("success", "Bem-vindo de volta, produtor! 🚁")
       setAppLoading(true)
 
-      // P-03: salva referência para poder cancelar em desmontagem
       navTimerRef.current = setTimeout(() => navigate("/home"), 2000)
-
     } catch (error) {
       const message = FIREBASE_ERROR_MESSAGES[error.code] ?? FIREBASE_ERROR_DEFAULT
       showAlertMsg("error", message)
@@ -256,31 +235,76 @@ export default function Login({ setAppLoading }) {
     }
   }, [email, password, rememberMe, navigate, setAppLoading, showAlertMsg, clearAlertMsg])
 
-  // P-05: já usando onKeyDown (não onKeyPress)
   const handleKeyDown = useCallback(
     (e) => { if (e.key === "Enter") handleLogin() },
     [handleLogin]
   )
 
+  const googleProvider = new GoogleAuthProvider()
+  const outlookProvider = new OAuthProvider("microsoft.com")
+
+  const handleGoogleLogin = async () => {
+  try {
+    setLoading(true)
+
+    await signInWithPopup(auth, googleProvider)
+
+    showAlertMsg("success", "Login com Google realizado com sucesso! 🚀")
+
+    setAppLoading(true)
+
+    navTimerRef.current = setTimeout(() => {
+      navigate("/home")
+    }, 1500)
+
+  } catch (error) {
+    console.error(error)
+    showAlertMsg("error", "Erro ao entrar com Google.")
+  } finally {
+    setLoading(false)
+  }
+}
+
+const handleOutlookLogin = async () => {
+  try {
+    setLoading(true)
+
+    await signInWithPopup(auth, outlookProvider)
+
+    showAlertMsg("success", "Login com Outlook realizado com sucesso! 📧")
+
+    setAppLoading(true)
+
+    navTimerRef.current = setTimeout(() => {
+      navigate("/home")
+    }, 1500)
+
+  } catch (error) {
+    console.error(error)
+    showAlertMsg("error", "Erro ao entrar com Outlook.")
+  } finally {
+    setLoading(false)
+  }
+}
+
   /* ── RENDER ── */
   return (
     <div className="login-page">
 
-      {/* ── DARK TOP PANEL: hero image + logo + heading ── */}
+      {/* ── HERO MOBILE ── */}
       <div className="login-hero" role="banner">
         <div className="login-hero__overlay" aria-hidden="true" />
 
         <div className="login-hero__content">
           <div className="login-logo" aria-label="Zenith">
-             <img className="logo-img" src="assets/image/Logo-redonda.png" alt="" />
+            <img className="logo-img" src="assets/image/Logo-redonda.png" alt="" />
           </div>
-
           <p className="login-hero__subtitle">Acesse a sua propriedade rural</p>
-          <h1 className="login-hero__title">LOGIN</h1>
+          <h1 className="login-hero__title">Login</h1>
         </div>
       </div>
 
-      {/* ── WHITE CARD PANEL: form ── */}
+      {/* ── CARD — FORMULÁRIO ── */}
       <main className="login-card">
 
         <FormInput
@@ -360,23 +384,23 @@ export default function Login({ setAppLoading }) {
           </a>
         </p>
 
-        {/* Social buttons */}
+        {/* Social */}
         <div className="login-social">
           <SocialButton
             icon={<GoogleIcon />}
             label="Entre com Google"
-            onClick={() => {}}
+            onClick={handleGoogleLogin}
           />
           <SocialButton
-            icon={<OutlookIcon />}
+            icon={<MicrosoftIcon />}
             label="Entre com Outlook"
-            onClick={() => {}}
+            onClick={handleOutlookLogin}
           />
         </div>
 
       </main>
 
-      {/* Decorative circles */}
+      {/* Círculos decorativos */}
       <div className="login-deco-circle login-deco-circle--br" aria-hidden="true" />
       <div className="login-deco-circle login-deco-circle--bl" aria-hidden="true" />
     </div>
