@@ -81,7 +81,7 @@ body {
 }
 
 /* Desktop: apresenta como card mobile centralizado */
-@media (min-width: 480px) {
+@media (min-width: 768px) {
   .iv-root {
     box-shadow:
       0 0  0 1px rgba(255,255,255,0.06),
