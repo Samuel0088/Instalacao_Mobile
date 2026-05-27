@@ -75,8 +75,7 @@ body {
       #1a4830  80%,
       #112e1e  100%
     );
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow-x: hidden; 
   isolation: isolate;
 }
 
@@ -783,4 +782,33 @@ body {
   .iv-hero__blob, .iv-bg__grid,
   .iv-logo-card__ring, .iv-badge__pulse { animation: none; }
   .iv-anim { opacity: 1 !important; transform: none !important; }
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* tira scroll lateral */
+  background: #112e1e;
+}
+
+.iv-root {
+  width: 100%;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E"),
+    linear-gradient(
+      168deg,
+      #5ec285 0%,
+      #3e9460 14%,
+      #2f7a4c 32%,
+      #235f3a 56%,
+      #1a4830 80%,
+      #112e1e 100%
+    );
 }
