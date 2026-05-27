@@ -1,7 +1,7 @@
 /**
  * Lógica de interpretação agronômica — cores atualizadas para tema escuro.
  *
- * Paleta neon: #00ffaa (ok), #ffaa00 (aviso), #ff4d4d (perigo)
+ * Paleta neon: #56a870 (ok), #ffaa00 (aviso), #ff4d4d (perigo)
  * Thresholds ajustáveis por cultura em versões futuras.
  */
 
@@ -186,9 +186,9 @@ export function coresNivelFalha(level) {
       };
     default:
       return {
-        fundo:  "rgba(0, 255, 170, 0.08)",
-        texto:  "#00ffaa",
-        borda:  "rgba(0, 255, 170, 0.25)",
+        fundo:  "rgba(86, 168, 112, 0.08)",
+        texto:  "#56a870",
+        borda:  "rgba(86, 168, 112, 0.25)",
       };
   }
 }
@@ -197,7 +197,7 @@ export function coresNivelFalha(level) {
  * Cor neon baseada em valor vs thresholds (tema escuro).
  */
 export function corPorValor(value, { bom, aviso }) {
-  if (value >= bom)   return "#00ffaa"; // neon green
+  if (value >= bom)   return "#56a870"; // neon green
   if (value >= aviso) return "#ffaa00"; // âmbar
   return "#ff4d4d";                     // vermelho
 }

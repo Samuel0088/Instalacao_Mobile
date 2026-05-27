@@ -163,14 +163,16 @@ const FarmInfoView = ({ farmData, onAddFarm, onEditFarm, formatPhone }) => {
         }
         
         .info-item-tech.highlight {
-          background: linear-gradient(135deg, rgba(19, 236, 128, 0.05), transparent);
+          background: #f7f5f0;
+          box-shadow: 0 10px 30px var(--primary-glow);
           border-radius: 16px;
           margin: -4px;
           padding: 4px;
         }
         
         .info-item-tech.highlight .info-value {
-          background: linear-gradient(135deg, rgba(19, 236, 128, 0.2), rgba(0, 102, 255, 0.1));
+          background: #f7f5f0;
+          box-shadow: 0 10px 30px var(--primary-glow);
           border-color: var(--primary);
           font-weight: 700;
           font-size: 16px;
@@ -185,8 +187,9 @@ const FarmInfoView = ({ farmData, onAddFarm, onEditFarm, formatPhone }) => {
           gap: 8px;
           padding: 16px;
           margin-top: 24px;
-          background: linear-gradient(135deg, rgba(19, 236, 128, 0.1), rgba(0, 102, 255, 0.05));
-          border: 1px solid rgba(19, 236, 128, 0.3);
+          background: #f7f5f0;
+          box-shadow: 0 10px 30px var(--primary-glow);
+          border: 1px solid rgba(86, 168, 112, 0.3);
           border-radius: 30px;
           color: var(--primary);
           font-size: 14px;

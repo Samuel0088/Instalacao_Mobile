@@ -15,6 +15,7 @@ import Explore from "./pages/App/Explore"
 import SplashScreen from "./components/App/Global/SplashScreen"
 import InstallPrompt from "./components/App/Global/InstallPrompt"
 import InstallSuccess from "./components/App/Global/InstallSuccess"
+import AccessibilityTextControls from "./components/App/Global/AccessibilityTextControls"
 
 // Estilos
 import "./App.css"
@@ -152,6 +153,7 @@ const handleInstall = async () => {
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/explore" element={<Explore />} />
             </Routes>
+            <AccessibilityTextControls />
           </>
         )}
       </AnimatePresence>

@@ -24,7 +24,7 @@ export default function ParticleBackground() {
         this.size = Math.random() * 2 + 0.5
         this.speedX = Math.random() * 0.5 - 0.25
         this.speedY = Math.random() * 0.5 - 0.25
-        this.color = `rgba(19, 236, 128, ${Math.random() * 0.3})`
+        this.color = `rgba(86, 168, 112, ${Math.random() * 0.3})`
       }
 
       update() {
@@ -68,7 +68,7 @@ export default function ParticleBackground() {
 
           if (distance < 100) {
             ctx.beginPath()
-            ctx.strokeStyle = `rgba(19, 236, 128, ${0.1 * (1 - distance / 100)})`
+            ctx.strokeStyle = `rgba(86, 168, 112, ${0.1 * (1 - distance / 100)})`
             ctx.lineWidth = 0.5
             ctx.moveTo(particle.x, particle.y)
             ctx.lineTo(particles[j].x, particles[j].y)

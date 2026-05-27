@@ -1,0 +1,485 @@
+X [ERROR] Cannot read directory "../../..": Access is denied.
+
+X [ERROR] Could not resolve "./cjs/react-dom.development.js"
+
+    node_modules/react-dom/index.js:37:27:
+      37 │   module.exports = require('./cjs/react-dom.development.js');
+         ╵                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./cjs/react-jsx-dev-runtime.development.js"
+
+    node_modules/react/jsx-dev-runtime.js:6:27:
+      6 │ ...le.exports = require('./cjs/react-jsx-dev-runtime.development.js');
+        ╵                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./components/AnimatePresence/index.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:1:32:
+      1 │ ... { AnimatePresence } from './components/AnimatePresence/index.mjs';
+        ╵                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./components/AnimatePresence/PopChild.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:2:25:
+      2 │ export { PopChild } from './components/AnimatePresence/PopChild.mjs';
+        ╵                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./cjs/react-jsx-runtime.development.js"
+
+    node_modules/react/jsx-runtime.js:6:27:
+      6 │   module.exports = require('./cjs/react-jsx-runtime.development.js');
+        ╵                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./cjs/react.development.js"
+
+    node_modules/react/index.js:6:27:
+      6 │   module.exports = require('./cjs/react.development.js');
+        ╵                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./index-68602d24.js"
+
+    node_modules/firebase/node_modules/@firebase/auth/dist/esm2017/index.js:1:2115:
+      1 │ ...eEmail, a9 as verifyPasswordResetCode } from './index-68602d24.js';
+        ╵                                                 ~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/index.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:9:23:
+      9 │ import * as index from './icons/index.mjs';
+        ╵                        ~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "../lib/index.mjs"
+
+    node_modules/react-icons/fc/index.mjs:2:24:
+      2 │ import { GenIcon } from '../lib/index.mjs';
+        ╵                         ~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "../lib/index.mjs"
+
+    node_modules/react-icons/fa/index.mjs:2:24:
+      2 │ import { GenIcon } from '../lib/index.mjs';
+        ╵                         ~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./wrap-idb-value.js"
+
+    node_modules/idb/build/index.js:1:45:
+      1 │ import { w as wrap, r as replaceTraps } from './wrap-idb-value.js';
+        ╵                                              ~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./components/AnimatePresence/PresenceChild.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:3:30:
+      3 │ ...senceChild } from './components/AnimatePresence/PresenceChild.mjs';
+        ╵                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/fingerprint-pattern.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:11:200:
+      11 │ ...LucideFingerprintPattern } from './icons/fingerprint-pattern.mjs';
+         ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/alarm-clock-check.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:12:188:
+      12 │ ...t as LucideAlarmClockCheck } from './icons/alarm-clock-check.mjs';
+         ╵                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./components/LayoutGroup/index.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:4:28:
+      4 │ export { LayoutGroup } from './components/LayoutGroup/index.mjs';
+        ╵                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./components/LazyMotion/index.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:5:27:
+      5 │ export { LazyMotion } from './components/LazyMotion/index.mjs';
+        ╵                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/alarm-clock-minus.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:13:188:
+      13 │ ...efault as LucideAlarmMinus } from './icons/alarm-clock-minus.mjs';
+         ╵                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./components/MotionConfig/index.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:6:29:
+      6 │ export { MotionConfig } from './components/MotionConfig/index.mjs';
+        ╵                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./render/components/m/proxy.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:7:18:
+      7 │ export { m } from './render/components/m/proxy.mjs';
+        ╵                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/alarm-clock-plus.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:14:182:
+      14 │ ... default as LucideAlarmPlus } from './icons/alarm-clock-plus.mjs';
+         ╵                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/arrow-down-a-z.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:15:179:
+      15 │ ... default as LucideArrowDownAz } from './icons/arrow-down-a-z.mjs';
+         ╵                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./render/components/motion/proxy.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:8:23:
+      8 │ export { motion } from './render/components/motion/proxy.mjs';
+        ╵                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./events/add-pointer-event.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:9:32:
+      9 │ export { addPointerEvent } from './events/add-pointer-event.mjs';
+        ╵                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/arrow-down-z-a.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:16:179:
+      16 │ ... default as LucideArrowDownZa } from './icons/arrow-down-z-a.mjs';
+         ╵                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./events/event-info.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:10:31:
+      10 │ export { addPointerInfo } from './events/event-info.mjs';
+         ╵                                ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/arrow-down-wide-narrow.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:17:194:
+      17 │ ...fault as SortDescIcon } from './icons/arrow-down-wide-narrow.mjs';
+         ╵                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./motion/features/animations.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:11:27:
+      11 │ export { animations } from './motion/features/animations.mjs';
+         ╵                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/arrow-up-a-z.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:18:167:
+      18 │ ...pAZ, default as LucideArrowUpAz } from './icons/arrow-up-a-z.mjs';
+         ╵                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./motion/utils/use-visual-state.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:12:35:
+      12 │ ...{ makeUseVisualState } from './motion/utils/use-visual-state.mjs';
+         ╵                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/arrow-up-narrow-wide.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:19:185:
+      19 │ ... default as SortAscIcon } from './icons/arrow-up-narrow-wide.mjs';
+         ╵                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/arrow-up-z-a.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:20:167:
+      20 │ ...pZA, default as LucideArrowUpZa } from './icons/arrow-up-z-a.mjs';
+         ╵                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/axis-3d.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:21:149:
+      21 │ ...ucideAxis3D, default as LucideAxis3d } from './icons/axis-3d.mjs';
+         ╵                                                ~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/badge-check.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:22:167:
+      22 │ ...erified, default as VerifiedIcon } from './icons/badge-check.mjs';
+         ╵                                            ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/badge-question-mark.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:23:191:
+      23 │ ... LucideBadgeQuestionMark } from './icons/badge-question-mark.mjs';
+         ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/between-horizontal-end.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:24:230:
+      24 │ ...eBetweenHorizontalEnd } from './icons/between-horizontal-end.mjs';
+         ╵                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/between-horizontal-start.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:25:242:
+      25 │ ...weenHorizontalStart } from './icons/between-horizontal-start.mjs';
+         ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/book-dashed.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:26:179:
+      26 │ ...d, default as LucideBookTemplate } from './icons/book-dashed.mjs';
+         ╵                                            ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/braces.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:27:164:
+      27 │ ...eBraces, default as LucideCurlyBraces } from './icons/braces.mjs';
+         ╵                                                 ~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/captions.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:28:164:
+      28 │ ...Subtitles, default as SubtitlesIcon } from './icons/captions.mjs';
+         ╵                                               ~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/chart-area.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:29:167:
+      29 │ ...Chart, default as LucideChartArea } from './icons/chart-area.mjs';
+         ╵                                             ~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/chart-bar-big.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:30:209:
+      30 │ ..., default as LucideChartBarBig } from './icons/chart-bar-big.mjs';
+         ╵                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/chart-bar.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:31:191:
+      31 │ ...izontal, default as LucideChartBar } from './icons/chart-bar.mjs';
+         ╵                                              ~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./render/dom/utils/filter-props.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:15:28:
+      15 │ export { filterProps } from './render/dom/utils/filter-props.mjs';
+         ╵                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./utils/is-browser.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:16:26:
+      16 │ export { isBrowser } from './utils/is-browser.mjs';
+         ╵                           ~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/chart-candlestick.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:32:209:
+      32 │ ... as LucideChartCandlestick } from './icons/chart-candlestick.mjs';
+         ╵                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/chart-column-increasing.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:33:203:
+      33 │ ...hartColumnIncreasing } from './icons/chart-column-increasing.mjs';
+         ╵                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./utils/use-composed-ref.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:17:32:
+      17 │ export { useComposedRefs } from './utils/use-composed-ref.mjs';
+         ╵                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./utils/use-force-update.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:18:31:
+      18 │ export { useForceUpdate } from './utils/use-force-update.mjs';
+         ╵                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/chart-column-big.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:34:188:
+      34 │ ...ult as LucideChartColumnBig } from './icons/chart-column-big.mjs';
+         ╵                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/chart-column.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:35:173:
+      35 │ ...3, default as LucideChartColumn } from './icons/chart-column.mjs';
+         ╵                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./utils/use-isomorphic-effect.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:19:42:
+      19 │ ...IsomorphicLayoutEffect } from './utils/use-isomorphic-effect.mjs';
+         ╵                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./utils/use-unmount-effect.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:20:33:
+      20 │ export { useUnmountEffect } from './utils/use-unmount-effect.mjs';
+         ╵                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/chart-line.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:36:167:
+      36 │ ...tLine, default as LucideLineChart } from './icons/chart-line.mjs';
+         ╵                                             ~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/chart-no-axes-column-increasing.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:37:218:
+      37 │ ...mnIncreasing } from './icons/chart-no-axes-column-increasing.mjs';
+         ╵                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./render/dom/features-animation.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:21:29:
+      21 │ export { domAnimation } from './render/dom/features-animation.mjs';
+         ╵                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./render/dom/features-max.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:22:23:
+      22 │ export { domMax } from './render/dom/features-max.mjs';
+         ╵                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/chart-no-axes-column.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:38:191:
+      38 │ ...LucideChartNoAxesColumn } from './icons/chart-no-axes-column.mjs';
+         ╵                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/chart-no-axes-gantt.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:39:191:
+      39 │ ...ault as LucideGanttChart } from './icons/chart-no-axes-gantt.mjs';
+         ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./render/dom/features-min.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:23:23:
+      23 │ export { domMin } from './render/dom/features-min.mjs';
+         ╵                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./utils/use-motion-value-event.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:24:36:
+      24 │ ...{ useMotionValueEvent } from './utils/use-motion-value-event.mjs';
+         ╵                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/chart-pie.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:40:161:
+      40 │ ... PieChart, default as PieChartIcon } from './icons/chart-pie.mjs';
+         ╵                                              ~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/chart-scatter.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:41:185:
+      41 │ ...t, default as ScatterChartIcon } from './icons/chart-scatter.mjs';
+         ╵                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./value/scroll/use-element-scroll.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:25:33:
+      25 │ ...{ useElementScroll } from './value/scroll/use-element-scroll.mjs';
+         ╵                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./value/scroll/use-viewport-scroll.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:26:34:
+      26 │ ...useViewportScroll } from './value/scroll/use-viewport-scroll.mjs';
+         ╵                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/circle-arrow-down.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:42:203:
+      42 │ ...t as LucideCircleArrowDown } from './icons/circle-arrow-down.mjs';
+         ╵                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/circle-alert.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:43:179:
+      43 │ ...e, default as LucideCircleAlert } from './icons/circle-alert.mjs';
+         ╵                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./value/use-motion-template.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:27:34:
+      27 │ export { useMotionTemplate } from './value/use-motion-template.mjs';
+         ╵                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./value/use-motion-value.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:28:31:
+      28 │ export { useMotionValue } from './value/use-motion-value.mjs';
+         ╵                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/circle-arrow-out-down-right.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:44:254:
+      44 │ ...rrowOutDownRight } from './icons/circle-arrow-out-down-right.mjs';
+         ╵                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/circle-arrow-out-down-left.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:45:248:
+      45 │ ...eArrowOutDownLeft } from './icons/circle-arrow-out-down-left.mjs';
+         ╵                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./value/use-scroll.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:29:26:
+      29 │ export { useScroll } from './value/use-scroll.mjs';
+         ╵                           ~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./value/use-follow-value.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:30:31:
+      30 │ export { useFollowValue } from './value/use-follow-value.mjs';
+         ╵                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/circle-arrow-out-up-left.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:46:236:
+      46 │ ...ircleArrowOutUpLeft } from './icons/circle-arrow-out-up-left.mjs';
+         ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/circle-arrow-left.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:47:203:
+      47 │ ...t as LucideCircleArrowLeft } from './icons/circle-arrow-left.mjs';
+         ╵                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./value/use-spring.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:31:26:
+      31 │ export { useSpring } from './value/use-spring.mjs';
+         ╵                           ~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./value/use-time.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:32:24:
+      32 │ export { useTime } from './value/use-time.mjs';
+         ╵                         ~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./value/use-transform.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:33:29:
+      33 │ export { useTransform } from './value/use-transform.mjs';
+         ╵                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/circle-arrow-out-up-right.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:48:242:
+      48 │ ...cleArrowOutUpRight } from './icons/circle-arrow-out-up-right.mjs';
+         ╵                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./value/use-velocity.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:34:28:
+      34 │ export { useVelocity } from './value/use-velocity.mjs';
+         ╵                             ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./value/use-will-change/index.mjs"
+
+    node_modules/framer-motion/dist/es/index.mjs:35:30:
+      35 │ export { useWillChange } from './value/use-will-change/index.mjs';
+         ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+X [ERROR] Could not resolve "./icons/circle-arrow-right.mjs"
+
+    node_modules/lucide-react/dist/esm/lucide-react.mjs:49:209:

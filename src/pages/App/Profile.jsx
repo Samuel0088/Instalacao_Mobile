@@ -265,8 +265,10 @@ export default function Profile() {
       <ProfileParticleBackground />
       <ProfileMouseGlow />
       
-      <AppHeader title="Perfil" showLogo={true} showNotification={true} />
-      
+      {/*
+        <AppHeader title="Perfil" showLogo={true} showNotification={true} />
+      */}
+
       <div className="profile-container-tech">
         <ProfileHeader 
           profileIcon={formData.profileIcon}
@@ -308,7 +310,6 @@ export default function Profile() {
         <ProfileTabs 
           activeTab={activeTab}
           onTabChange={setActiveTab}
-          onEditClick={() => setEditing(true)}
         />
 
         <AlertMessage type={alertMessage.type} text={alertMessage.text} />

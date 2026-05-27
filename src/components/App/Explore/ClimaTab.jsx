@@ -123,8 +123,21 @@ export default function ClimaTab() {
     return dirs[Math.round(deg / 45) % 8]
   }
 
-  const getWeatherIcon = (iconCode) => {
-    return `https://openweathermap.org/img/wn/${iconCode}@2x.png`
+  const getWeatherSymbol = (iconCode) => {
+    const code = iconCode?.slice(0, 2)
+    const symbols = {
+      "01": "sunny",
+      "02": "partly_cloudy_day",
+      "03": "cloud",
+      "04": "cloud",
+      "09": "rainy",
+      "10": "rainy",
+      "11": "thunderstorm",
+      "13": "weather_snowy",
+      "50": "foggy",
+    }
+
+    return symbols[code] || "cloud"
   }
 
   const retry = () => fetchWeather()
@@ -259,6 +272,11 @@ export default function ClimaTab() {
   }
 
   const recommendations = getRecommendations()
+  const getRecommendationAccent = (type) => {
+    if (type === "warning") return "#ffaa00"
+    if (type === "success") return "#56a870"
+    return "#0066ff"
+  }
 
   return (
     <div style={styles.container}>
@@ -273,11 +291,13 @@ export default function ClimaTab() {
             </p>
           </div>
           <div style={styles.weatherIcon}>
-            <img 
-              src={getWeatherIcon(weatherData.icon)} 
-              alt={weatherData.description}
-              style={{ width: '50px', height: '50px' }}
-            />
+            <span
+              className="material-symbols-outlined"
+              aria-label={weatherData.description}
+              style={styles.weatherSymbol}
+            >
+              {getWeatherSymbol(weatherData.icon)}
+            </span>
             <p style={styles.weatherDesc}>{weatherData.description}</p>
           </div>
         </div>
@@ -295,14 +315,20 @@ export default function ClimaTab() {
               <span>Sensação {weatherData.feelsLike}°</span>
             </div>
             <div style={styles.tempRange}>
-              <span style={styles.tempMin}>
-                <span className="material-symbols-outlined" style={{ fontSize: '16px', verticalAlign: 'middle' }}>arrow_downward</span>
-                {weatherData.tempMin}°
-              </span>
-              <span style={styles.tempMax}>
-                <span className="material-symbols-outlined" style={{ fontSize: '16px', verticalAlign: 'middle' }}>arrow_upward</span>
-                {weatherData.tempMax}°
-              </span>
+              <div style={styles.tempRangeItem}>
+                <span style={styles.tempRangeLabel}>Mínima</span>
+                <span style={styles.tempMin}>
+                  <span className="material-symbols-outlined" style={styles.tempRangeIcon}>arrow_downward</span>
+                  {weatherData.tempMin}°
+                </span>
+              </div>
+              <div style={styles.tempRangeItem}>
+                <span style={styles.tempRangeLabel}>Máxima</span>
+                <span style={styles.tempMax}>
+                  <span className="material-symbols-outlined" style={styles.tempRangeIcon}>arrow_upward</span>
+                  {weatherData.tempMax}°
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -404,10 +430,18 @@ export default function ClimaTab() {
                 ...(rec.type === "info" ? styles.recommendationInfo : {})
               }}
             >
-              <span className="material-symbols-outlined" style={styles.recommendationIcon}>{rec.icon}</span>
+              <span
+                className="material-symbols-outlined"
+                style={{
+                  ...styles.recommendationIcon,
+                  color: getRecommendationAccent(rec.type)
+                }}
+              >
+                {rec.icon}
+              </span>
               <div style={styles.recommendationText}>
-                <strong>{rec.title}</strong>
-                <p>{rec.message}</p>
+                <strong style={styles.recommendationTitleText}>{rec.title}</strong>
+                <p style={styles.recommendationMessage}>{rec.message}</p>
               </div>
             </div>
           ))}
@@ -436,13 +470,13 @@ const styles = {
 
   // Card principal
   mainCard: {
-    background: 'rgba(18, 22, 28, 0.8)',
+    background: '#f7f5f0',
     backdropFilter: 'blur(10px)',
-    border: '1px solid rgba(255,255,255,0.05)',
+    border: '1px solid var(--border)',
     borderRadius: '28px',
     padding: '20px',
     marginBottom: '16px',
-    boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+    boxShadow: '0 10px 30px var(--primary-glow)',
     width: '100%',
     boxSizing: 'border-box',
   },
@@ -457,13 +491,13 @@ const styles = {
   cityName: {
     fontSize: '1.8rem',
     fontWeight: '700',
-    color: '#fff',
+    color: 'var(--g4)',
     margin: '0 0 4px 0',
     lineHeight: 1.2,
   },
   date: {
     fontSize: '0.85rem',
-    color: '#a0a8b4',
+    color: 'var(--muted)',
     margin: 0,
     textTransform: 'capitalize',
     display: 'flex',
@@ -471,15 +505,23 @@ const styles = {
   },
   weatherIcon: {
     textAlign: 'center',
-    background: 'rgba(255,255,255,0.02)',
-    padding: '8px 16px',
+    background: '#f7f5f0',
+    boxShadow: '0 10px 30px var(--primary-glow)',
+    padding: '12px 16px',
     borderRadius: '20px',
-    border: '1px solid rgba(255,255,255,0.05)',
+    border: '1px solid var(--border)',
     minWidth: '100px',
+  },
+  weatherSymbol: {
+    display: 'block',
+    fontSize: '38px',
+    color: 'var(--g4)',
+    lineHeight: 1,
+    marginBottom: '8px',
   },
   weatherDesc: {
     fontSize: '0.8rem',
-    color: '#fff',
+    color: 'var(--ink)',
     margin: '2px 0 0 0',
     textTransform: 'capitalize',
   },
@@ -498,20 +540,21 @@ const styles = {
     width: '120px',
     height: '120px',
     borderRadius: '50%',
-    background: 'linear-gradient(135deg, #00ff88, #0066ff)',
+    background: 'linear-gradient(145deg, var(--g4) 0%, var(--g5) 100%)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    boxShadow: '0 0 30px rgba(0,255,136,0.3)',
+    boxShadow: '0 18px 34px rgba(45, 97, 64, 0.28), inset 0 1px 0 rgba(255,255,255,0.18)',
+    border: '1px solid rgba(255,255,255,0.18)',
   },
   tempValue: {
     fontSize: '3rem',
     fontWeight: '700',
-    color: '#000',
+    color: '#fff',
   },
   tempUnit: {
     fontSize: '1rem',
-    color: '#000',
+    color: '#fff',
     alignSelf: 'flex-start',
     marginTop: '20px',
   },
@@ -523,25 +566,42 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: '6px',
-    color: '#a0a8b4',
+    color: 'var(--muted)',
     marginBottom: '6px',
     fontSize: '0.9rem',
   },
   tempRange: {
     display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+  },
+  tempRangeItem: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     gap: '12px',
+    maxWidth: '150px',
+  },
+  tempRangeLabel: {
+    color: 'var(--muted)',
+    fontSize: '0.78rem',
+    fontWeight: '600',
+  },
+  tempRangeIcon: {
+    fontSize: '16px',
+    verticalAlign: 'middle',
   },
   tempMin: {
-    color: '#00ccff',
-    fontWeight: '500',
+    color: 'var(--g4)',
+    fontWeight: '700',
     fontSize: '0.9rem',
     display: 'flex',
     alignItems: 'center',
     gap: '2px',
   },
   tempMax: {
-    color: '#ffaa00',
-    fontWeight: '500',
+    color: '#d58a00',
+    fontWeight: '700',
     fontSize: '0.9rem',
     display: 'flex',
     alignItems: 'center',
@@ -555,8 +615,9 @@ const styles = {
     gap: '10px',
   },
   statCard: {
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.05)',
+    background: '#f7f5f0',
+    boxShadow: '0 10px 30px var(--primary-glow)',
+    border: '1px solid var(--border)',
     borderRadius: '18px',
     padding: '14px',
     display: 'flex',
@@ -576,14 +637,14 @@ const styles = {
   statLabel: {
     display: 'block',
     fontSize: '0.65rem',
-    color: '#a0a8b4',
+    color: 'var(--muted)',
     marginBottom: '2px',
     textTransform: 'uppercase',
     letterSpacing: '0.3px',
   },
   statValue: {
     fontSize: '0.95rem',
-    color: '#fff',
+    color: 'var(--ink)',
     fontWeight: '600',
     display: 'inline-block',
     marginRight: '4px',
@@ -596,7 +657,8 @@ const styles = {
 
   // Recomendações
   recommendationsCard: {
-    background: 'rgba(18, 22, 28, 0.6)',
+    background: '#f7f5f0',
+    boxShadow: '0 10px 30px var(--primary-glow)',
     backdropFilter: 'blur(10px)',
     border: '1px solid rgba(255,255,255,0.05)',
     borderRadius: '28px',
@@ -609,7 +671,7 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-    color: '#fff',
+    color: 'var(--ink)',
     fontSize: '1.1rem',
     margin: '0 0 16px 0',
     fontWeight: '500',
@@ -624,8 +686,9 @@ const styles = {
     alignItems: 'center',
     gap: '14px',
     padding: '14px',
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.05)',
+    background: '#f7f5f0',
+    boxShadow: '0 10px 30px var(--primary-glow)',
+    border: '1px solid var(--border)',
     borderRadius: '18px',
     transition: 'all 0.2s',
   },
@@ -634,8 +697,8 @@ const styles = {
     background: 'rgba(255,170,0,0.05)',
   },
   recommendationSuccess: {
-    borderLeft: '4px solid #00ff88',
-    background: 'rgba(0,255,136,0.05)',
+    borderLeft: '4px solid #56a870',
+    background: 'rgba(86,168,112,0.08)',
   },
   recommendationInfo: {
     borderLeft: '4px solid #0066ff',
@@ -649,6 +712,18 @@ const styles = {
   recommendationText: {
     flex: 1,
   },
+  recommendationTitleText: {
+    color: 'var(--g1)',
+    display: 'block',
+    fontWeight: '700',
+    marginBottom: '2px',
+  },
+  recommendationMessage: {
+    color: 'var(--g1)',
+    margin: 0,
+    fontSize: '0.9rem',
+    lineHeight: 1.35,
+  },
 
   // Loading e erro
   loadingContainer: {
@@ -661,9 +736,10 @@ const styles = {
     boxSizing: 'border-box',
   },
   loadingCard: {
-    background: 'rgba(18, 22, 28, 0.8)',
+    background: '#f7f5f0',
+    boxShadow: '0 10px 30px var(--primary-glow)',
     backdropFilter: 'blur(10px)',
-    border: '1px solid rgba(255,255,255,0.05)',
+    border: '1px solid var(--border)',
     borderRadius: '28px',
     padding: '32px 24px',
     textAlign: 'center',
@@ -674,17 +750,18 @@ const styles = {
     marginBottom: '14px',
   },
   loadingTitle: {
-    color: '#fff',
+    color: 'var(--ink)',
     margin: '0 0 6px 0',
     fontSize: '1.2rem',
   },
   loadingText: {
-    color: '#a0a8b4',
+    color: 'var(--muted)',
     margin: 0,
     fontSize: '0.9rem',
   },
   errorCard: {
-    background: 'rgba(18, 22, 28, 0.8)',
+    background: '#f7f5f0',
+    boxShadow: '0 10px 30px var(--primary-glow)',
     backdropFilter: 'blur(10px)',
     border: '1px solid rgba(255,68,68,0.2)',
     borderRadius: '28px',
@@ -702,7 +779,7 @@ const styles = {
     fontSize: '1.2rem',
   },
   errorText: {
-    color: '#a0a8b4',
+    color: 'var(--muted)',
     margin: '0 0 16px 0',
     fontSize: '0.9rem',
   },

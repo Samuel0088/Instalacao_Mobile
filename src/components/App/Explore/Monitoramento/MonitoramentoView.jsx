@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import { useMonitoramento } from "../hooks/useMonitoramento";
 import UploadImage   from "./UploadImage";
 import OverlayResult from "./OverlayResult";
 import MetricsPanel  from "./MetricsPanel";
 import AlertBanner   from "./AlertBanner";
+import CameraView    from "../Diagnostico/CameraView";
 import { interpretar } from "../../utils/Interpretations";
 import styles from "../../../../styles/App/MonitoramentoView.module.css";
 
@@ -25,11 +26,50 @@ import styles from "../../../../styles/App/MonitoramentoView.module.css";
  */
 export default function MonitoramentoView() {
   const { analisar, resetar, result, loading, error, preview } = useMonitoramento();
+  const [cameraAberta, setCameraAberta] = useState(false);
+  const videoRef = useRef(null);
 
   // Interpretação agronômica só calculada quando há resultado
   const interpretacao = result ? interpretar(result) : null;
 
   const mostrarResultados = result && !loading && !error;
+
+  const fecharCamera = () => {
+    setCameraAberta(false);
+  };
+
+  const capturarFoto = () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0);
+
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+
+      const file = new File([blob], "monitoramento-camera.jpg", {
+        type: "image/jpeg",
+      });
+
+      fecharCamera();
+      analisar(file);
+    }, "image/jpeg", 0.92);
+  };
+
+  if (cameraAberta) {
+    return (
+      <CameraView
+        videoRef={videoRef}
+        onCapture={capturarFoto}
+        onCancel={fecharCamera}
+      />
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -47,7 +87,11 @@ export default function MonitoramentoView() {
       {/* ------------------------------------------------------------------ */}
       {/* Upload — sempre visível                                             */}
       {/* ------------------------------------------------------------------ */}
-      <UploadImage onSelect={analisar} disabled={loading} />
+      <UploadImage
+        onSelect={analisar}
+        onCamera={() => setCameraAberta(true)}
+        disabled={loading}
+      />
 
       {/* ------------------------------------------------------------------ */}
       {/* Loading                                                             */}

@@ -4,10 +4,10 @@ import "../../../styles/App/Explore.css"
 export default function ResultCard({ result, image, onNewDiagnosis }) {
   const getSeverityColor = (severity) => {
     switch(severity?.toLowerCase()) {
-      case 'baixa': return '#4caf50'
+      case 'baixa': return '#56a870'
       case 'média': return '#ff9800'
       case 'alta': return '#f44336'
-      default: return '#13ec80'
+      default: return '#56a870'
     }
   }
 

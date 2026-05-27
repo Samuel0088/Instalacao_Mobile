@@ -2,7 +2,8 @@
   position: fixed;
   bottom: 0;
   left: 0;
-  width: 100%;
+  right: 0;
+  width: auto;
   height: 50px;
   display: flex;
   justify-content: center;
@@ -13,7 +14,7 @@
   content: "";
   position: absolute;
   inset: 0; 
-  background: #013d24; /* cor diferente do svg */
+  background: #0f2318; /* cor diferente do svg */
   border-radius: 6px;
 
   transform: translateY(6px); /* desce um pouco pra aparecer */
@@ -24,10 +25,12 @@
 .nav__notch-svg {
   position: absolute;
   bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  transform: none;
   width: 100%;
-  max-width: 400px;
+  min-width: 100%;
+  max-width: none;
   height: 50px;
   z-index: 0;
 }
@@ -40,7 +43,8 @@
   justify-content: space-around;
   align-items: center;
   width: 100%;
-  max-width: 400px;
+  min-width: 100%;
+  max-width: none;
   height: 100%;
   margin: 0;
   padding: 0;
@@ -84,12 +88,12 @@
 .nav__item-btn--active {
   width: 48px;
   height: 48px;
-  background: #016c3a;
+  background: #3d8057;
   transform: translateY(-8px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.25);
 }
 
 .nav__item-btn--active .material-symbols-outlined {
-  color: #00FF90;
+  color: var(--g7);
   font-size: 24px;
 }

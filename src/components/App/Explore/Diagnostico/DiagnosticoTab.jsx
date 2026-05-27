@@ -159,6 +159,7 @@ export default function DiagnosticoTab() {
   // ==============================
   const viewAllHistory = () => {
     setShowAllHistory(true)
+    window.scrollTo({ top: 0, behavior: "auto" })
   }
 
   // ==============================
@@ -166,6 +167,7 @@ export default function DiagnosticoTab() {
   // ==============================
   const backFromHistory = () => {
     setShowAllHistory(false)
+    window.scrollTo({ top: 0, behavior: "auto" })
     const saved = localStorage.getItem("diagnosticHistory")
     if (saved) {
       setHistory(JSON.parse(saved))
@@ -444,7 +446,7 @@ export default function DiagnosticoTab() {
               </div>
             </div>
           ) : (
-            history.map((item) => (
+            history.slice(0, 5).map((item) => (
               <div key={item.id} className="history-item">
                 <div className="history-icon">
                   <span className="material-symbols-outlined">eco</span>
@@ -470,6 +472,12 @@ export default function DiagnosticoTab() {
             ))
           )}
         </div>
+        {history.length > 5 && (
+          <button className="show-more-history-btn" onClick={viewAllHistory}>
+            Ver mais
+            <span className="material-symbols-outlined">expand_more</span>
+          </button>
+        )}
       </div>
 
       <div className="tips-card">

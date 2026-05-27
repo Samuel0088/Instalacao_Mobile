@@ -27,11 +27,11 @@ export default function CameraView({ videoRef, onCapture, onCancel }) {
   }, [isMobile, size.width, size.height, isInitialized])
 
   useEffect(() => {
-    // Esconder o menu bar
-    const menuBar = document.querySelector('.menu-bar')
-    if (menuBar) {
-      menuBar.style.display = 'none'
-    }
+    const hiddenElements = document.querySelectorAll(".nav, .menu-bar, .app-header, .explore-header, .accessibility-widget")
+
+    hiddenElements.forEach((element) => {
+      element.style.display = "none"
+    })
     
     // Prevenir scroll no body
     document.body.style.overflow = 'hidden'
@@ -53,11 +53,9 @@ export default function CameraView({ videoRef, onCapture, onCancel }) {
     startCamera()
     
     return () => {
-      // Restaurar menu bar
-      const menuBar = document.querySelector('.menu-bar')
-      if (menuBar) {
-        menuBar.style.display = 'flex'
-      }
+      hiddenElements.forEach((element) => {
+        element.style.display = ""
+      })
       
       // Restaurar scroll
       document.body.style.overflow = 'auto'

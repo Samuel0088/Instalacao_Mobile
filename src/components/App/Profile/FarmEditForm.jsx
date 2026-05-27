@@ -74,7 +74,7 @@ const FarmEditForm = ({ farmData, onSave, onCancel, saving }) => {
 
   return (
     <motion.div 
-      className="profile-card"
+      className="profile-card farm-edit-card"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}

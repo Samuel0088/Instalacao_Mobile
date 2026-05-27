@@ -24,7 +24,7 @@ const InstallSuccess = ({ onClose, isIOS, isAndroid }) => {
         </button>
 
         <div className="success-icon">
-          <FaCheckCircle size={64} color="#16f29a" />
+          <FaCheckCircle size={64} color="#56a870" />
         </div>
 
         <h2>Instalado com sucesso! 🎉</h2>

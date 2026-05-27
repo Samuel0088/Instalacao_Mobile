@@ -38,7 +38,7 @@ function getAreaStatus() {
   const rand = Math.random()
 
   if (rand < 0.33) {
-    return { label: "Saudável", color: "#4CAF50" }
+    return { label: "Saudável", color: "#56a870" }
   } else if (rand < 0.66) {
     return { label: "Atenção", color: "#FFC107" }
   } else {
@@ -82,6 +82,7 @@ export default function MapaTab() {
 
   const [areas, setAreas] = useState([])
   const [selectedAreaId, setSelectedAreaId] = useState(null)
+  const [visibleAreasCount, setVisibleAreasCount] = useState(3)
 
   const [isDrawing, setIsDrawing] = useState(false)
   const [currentPoints, setCurrentPoints] = useState([])
@@ -197,8 +198,8 @@ export default function MapaTab() {
       if (!area.coordinates || area.coordinates.length < 3) return
 
       const polygon = L.polygon(area.coordinates, {
-        color: area.color || "#2E7D32",
-        fillColor: area.color || "#2E7D32",
+        color: area.color || "#3d8057",
+        fillColor: area.color || "#3d8057",
         fillOpacity: 0.25,
         weight: 2,
         smoothFactor: 1
@@ -230,7 +231,7 @@ export default function MapaTab() {
           .setLatLng(center)
           .setContent(`
             <div style="
-              background:${area.color || "#2E7D32"};
+              background:${area.color || "#3d8057"};
               padding:10px 12px;
               border-radius:12px;
               color:#fff;
@@ -256,7 +257,7 @@ export default function MapaTab() {
   useEffect(() => {
     Object.entries(polygonsRef.current).forEach(([id, polygon]) => {
       polygon.setStyle({
-        color: Number(id) === selectedAreaId ? "#4CAF50" : (areas.find(a => a.id == id)?.color || "#2E7D32"),
+        color: Number(id) === selectedAreaId ? "#56a870" : (areas.find(a => a.id == id)?.color || "#3d8057"),
         fillOpacity: Number(id) === selectedAreaId ? 0.4 : 0.25,
         weight: Number(id) === selectedAreaId ? 3 : 2
       })
@@ -271,8 +272,8 @@ export default function MapaTab() {
 
     const marker = L.circleMarker(latlng, {
       radius: 5,
-      color: "#2E7D32",
-      fillColor: "#4CAF50",
+      color: "#3d8057",
+      fillColor: "#56a870",
       fillOpacity: 1,
       weight: 2
     }).addTo(mapInstanceRef.current)
@@ -284,7 +285,7 @@ export default function MapaTab() {
     }
 
     lineRef.current = L.polyline(newPoints, {
-      color: "#2E7D32",
+      color: "#3d8057",
       weight: 3,
       opacity: 0.8
     }).addTo(mapInstanceRef.current)
@@ -299,7 +300,7 @@ export default function MapaTab() {
 
       tooltipRef.current = L.marker(newPoints[0], {
         icon: L.divIcon({
-          html: `<div style="background:#2E7D32;padding:6px 12px;border-radius:10px;color:#fff;font-weight:600;font-size:12px;">
+          html: `<div style="background:#3d8057;padding:6px 12px;border-radius:10px;color:#fff;font-weight:600;font-size:12px;">
             ${formatArea(area)}
           </div>`
         })
@@ -426,6 +427,8 @@ export default function MapaTab() {
   }, [])
 
   const totalArea = areas.reduce((sum, a) => sum + (a.areaHa || 0), 0)
+  const visibleAreas = areas.slice(0, visibleAreasCount)
+  const hasMoreAreas = visibleAreasCount < areas.length
 
   return (
     <div className="mapa-container">
@@ -451,7 +454,7 @@ export default function MapaTab() {
       <div className="draw-button-container">
         {!isDrawing ? (
           <button className="draw-area-btn" onClick={startDrawing}>
-            <span className="btn-icon">✏️</span>
+            <span className="material-symbols-outlined btn-icon">edit_location_alt</span>
             Desenhar área
           </button>
         ) : (
@@ -490,70 +493,82 @@ export default function MapaTab() {
             <span>Clique em "Desenhar área" para começar</span>
           </div>
         ) : (
-          <div className="areas-cards">
-            {areas.map((area) => (
-              <div
-                key={area.id}
-                className={`area-card-modern ${selectedAreaId === area.id ? "selected" : ""}`}
-                onClick={() => {
-                  setSelectedAreaId(area.id)
-                  const polygon = polygonsRef.current[area.id]
-                  if (polygon && mapInstanceRef.current) {
-                    mapInstanceRef.current.fitBounds(polygon.getBounds())
-                  }
-                }}
+          <>
+            <div className="areas-cards">
+              {visibleAreas.map((area) => (
+                <div
+                  key={area.id}
+                  className={`area-card-modern ${selectedAreaId === area.id ? "selected" : ""}`}
+                  onClick={() => {
+                    setSelectedAreaId(area.id)
+                    const polygon = polygonsRef.current[area.id]
+                    if (polygon && mapInstanceRef.current) {
+                      mapInstanceRef.current.fitBounds(polygon.getBounds())
+                    }
+                  }}
+                >
+                  <div className="card-header">
+                    <div className="card-icon">🌾</div>
+                    <div className="card-title">
+                      <h4>Área #{String(area.id).slice(-6)}</h4>
+                      <span className="card-date">
+                        {new Date(area.id).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="card-stats">
+                    <div className="stat">
+                      <span className="stat-label">Tamanho</span>
+                      <span className="stat-value">{formatArea(area.areaHa)}</span>
+                    </div>
+                    <div className="stat-divider"></div>
+                    <div className="stat">
+                      <span className="stat-label">Status</span>
+                      <span className="stat-value">
+                        <span className="status-dot"></span>
+                        {area.status || "Saudável"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="card-footer-actions">
+                    <button
+                      className="view-btn"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        const polygon = polygonsRef.current[area.id]
+                        if (polygon && mapInstanceRef.current) {
+                          mapInstanceRef.current.fitBounds(polygon.getBounds())
+                        }
+                      }}
+                    >
+                      👁️ Ver no mapa
+                    </button>
+                    <button
+                      className="delete-btn-modern"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        deleteArea(area.id)
+                      }}
+                    >
+                      🗑️ Excluir
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {hasMoreAreas && (
+              <button
+                className="show-more-areas-btn"
+                onClick={() => setVisibleAreasCount(count => count + 3)}
               >
-                <div className="card-header">
-                  <div className="card-icon">🌾</div>
-                  <div className="card-title">
-                    <h4>Área #{String(area.id).slice(-6)}</h4>
-                    <span className="card-date">
-                      {new Date(area.id).toLocaleDateString()}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="card-stats">
-                  <div className="stat">
-                    <span className="stat-label">Tamanho</span>
-                    <span className="stat-value">{formatArea(area.areaHa)}</span>
-                  </div>
-                  <div className="stat-divider"></div>
-                  <div className="stat">
-                    <span className="stat-label">Status</span>
-                    <span className="stat-value">
-                      <span className="status-dot"></span>
-                      {area.status || "Saudável"}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="card-footer-actions">
-                  <button
-                    className="view-btn"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      const polygon = polygonsRef.current[area.id]
-                      if (polygon && mapInstanceRef.current) {
-                        mapInstanceRef.current.fitBounds(polygon.getBounds())
-                      }
-                    }}
-                  >
-                    👁️ Ver no mapa
-                  </button>
-                  <button
-                    className="delete-btn-modern"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      deleteArea(area.id)
-                    }}
-                  >
-                    🗑️ Excluir
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+                Ver mais áreas
+                <span>{areas.length - visibleAreasCount} restante(s)</span>
+              </button>
+            )}
+          </>
         )}
       </div>
     </div>

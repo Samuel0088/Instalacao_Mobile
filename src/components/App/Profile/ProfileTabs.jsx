@@ -1,9 +1,8 @@
 // components/Profile/ProfileTabs.jsx
-export default function ProfileTabs({ activeTab, onTabChange, onEditClick }) {
+export default function ProfileTabs({ activeTab, onTabChange }) {
   const tabs = [
     { id: "pessoal", icon: "person", label: "Pessoal" },
-    { id: "fazenda", icon: "agriculture", label: "Fazenda" },
-    { id: "editar", icon: "edit", label: "Editar", action: onEditClick }
+    { id: "fazenda", icon: "agriculture", label: "Fazenda" }
   ]
 
   return (
@@ -14,7 +13,7 @@ export default function ProfileTabs({ activeTab, onTabChange, onEditClick }) {
           <button
             key={tab.id}
             className={`tab-tech ${activeTab === tab.id ? 'active' : ''}`}
-            onClick={() => tab.action ? tab.action() : onTabChange(tab.id)}
+            onClick={() => onTabChange(tab.id)}
           >
             <span className="material-symbols-outlined tab-icon">{tab.icon}</span>
             <span className="tab-label">{tab.label}</span>

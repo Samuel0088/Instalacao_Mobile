@@ -20,13 +20,27 @@ export default function AtividadesTab() {
     responsible: ""
   })
 
+  useEffect(() => {
+    const menuBars = document.querySelectorAll(".nav, .menu-bar")
+
+    menuBars.forEach((menuBar) => {
+      menuBar.style.display = showForm || selectedActivity ? "none" : ""
+    })
+
+    return () => {
+      menuBars.forEach((menuBar) => {
+        menuBar.style.display = ""
+      })
+    }
+  }, [showForm, selectedActivity])
+
   // Tipos de atividade
   const activityTypes = [
-    { id: "tarefa", name: "Tarefa", icon: "assignment", color: "#00ffaa" },
+    { id: "tarefa", name: "Tarefa", icon: "assignment", color: "#56a870" },
     { id: "voo", name: "Voo de Drone", icon: "flight", color: "#0066ff" },
     { id: "irrigacao", name: "Irrigação", icon: "water_drop", color: "#00ccff" },
     { id: "pulverizacao", name: "Pulverização", icon: "spray", color: "#ffaa00" },
-    { id: "colheita", name: "Colheita", icon: "agriculture", color: "#00ffaa" },
+    { id: "colheita", name: "Colheita", icon: "agriculture", color: "#56a870" },
     { id: "manutencao", name: "Manutenção", icon: "handyman", color: "#ff6b6b" }
   ]
 
@@ -34,14 +48,14 @@ export default function AtividadesTab() {
   const priorities = [
     { id: "alta", name: "Alta", icon: "priority_high", color: "#ff4d4d" },
     { id: "media", name: "Média", icon: "drag_handle", color: "#ffaa00" },
-    { id: "baixa", name: "Baixa", icon: "low_priority", color: "#00ffaa" }
+    { id: "baixa", name: "Baixa", icon: "low_priority", color: "#56a870" }
   ]
 
   // Status
   const statuses = [
     { id: "pendente", name: "Pendente", icon: "pending", color: "#ffaa00" },
     { id: "em_andamento", name: "Em andamento", icon: "play_circle", color: "#0066ff" },
-    { id: "concluida", name: "Concluída", icon: "check_circle", color: "#00ffaa" },
+    { id: "concluida", name: "Concluída", icon: "check_circle", color: "#56a870" },
     { id: "cancelada", name: "Cancelada", icon: "cancel", color: "#ff4d4d" }
   ]
 

@@ -1,5 +1,5 @@
 // components/Home/MetricsGrid.jsx
-import MetricCard from './MetricCard'
+import MetricCard from './MetricCard' 
 
 export default function MetricsGrid({ hasFarm, weather, farmData }) {
   return (

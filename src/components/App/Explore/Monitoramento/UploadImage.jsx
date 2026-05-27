@@ -3,17 +3,22 @@ import styles from "../../../../styles/App/MonitoramentoView.module.css";
 
 /**
  * Zona de upload com:
- *  - Toque para abrir galeria (mobile) ou seletor de arquivo (desktop)
- *  - `capture="environment"`: abre câmera traseira diretamente no celular
+ *  - Botao de camera controlado pela tela principal
+ *  - Botao de galeria sem capture
  *  - Drag-and-drop para desktop
  *  - Estado desabilitado durante análise
  */
-export default function UploadImage({ onSelect, disabled }) {
+export default function UploadImage({ onSelect, onCamera, disabled }) {
   const [arrastando, setArrastando] = useState(false);
-  const inputRef = useRef(null);
+  const galleryInputRef = useRef(null);
 
   const processarArquivo = (file) => {
     if (file && !disabled) onSelect(file);
+  };
+
+  const handleFileChange = (e) => {
+    processarArquivo(e.target.files[0]);
+    e.target.value = "";
   };
 
   const handleDrop = (e) => {
@@ -29,9 +34,6 @@ export default function UploadImage({ onSelect, disabled }) {
 
   return (
     <div
-      role="button"
-      tabIndex={disabled ? -1 : 0}
-      aria-label="Selecionar imagem para análise"
       className={[
         styles.uploadArea,
         arrastando  ? styles.uploadArea_arrastando  : "",
@@ -39,8 +41,6 @@ export default function UploadImage({ onSelect, disabled }) {
       ]
         .filter(Boolean)
         .join(" ")}
-      onClick={() => !disabled && inputRef.current?.click()}
-      onKeyDown={(e) => e.key === "Enter" && !disabled && inputRef.current?.click()}
       onDragOver={handleDragOver}
       onDragLeave={() => setArrastando(false)}
       onDrop={handleDrop}
@@ -49,20 +49,40 @@ export default function UploadImage({ onSelect, disabled }) {
         {disabled ? "⏳" : "📷"}
       </span>
       <span className={styles.uploadTexto}>
-        {disabled ? "Processando imagem..." : "Toque para selecionar imagem"}
+        {disabled ? "Processando imagem..." : "Selecione uma imagem para análise"}
       </span>
       <span className={styles.uploadDica}>
         JPG, PNG · Da câmera ou galeria
       </span>
 
+      <div className={styles.uploadAcoes}>
+        <button
+          type="button"
+          className={styles.uploadAcao}
+          onClick={() => !disabled && onCamera?.()}
+          disabled={disabled}
+        >
+          <span className="material-symbols-outlined" aria-hidden="true">photo_camera</span>
+          Tirar foto
+        </button>
+        <button
+          type="button"
+          className={`${styles.uploadAcao} ${styles.uploadAcaoSecundaria}`}
+          onClick={() => !disabled && galleryInputRef.current?.click()}
+          disabled={disabled}
+        >
+          <span className="material-symbols-outlined" aria-hidden="true">photo_library</span>
+          Selecionar da galeria
+        </button>
+      </div>
+
       <input
-        ref={inputRef}
+        ref={galleryInputRef}
         type="file"
         accept="image/*"
-        capture="environment"
         className={styles.uploadInputOculto}
         disabled={disabled}
-        onChange={(e) => processarArquivo(e.target.files[0])}
+        onChange={handleFileChange}
       />
     </div>
   );

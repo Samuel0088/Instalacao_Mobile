@@ -60,7 +60,7 @@ export default function MenuBar() {
         xmlns="http://www.w3.org/2000/svg"
         aria-hidden="true"
       >
-        <path d={buildNotchPath(activeIdx)} fill="#016c3a" />
+        <path d={buildNotchPath(activeIdx)} fill="#3d8057" />
       </svg>
 
       <ul className="nav__items">

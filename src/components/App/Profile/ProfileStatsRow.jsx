@@ -1,7 +1,7 @@
 // components/Profile/ProfileStatsRow.jsx
 export default function ProfileStatsRow({ hectares, age, farmsCount }) {
   const stats = [
-    { icon: "square_foot", value: hectares, label: "Hectares", color: "#13ec80" },
+    { icon: "square_foot", value: hectares, label: "Hectares", color: "var(--g6)" },
     { icon: "cake", value: age, label: "Idade", color: "#0066ff" },
     { icon: "agriculture", value: farmsCount, label: "Fazendas", color: "#ffaa00" }
   ]

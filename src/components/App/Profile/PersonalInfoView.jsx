@@ -21,7 +21,7 @@ export default function PersonalInfoView({ userData, user, formatDocument }) {
           <span className="material-symbols-outlined">person</span>
           <div className="icon-glow"></div>
         </div>
-        <h3>Informações Pessoais</h3>
+        <h3 className="personal-info-title">Informações Pessoais</h3>
         <div className="header-line"></div>
       </div>
       

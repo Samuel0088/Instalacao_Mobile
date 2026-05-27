@@ -2,8 +2,8 @@
  * MonitoramentoView.module.css
  * Design system do módulo de Monitoramento.
  *
- * Alinhado ao tema escuro/neon do Diagnóstico:
- *   Background: #0a0c0e  |  Neon: #00ffaa  |  Azul: #0066ff
+ * Alinhado ao tema verde orgânico do Diagnóstico:
+ *   Background: #0a0c0e  |  Verde: #56a870  |  Azul: #0066ff
  *   Cards: glass effect (backdrop-filter + rgba escuro)
  *   Texto: #fff (primário), #a0a8b4 (secundário)
  *
@@ -15,11 +15,28 @@
    VARIÁVEIS — herdadas por todos os filhos
    ============================================================ */
 .container {
+  --g0: #0a1a0f;
+  --g1: #0f2318;
+  --g2: #163020;
+  --g3: #1e4229;
+  --g4: #2d6140;
+  --g5: #3d8057;
+  --g6: #56a870;
+  --g7: #8ecfa0;
+  --g8: #c2e8cc;
+  --g9: #eaf6ed;
+  --cream: #f7f5f0;
+  --ink: #0f1a13;
+  --muted: #4a6254;
+  --border: rgba(45, 97, 64, 0.12);
+  --border-strong: rgba(45, 97, 64, 0.25);
+
+
   /* Cores base */
-  --n-primary:          #00ffaa;
-  --n-primary-dark:     #00cc88;
-  --n-primary-glow:     rgba(0, 255, 170, 0.35);
-  --n-primary-soft:     rgba(0, 255, 170, 0.08);
+  --n-primary:          var(--g6);
+  --n-primary-dark:     var(--g5);
+  --n-primary-glow:     rgba(86, 168, 112, 0.35);
+  --n-primary-soft:     rgba(86, 168, 112, 0.08);
   --n-secondary:        #0066ff;
   --n-secondary-glow:   rgba(0, 102, 255, 0.3);
 
@@ -32,7 +49,7 @@
   /* Bordas */
   --n-border:           rgba(255, 255, 255, 0.05);
   --n-border-md:        rgba(255, 255, 255, 0.10);
-  --n-border-glow:      rgba(0, 255, 170, 0.25);
+  --n-border-glow:      rgba(86, 168, 112, 0.25);
 
   /* Texto */
   --n-text:             #ffffff;
@@ -45,13 +62,13 @@
   --n-danger-glow:      rgba(255, 77, 77, 0.3);
   --n-warning:          #ffaa00;
   --n-warning-soft:     rgba(255, 170, 0, 0.12);
-  --n-success:          #00ffaa;
+  --n-success:          var(--g6);
   --n-info:             #00ccff;
 
   /* Sombras */
   --n-shadow:           0 8px 32px rgba(0, 0, 0, 0.5);
   --n-shadow-sm:        0 2px 12px rgba(0, 0, 0, 0.4);
-  --n-neon:             0 0 20px rgba(0, 255, 170, 0.3);
+  --n-neon:             0 0 20px rgba(86, 168, 112, 0.3);
 
   /* Radii */
   --n-r-sm:  12px;
@@ -100,7 +117,7 @@
 .titulo {
   font-size: 1.9rem;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--n-primary), var(--n-secondary));
+  background: var(--g5);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -118,7 +135,7 @@
   transform: translateX(-50%);
   width: 60px;
   height: 3px;
-  background: linear-gradient(90deg, var(--n-primary), var(--n-secondary));
+  background: var(--g6);
   border-radius: 3px;
   filter: blur(1px);
 }
@@ -143,10 +160,11 @@
   padding: 36px 24px;
   border: 2px dashed var(--n-border-md);
   border-radius: var(--n-r-xl);
-  background: linear-gradient(135deg, var(--n-card), rgba(18, 22, 28, 0.4));
+  background: var(--background);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  cursor: pointer;
+  cursor: default;
   transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
   margin-bottom: 24px;
   text-align: center;
@@ -165,7 +183,7 @@
 
 .uploadArea:hover,
 .uploadArea:focus-visible {
-  border-color: var(--n-primary);
+  border-color: var(--g0);
   transform: translateY(-3px);
   box-shadow: var(--n-neon);
 }
@@ -175,8 +193,8 @@
 }
 
 .uploadArea_arrastando {
-  border-color: var(--n-primary);
-  box-shadow: var(--n-neon);
+  border-color: var(--g5);
+  box-shadow: 0 0 20px rgba(61, 128, 87, 0.3);
   transform: translateY(-3px);
 }
 
@@ -197,7 +215,7 @@
 .uploadTexto {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--n-text);
+  color: var(--g0);
   position: relative;
   z-index: 1;
 }
@@ -211,6 +229,63 @@
   border: 1px solid var(--n-border);
   position: relative;
   z-index: 1;
+}
+
+.uploadAcoes {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.uploadAcao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 9px 16px;
+  background: var(--g4);
+  border: none;
+  border-radius: 14px;
+  color: var(--g9);
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: var(--n-font);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.uploadAcao:hover:not(:disabled) {
+  background: var(--g5);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(45, 97, 64, 0.3);
+}
+
+.uploadAcao:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.uploadAcao span {
+  font-size: 18px;
+  line-height: 1;
+  color: inherit;
+}
+
+.uploadAcaoSecundaria {
+  background: rgba(45, 97, 64, 0.06);
+  border: 1px solid var(--border-strong);
+  color: var(--g4);
+}
+
+.uploadAcaoSecundaria:hover:not(:disabled) {
+  background: rgba(45, 97, 64, 0.1);
+  color: var(--g5);
+  border-color: var(--g5);
 }
 
 .uploadInputOculto {
@@ -378,7 +453,7 @@
 
 .alertBanner_perigo .alertBannerText { color: rgba(255, 180, 180, 0.9); }
 .alertBanner_aviso  .alertBannerText { color: rgba(255, 210, 100, 0.9); }
-.alertBanner_ok     .alertBannerText { color: rgba(0, 255, 170, 0.85); }
+.alertBanner_ok     .alertBannerText { color: rgba(86, 168, 112, 0.85); }
 
 /* ============================================================
    LAYOUT DE RESULTADOS
@@ -407,13 +482,13 @@
    CARD DE IMAGEM + ABAS
    ============================================================ */
 .imagemCard {
-  background: linear-gradient(135deg, var(--n-card), rgba(18, 22, 28, 0.6));
+  background: #f7f5f0;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--n-border);
   border-radius: var(--n-r-lg);
   overflow: hidden;
-  box-shadow: var(--n-shadow);
+  box-shadow: 0 10px 30px var(--primary-glow);
   position: relative;
 }
 
@@ -505,13 +580,13 @@
    PAINEL DE MÉTRICAS
    ============================================================ */
 .painelMetricas {
-  background: linear-gradient(135deg, var(--n-card), rgba(18, 22, 28, 0.6));
+  background: #f7f5f0;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--n-border);
   border-radius: var(--n-r-lg);
   overflow: hidden;
-  box-shadow: var(--n-shadow);
+  box-shadow: 0 10px 30px var(--primary-glow);
 }
 
 .painelCabecalho {
@@ -658,9 +733,9 @@
 }
 
 .statusTag_ok {
-  background: rgba(0, 255, 170, 0.1);
+  background: rgba(86, 168, 112, 0.1);
   color: var(--n-primary);
-  border-color: rgba(0, 255, 170, 0.2);
+  border-color: rgba(86, 168, 112, 0.2);
 }
 
 .statusTag_aviso {
@@ -689,9 +764,9 @@
 
 /* Iluminação */
 .iluminacao_boa {
-  background: rgba(0, 255, 170, 0.1);
+  background: rgba(86, 168, 112, 0.1);
   color: var(--n-primary);
-  border-color: rgba(0, 255, 170, 0.2);
+  border-color: rgba(86, 168, 112, 0.2);
 }
 
 .iluminacao_moderada {
@@ -763,7 +838,7 @@
 
 .itemInsight_perigo { color: rgba(255, 180, 180, 0.85); }
 .itemInsight_aviso  { color: rgba(255, 210, 130, 0.85); }
-.itemInsight_ok     { color: rgba(0, 255, 170, 0.75);   }
+.itemInsight_ok     { color: rgba(86, 168, 112, 0.75);   }
 
 /* ============================================================
    BOTÃO DE NOVA ANÁLISE

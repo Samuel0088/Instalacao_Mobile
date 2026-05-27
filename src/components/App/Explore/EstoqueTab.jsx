@@ -24,7 +24,7 @@ export default function EstoqueTab() {
     { id: "insumo", name: "Insumos", icon: "inventory" },
     { id: "fertilizante", name: "Fertilizantes", icon: "grass" },
     { id: "defensivo", name: "Defensivos", icon: "bug_report" },
-    { id: "semente", name: "Sementes", icon: "seed" },
+    { id: "semente", name: "Sementes", icon: "psychiatry" },
     { id: "equipamento", name: "Equipamentos", icon: "handyman" }
   ]
 
@@ -77,6 +77,20 @@ export default function EstoqueTab() {
       localStorage.setItem("inventory", JSON.stringify(sampleProducts))
     }
   }, [])
+
+  useEffect(() => {
+    const menuBars = document.querySelectorAll(".nav, .menu-bar")
+
+    menuBars.forEach((menuBar) => {
+      menuBar.style.display = showForm || selectedProduct ? "none" : ""
+    })
+
+    return () => {
+      menuBars.forEach((menuBar) => {
+        menuBar.style.display = ""
+      })
+    }
+  }, [showForm, selectedProduct])
 
   // Salvar produtos
   const saveProducts = (newProducts) => {
@@ -318,7 +332,7 @@ export default function EstoqueTab() {
                         className="stock-fill"
                         style={{
                           width: `${Math.min(100, (product.quantity / product.minQuantity) * 100)}%`,
-                          background: isLowStock(product) ? "#ffaa00" : "#00ffaa"
+                          background: isLowStock(product) ? "#ffaa00" : "#56a870"
                         }}
                       ></div>
                     </div>

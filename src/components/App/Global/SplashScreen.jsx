@@ -1,409 +1,333 @@
-import { useEffect, useState, useRef, memo, useCallback } from "react"
+// SplashScreen.jsx - Versão com foco na animação de crescimento das plantas
+import { useEffect, useState, useRef, memo } from "react"
 import "../../../styles/Global/SplashScreen.css"
 
-// ─── Utilitários ───────────────────────────────────────────────────────────────
-const clamp = (v, a, b) => Math.max(a, Math.min(b, v))
-const lerp   = (a, b, t) => a + (b - a) * clamp(t, 0, 1)
-const easeOutCubic  = (t) => 1 - Math.pow(1 - clamp(t, 0, 1), 3)
-const easeOutQuart  = (t) => 1 - Math.pow(1 - clamp(t, 0, 1), 4)
-const easeInOutQuad = (t) => {
-  t = clamp(t, 0, 1)
-  return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t
-}
-
-// ─── Mensagens do scan ─────────────────────────────────────────────────────────
-const SCAN_MESSAGES = [
-  "INICIANDO SISTEMA...",
-  "MAPEANDO TERRENO...",
-  "DETECTANDO CULTIVOS...",
-  "ANALISANDO DADOS...",
-  "GERANDO RELATÓRIO...",
-  "SCAN COMPLETO ✓",
-]
-
-function getScanMessage(progress) {
-  const idx = Math.min(
-    Math.floor((progress / 100) * (SCAN_MESSAGES.length - 1)),
-    SCAN_MESSAGES.length - 1
-  )
-  return SCAN_MESSAGES[idx]
-}
-
-// ─── Geração de dados das plantas ─────────────────────────────────────────────
-function generatePlants(isMobile) {
-  const rows = isMobile ? 3 : 4
-  const plants = []
-
-  for (let row = 0; row < rows; row++) {
-    const rowDepth = (row + 1) / rows
-    const perRow   = isMobile ? 5 : 8
-    const baseH    = lerp(isMobile ? 18 : 38, isMobile ? 52 : 105, rowDepth)
-
-    for (let col = 0; col < perRow; col++) {
-      const spacing = 100 / perRow
-      plants.push({
-        id:     row * perRow + col,
-        row,
-        depth:  rowDepth,
-        left:   col * spacing + spacing * 0.08 + Math.random() * spacing * 0.55,
-        height: baseH + Math.random() * baseH * 0.35,
-        delay:  row * 0.1 + col * 0.05 + Math.random() * 0.12,
-        type:   Math.floor(Math.random() * 3),
-        lean:   (Math.random() - 0.5) * 7,
-      })
-    }
-  }
-  return plants
-}
-
-// ─── Componente de Planta ──────────────────────────────────────────────────────
-const Plant = memo(({ plant, grow, scanning }) => {
-  const { left, height, delay, type, depth, lean } = plant
-
+// Componente de planta com animação de crescimento SUPER VISÍVEL
+const Plant = memo(({ plant, stage }) => {
+  const { id, left, height, delay, type } = plant
+  
   return (
     <div
-      className={`plant type-${type} ${grow ? "grow" : ""} ${scanning ? "scanning" : ""}`}
+      className={`plant type-${type} ${stage >= 2 ? 'grow' : ''}`}
       style={{
-        left:              `${left}%`,
-        "--plant-height":  `${height}px`,
-        "--plant-delay":   `${delay}s`,
-        "--plant-scale":   lerp(0.42, 1, depth),
-        "--plant-opacity": lerp(0.48, 1, depth),
-        "--plant-lean":    `${lean}deg`,
+        left: `${left}%`,
+        '--plant-height': `${height}px`,
+        '--plant-delay': `${delay}s`,
       }}
     >
-      <div className="plant-root" />
-
+      {/* Caule com animação de crescimento bem visível */}
       <div className="stem">
-        <div className="stem-inner" />
-        <div className="stem-glow" />
+        <div className="stem-base"></div>
+        <div className="stem-grow-line"></div>
+        <div className="stem-glow"></div>
       </div>
-
+      
+      {/* Folhas - aparecem gradualmente */}
       <div className="leaves">
-        <div className="leaf-pair pair-1">
-          <div className="leaf left"  />
-          <div className="leaf right" />
-        </div>
-        <div className="leaf-pair pair-2">
-          <div className="leaf left"  />
-          <div className="leaf right" />
-        </div>
-        <div className="leaf-pair pair-3">
-          <div className="leaf left"  />
-          <div className="leaf right" />
-        </div>
+        <div className="leaf left"></div>
+        <div className="leaf right"></div>
+        <div className="leaf top"></div>
       </div>
-
-      <div className="fruit">
-        <div className="fruit-body" />
-      </div>
-
-      {scanning && <div className="scan-particle" />}
+      
+      {/* Fruto - aparece no final */}
+      <div className="fruit"></div>
+      
+      {/* Marcadores de crescimento (visíveis durante a animação) */}
+      <div className="growth-marker" style={{ bottom: '25%' }}></div>
+      <div className="growth-marker" style={{ bottom: '50%' }}></div>
+      <div className="growth-marker" style={{ bottom: '75%' }}></div>
     </div>
   )
 })
 
-// ─── Drone ─────────────────────────────────────────────────────────────────────
-function Drone({ hovering }) {
-  return (
-    <div className={`drone-premium ${hovering ? "hovering" : ""}`}>
-      <div className="drone-halo" />
+export default function SplashScreen({ onComplete }) {
+  const [stage, setStage] = useState(0)
+  const [progress, setProgress] = useState(0)
+  const [dronePos, setDronePos] = useState(0)
+  const [loadingMessage, setLoadingMessage] = useState("INICIANDO SCAN...")
+  const [isMobile, setIsMobile] = useState(false) // Começa como false para SSR
+  
+  const timeoutsRef = useRef([])
+  
+  // Detectar mobile apenas no cliente
+  useEffect(() => {
+    setIsMobile(window.innerWidth <= 768)
+  }, [])
+  
+  // Plantas - criar apenas no cliente também
+  const [plantData, setPlantData] = useState([])
+  
+  useEffect(() => {
+    // Só criar as plantas no cliente
+    if (isMobile) {
+      // Mobile: poucas plantas e mais baixas
+      setPlantData(
+        Array(12).fill(0).map((_, i) => ({  // Reduzido para 12
+          id: i,
+          left: (i * 8) + (Math.random() * 5), // Mais espaçadas
+          height: 40 + Math.random() * 50, // Altura bem reduzida
+          delay: 0.1 + (Math.random() * 1.5),
+          type: Math.floor(Math.random() * 3),
+        }))
+      )
+    } else {
+      // Desktop: configuração normal
+      setPlantData(
+        Array(25).fill(0).map((_, i) => ({
+          id: i,
+          left: (i * 4) + (Math.random() * 3),
+          height: 80 + Math.random() * 100,
+          delay: 0.1 + (Math.random() * 1.5),
+          type: Math.floor(Math.random() * 3),
+        }))
+      )
+    }
+  }, [isMobile])
 
-      {["-45deg", "45deg", "-135deg", "135deg"].map((angle, i) => (
-        <div key={i} className="drone-arm" style={{ "--arm-angle": angle }}>
-          <div className="arm-bar" />
-          <div className="motor">
-            <div className="propeller-blur" />
-            <div className="propeller">
-              <span className="blade b1" />
-              <span className="blade b2" />
+  useEffect(() => {
+    const timeouts = []
+    
+    const setSafeTimeout = (fn, delay) => {
+      const id = setTimeout(fn, delay)
+      timeouts.push(id)
+      timeoutsRef.current.push(id)
+      return id
+    }
+
+    // SEQUÊNCIA COM TEMPO PARA VER O CRESCIMENTO
+   setSafeTimeout(() => setStage(1), 100)
+setSafeTimeout(() => setStage(2), 600)
+    
+    setSafeTimeout(() => {
+      setStage(3) // Drone começa a entrar
+      
+      let pos = 0
+      // Velocidade do drone baseada no mobile
+      const droneSpeed = isMobile ? 0.8 : 1.4
+      const droneInterval = setInterval(() => {
+        pos += droneSpeed
+        if (pos <= 100) {
+          setDronePos(pos)
+        } else {
+          clearInterval(droneInterval)
+          setSafeTimeout(() => setStage(4), 500)
+        }
+      }, 25)
+      
+      timeouts.push({ cleanup: () => clearInterval(droneInterval) })
+    }, 5500)
+    
+    setSafeTimeout(() => {
+      let progressValue = 0
+      // Progresso mais lento no mobile
+      const progressSpeed = isMobile ? 2 : 3
+      const progressInterval = setInterval(() => {
+        progressValue += progressSpeed
+        
+        if (progressValue < 20) setLoadingMessage("INICIANDO SCAN...")
+        else if (progressValue < 40) setLoadingMessage("MAPEANDO TERRENO...")
+        else if (progressValue < 60) setLoadingMessage("DETECTANDO CULTIVOS...")
+        else if (progressValue < 80) setLoadingMessage("PROCESSANDO DADOS...")
+        else if (progressValue < 100) setLoadingMessage("GERANDO RELATÓRIO...")
+        else setLoadingMessage("SCAN COMPLETO!")
+        
+        setProgress(progressValue)
+        
+        if (progressValue >= 100) {
+          clearInterval(progressInterval)
+          setSafeTimeout(() => setStage(5), 1500)
+          setSafeTimeout(onComplete, 3000)
+        }
+      }, 50)
+      
+      timeouts.push({ cleanup: () => clearInterval(progressInterval) })
+    }, 7500)
+
+    return () => {
+      timeouts.forEach(t => {
+        if (t.cleanup) t.cleanup()
+        else clearTimeout(t)
+      })
+    }
+  }, [onComplete, isMobile])
+
+  // Animação do drone (mantida igual)
+  const getDroneStyle = () => {
+    if (stage < 3) return { x: -45, y: 25, scale: 0.3, opacity: 0 }
+    
+    if (stage === 3) {
+      const t = dronePos / 100
+      const easeOut = 1 - Math.pow(1 - t, 1.8)
+      
+      return {
+        x: -45 + (easeOut * 45),
+        y: 25 - (easeOut * 28),
+        scale: 0.3 + (easeOut * 0.7),
+        opacity: 0.2 + (easeOut * 0.8),
+      }
+    }
+    
+    if (stage === 4) {
+      return {
+        x: 0,
+        y: -2 + Math.sin(Date.now() * 0.003) * 1.2,
+        scale: 1,
+        opacity: 1,
+      }
+    }
+    
+    return { x: 50, y: -20, scale: 0.5, opacity: 0 }
+  }
+
+  const droneStyle = getDroneStyle()
+
+  // Não renderizar nada até ter os dados das peesas
+  if (plantData.length === 0) {
+    return <div className="splash" style={{ background: '#0a1a0f' }}></div>
+  }
+
+  return (
+    <div className="splash">
+      {/* Fundo */}
+      <div className="bg">
+        <div className="bg-sky"></div>
+        <div className="bg-horizon"></div>
+        <div className="bg-vignette"></div>
+      </div>
+
+      {/* TERRA */}
+      <div className={`ground ${stage >= 1 ? 'ground-visible' : ''}`}>
+        <div className="soil">
+          <div className="soil-base"></div>
+          <div className="soil-texture"></div>
+          <div className="soil-highlight"></div>
+        </div>
+      </div>
+
+      {/* PLANTAÇÃO - COM CRESCIMENTO BEM VISÍVEL */}
+      <div className="plantation">
+        {plantData.map((plant) => (
+          <Plant key={plant.id} plant={plant} stage={stage} />
+        ))}
+      </div>
+
+      {/* DRONE */}
+      {stage >= 3 && (
+        <div 
+          className="drone-wrapper"
+          style={{
+            transform: `translate(calc(-50% + ${droneStyle.x}vw), calc(-50% + ${droneStyle.y}vh)) scale(${droneStyle.scale})`,
+            opacity: droneStyle.opacity,
+          }}
+        >
+          <DronePremium hovering={stage === 4} />
+        </div>
+      )}
+
+      {/* SCAN */}
+      {stage === 4 && (
+        <div className="loading-screen">
+          <div className="scan-overlay">
+            <div className="scan-grid"></div>
+            <div className="scan-lines"></div>
+          </div>
+          
+          <div className="loading-card">
+            <div className="loading-header">
+              <div className="loading-icon">⟡</div>
+              <div className="loading-title">
+                <span className="loading-main">SCAN</span>
+                <span className="loading-sub">AGRÍCOLA</span>
+              </div>
             </div>
-            <div className="motor-hub" />
+            
+            <div className="progress-main">
+              <div className="progress-bar-container">
+                <div className="progress-bar-bg"></div>
+                <div 
+                  className="progress-bar-fill" 
+                  style={{ width: `${progress}%` }}
+                >
+                  <div className="progress-glow"></div>
+                </div>
+              </div>
+              
+              <div className="progress-stats">
+                <span className="progress-percentage">{Math.floor(progress)}%</span>
+                <span className="progress-message">{loadingMessage}</span>
+              </div>
+            </div>
+            
+            <div className="loading-metrics">
+              <div className="metric">
+                <span className="metric-label">ÁREA</span>
+                <span className="metric-value">{(progress * 0.24).toFixed(1)} ha</span>
+              </div>
+              <div className="metric">
+                <span className="metric-label">PLANTAS</span>
+                <span className="metric-value">{Math.floor(progress * 0.9)}</span>
+              </div>
+              <div className="metric">
+                <span className="metric-label">QUALIDADE</span>
+                <span className="metric-value">98%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* COMPLETION */}
+      {progress === 100 && stage === 4 && (
+        <div className="completion-screen">
+          <div className="completion-circle">
+            <div className="completion-check">✓</div>
+          </div>
+          <div className="completion-text">
+            <div className="completion-main">SCAN COMPLETO</div>
+            <div className="completion-sub">Iniciando aplicativo...</div>
+          </div>
+        </div>
+      )}
+
+      {/* FADE OUT */}
+      {stage === 5 && <div className="fade-out"></div>}
+    </div>
+  )
+}
+
+// DronePremium (igual ao anterior, mantido)
+function DronePremium({ hovering }) {
+  return (
+    <div className={`drone-premium ${hovering ? 'drone-hover' : ''}`}>
+      {/* CORPO CENTRAL */}
+      <div className="drone-core">
+        <div className="core-hex primary"></div>
+        <div className="core-hex secondary"></div>
+        <div className="core-hex inner"></div>
+        <div className="core-logo">AGRO <br />TECH</div>
+      </div>
+
+      {/* BRAÇOS */}
+      {[0, 60, 120, 180, 240, 300].map((angle) => (
+        <div key={angle} className="drone-arm" style={{ transform: `rotate(${angle}deg)` }}>
+          <div className="arm-bar"></div>
+          <div className="motor-unit">
+            <div className="motor-base"></div>
+            <div className="propeller-assembly">
+              <div className="blade-set">
+                <div className="blade blade-1"></div>
+                <div className="blade blade-2"></div>
+                <div className="blade blade-3"></div>
+              </div>
+              <div className="propeller-hub"></div>
+            </div>
           </div>
         </div>
       ))}
 
-      <div className="drone-body">
-        <div className="body-top" />
-        <div className="body-bottom">
-          <div className="camera">
-            <div className="lens" />
-            <div className="lens-glow" />
-          </div>
-        </div>
-        <div className="led led-front" />
-        <div className="led led-back"  />
-        <div className="drone-logo">
-          <span>AGRO</span>
-          <span>TECH</span>
-        </div>
-      </div>
-
-      <div className="drone-antenna" />
-    </div>
-  )
-}
-
-// ─── HUD de Scan ───────────────────────────────────────────────────────────────
-function ScanHUD({ progress, message, visible }) {
-  return (
-    <div className={`scan-hud ${visible ? "hud-visible" : ""}`}>
-      <div className="hud-frame">
-        <div className="hud-corner tl" />
-        <div className="hud-corner tr" />
-        <div className="hud-corner bl" />
-        <div className="hud-corner br" />
-      </div>
-
-      <div className="scan-sweep" />
-
-      <div className="scan-card">
-        <div className="scan-header">
-          <div className="scan-icon">⬡</div>
-          <div className="scan-titles">
-            <div className="scan-title">SCAN AGRÍCOLA</div>
-            <div className="scan-subtitle">SISTEMA ATIVO</div>
-          </div>
-          <div className="scan-blink" />
-        </div>
-
-        <div className="scan-bar-wrap">
-          <div className="scan-bar-track">
-            <div className="scan-bar-fill" style={{ width: `${progress}%` }}>
-              <div className="scan-bar-shine" />
-            </div>
-          </div>
-          <div className="scan-pct">{Math.floor(progress)}%</div>
-        </div>
-
-        <div className="scan-message">{message}</div>
-
-        <div className="scan-metrics">
-          <div className="metric">
-            <span className="metric-lbl">ÁREA</span>
-            <span className="metric-val">{(progress * 0.24).toFixed(1)} ha</span>
-          </div>
-          <div className="metric">
-            <span className="metric-lbl">PLANTAS</span>
-            <span className="metric-val">{Math.floor(progress * 0.87)}</span>
-          </div>
-          <div className="metric">
-            <span className="metric-lbl">SAÚDE</span>
-            <span className="metric-val">98%</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ─── Componente Principal ──────────────────────────────────────────────────────
-export default function SplashScreen({ onComplete }) {
-  const [stage,      setStage]      = useState(0)
-  const [progress,   setProgress]   = useState(0)
-  const [dronePos,   setDronePos]   = useState(0)
-  const [isMobile,   setIsMobile]   = useState(false)
-  const [plantData,  setPlantData]  = useState([])
-  const [hudVisible, setHudVisible] = useState(false)
-  const [scanMsg,    setScanMsg]    = useState(SCAN_MESSAGES[0])
-  const rafRef = useRef(null)
-
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth <= 768)
-    check()
-    window.addEventListener("resize", check)
-    return () => window.removeEventListener("resize", check)
-  }, [])
-
-  useEffect(() => {
-    setPlantData(generatePlants(isMobile))
-  }, [isMobile])
-
-  // ─── Timeline ─────────────────────────────────────────────────────────────────
-  useEffect(() => {
-    if (!plantData.length) return
-
-    const timers = []
-    const add = (fn, ms) => { const id = setTimeout(fn, ms); timers.push(id) }
-
-    add(() => setStage(1), 80)
-    add(() => setStage(2), 340)
-
-    // Entrada do drone com rAF (suave, 60fps real)
-    add(() => {
-      setStage(3)
-      let pos = 0
-      let last = null
-      const speed = isMobile ? 1.05 : 1.7
-
-      function tick(ts) {
-        if (!last) last = ts
-        const dt = Math.min(ts - last, 32)
-        last = ts
-        pos += speed * (dt / 16.67)
-        pos  = Math.min(pos, 100)
-        setDronePos(pos)
-        if (pos < 100) {
-          rafRef.current = requestAnimationFrame(tick)
-        } else {
-          add(() => { setStage(4); setHudVisible(true) }, 300)
-        }
-      }
-
-      rafRef.current = requestAnimationFrame(tick)
-    }, isMobile ? 1700 : 1500)
-
-    // Progresso do scan
-    add(() => {
-      let p = 0
-      const tickSpeed = isMobile ? 1.5 : 2.2
-      const iv = setInterval(() => {
-        p = Math.min(p + tickSpeed, 100)
-        setProgress(p)
-        setScanMsg(getScanMessage(p))
-        if (p >= 100) {
-          clearInterval(iv)
-          add(() => setStage(5), 800)
-          add(() => onComplete?.(), 1800)
-        }
-      }, 40)
-      timers.push({ _iv: iv })
-    }, isMobile ? 2500 : 2300)
-
-    return () => {
-      timers.forEach(t => t._iv ? clearInterval(t._iv) : clearTimeout(t))
-      if (rafRef.current) cancelAnimationFrame(rafRef.current)
-    }
-  }, [plantData, isMobile, onComplete])
-
-  // ─── Posição do drone ─────────────────────────────────────────────────────────
-  const getDrone = useCallback(() => {
-    if (stage < 3) return { x: -58, y: 32, scale: 0.12, opacity: 0, tilt: -10 }
-
-    if (stage === 3) {
-      const t = dronePos / 100
-      return {
-        x:       lerp(-58, 0, easeOutQuart(t)),
-        y:       lerp(32, -5, easeInOutQuad(t)),
-        scale:   lerp(0.12, 1, easeOutCubic(t)),
-        opacity: Math.min(t * 4, 1),
-        tilt:    lerp(-14, 0, easeOutCubic(t)),
-      }
-    }
-
-    if (stage === 4) {
-      const now = Date.now()
-      return {
-        x:       Math.sin(now * 0.0006) * 2,
-        y:       -5 + Math.sin(now * 0.0018) * 2.2,
-        scale:   1,
-        opacity: 1,
-        tilt:    Math.sin(now * 0.001) * 1.8,
-      }
-    }
-
-    return { x: 0, y: -45, scale: 0.5, opacity: 0, tilt: 0 }
-  }, [stage, dronePos])
-
-  const drone = getDrone()
-  const rows  = isMobile ? 3 : 4
-
-  if (!plantData.length) return <div className="splash splash-loading" />
-
-  return (
-    <div
-      className={`splash stage-${stage}`}
-      style={{
-        transform: stage >= 4
-          ? `scale(${1 + progress * 0.0012}) translateY(${progress * -0.03}px)`
-          : "scale(1)",
-      }}
-    >
-      {/* ── Céu ── */}
-      <div className="bg-sky">
-        <div className="sky-gradient" />
-        <div className="sky-glow"     />
-        <div className="sun"          />
-        <div className="sun-rays"     />
-        <div className="sun-halo"     />
-      </div>
-
-      {/* ── Chão em camadas ── */}
-      <div className="ground-layers">
-        <div className="ground-far"   />
-        <div className="ground-mid"   />
-        <div className="ground-near"  />
-        <div className="ground-front" />
-      </div>
-
-      {/* ── Sulcos (perspectiva) ── */}
-      <div className="furrows">
-        {Array.from({ length: 7 }).map((_, i) => (
-          <div key={i} className="furrow" style={{ "--fi": i }} />
-        ))}
-      </div>
-
-      {/* ── Plantação ── */}
-      <div className="plantation">
-        {Array.from({ length: rows }).map((_, row) => (
-          <div
-            key={row}
-            className="plant-row"
-            style={{ "--row-depth": (row + 1) / rows }}
-          >
-            {plantData
-              .filter(p => p.row === row)
-              .map(p => (
-                <Plant
-                  key={p.id}
-                  plant={p}
-                  grow={stage >= 2}
-                  scanning={stage >= 4 && progress > p.depth * 55}
-                />
-              ))}
-          </div>
-        ))}
-      </div>
-
-      {/* ── Névoa de chão ── */}
-      <div className="ground-mist" />
-
-      {/* ── Drone ── */}
-      {stage >= 3 && (
-        <>
-          <div
-            className="drone-shadow"
-            style={{
-              transform: `translateX(calc(-50% + ${drone.x}vw)) scale(${drone.scale}, ${drone.scale * 0.3})`,
-              opacity:   drone.opacity * 0.4,
-            }}
-          />
-          <div
-            className="drone-wrapper"
-            style={{
-              transform: `translate(calc(-50% + ${drone.x}vw), calc(-50% + ${drone.y}vh)) scale(${drone.scale}) rotate(${drone.tilt}deg)`,
-              opacity:   drone.opacity,
-            }}
-          >
-            <Drone hovering={stage === 4} />
-          </div>
-        </>
-      )}
-
-      {/* ── HUD ── */}
-      <ScanHUD progress={progress} message={scanMsg} visible={hudVisible && stage === 4} />
-
-      {/* ── Conclusão ── */}
-      {progress >= 100 && stage >= 4 && (
-        <div className="completion">
-          <div className="completion-ring" />
-          <div className="completion-check">✓</div>
-          <div className="completion-text">ANÁLISE CONCLUÍDA</div>
-        </div>
-      )}
-
-      {/* ── Fade out ── */}
-      <div className={`fade-out ${stage === 5 ? "active" : ""}`} />
+      {/* SENSORES */}
+      <div className="sensor-package camera"></div>
+      <div className="sensor-package lidar"></div>
     </div>
   )
 }

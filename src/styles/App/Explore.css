@@ -4,26 +4,26 @@
 
 /* ===== VARIÁVEIS ===== */
 :root {
-  --primary: #00ff88;
-  --primary-dark: #00cc6a;
-  --primary-glow: rgba(0, 255, 136, 0.4);
-  --primary-soft: rgba(0, 255, 136, 0.1);
+  --primary: var(--g6);
+  --primary-dark: var(--g6);
+  --primary-glow: rgba(86, 168, 112, 0.4);
+  --primary-soft: rgba(86, 168, 112, 0.1);
   --secondary: #0066ff;
   --secondary-glow: rgba(0, 102, 255, 0.3);
   --background-dark: #0a0c0e;
   --background-darker: #050708;
-  --background-card: rgba(18, 22, 28, 0.8);
+  --background-card: #f7f5f0;
   --text-primary: #ffffff;
   --text-secondary: #a0a8b4;
   --text-muted: #6b7280;
   --glass-border: rgba(255, 255, 255, 0.05);
   --glass-bg: rgba(255, 255, 255, 0.02);
-  --card-bg: rgba(18, 22, 28, 0.6);
+  --card-bg: #f7f5f0;
   --danger: #ff4d4d;
   --warning: #ffaa00;
   --info: #00ccff;
-  --success: #00ff88;
-  --neon-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+  --success: var(--g6);
+  --neon-shadow: 0 0 20px rgba(86, 168, 112, 0.3);
   --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
@@ -55,7 +55,7 @@ body {
   position: fixed;
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(0, 255, 136, 0.15) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(86, 168, 112, 0.15) 0%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
   z-index: 1;
@@ -79,7 +79,7 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  background: linear-gradient(135deg, var(--card-bg), rgba(18, 22, 28, 0.4));
+  background: #f7f5f0;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--glass-border);
@@ -132,7 +132,7 @@ body {
   padding: 20px;
   overflow-x: auto;
   scrollbar-width: none;
-  background: linear-gradient(135deg, var(--card-bg), rgba(18, 22, 28, 0.4));
+  background: #f7f5f0;
   border-bottom: 1px solid var(--glass-border);
 }
 
@@ -147,7 +147,7 @@ body {
   align-items: center;
   gap: 8px;
   padding: 16px 24px;
-  background: linear-gradient(135deg, var(--card-bg), rgba(18, 22, 28, 0.4));
+  background: #f7f5f0;
   border: 1px solid var(--glass-border);
   border-radius: 20px;
   color: var(--text-secondary);
@@ -223,18 +223,6 @@ body {
   color: var(--primary);
 }
 
-.section-badge {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  background: rgba(0, 255, 136, 0.1);
-  border: 1px solid rgba(0, 255, 136, 0.2);
-  border-radius: 30px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--primary);
-}
 .analysis-container {
   display: flex;
   justify-content: center;
@@ -251,7 +239,7 @@ body {
   width: 60px;
   height: 60px;
   border: 6px solid #e5e7eb;
-  border-top: 6px solid #16a34a;
+  border-top: 6px solid #3d8057;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 20px auto;
@@ -276,7 +264,7 @@ body {
 .empty-state {
   position: relative;
   padding: 60px 24px;
-  background: linear-gradient(135deg, var(--card-bg), rgba(18, 22, 28, 0.4));
+  background: #f7f5f0;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--glass-border);
@@ -330,7 +318,7 @@ body {
   align-items: center;
   gap: 8px;
   padding: 8px 20px;
-  background: linear-gradient(135deg, var(--card-bg), rgba(18, 22, 28, 0.4));
+  background: #f7f5f0;
   border: 1px solid var(--glass-border);
   border-radius: 30px;
   color: var(--text-secondary);
@@ -367,7 +355,7 @@ body {
 
 .option-card {
   position: relative;
-  background: linear-gradient(135deg, var(--card-bg), rgba(18, 22, 28, 0.4));
+  background: #f7f5f0;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--glass-border);
@@ -405,7 +393,7 @@ body {
   right: 0;
   width: 50px;
   height: 50px;
-  background: linear-gradient(135deg, transparent 50%, rgba(0, 255, 136, 0.1) 100%);
+  background: linear-gradient(135deg, transparent 50%, rgba(86, 168, 112, 0.1) 100%);
   pointer-events: none;
 }
 
@@ -423,7 +411,7 @@ body {
 
 .option-icon span {
   font-size: 40px;
-  color: #00ff88;
+  color: var(--g6);
   position: relative;
   z-index: 2;
 }
@@ -445,7 +433,7 @@ body {
 .database-section {
   margin: 24px 0;
   padding: 20px;
-  background: linear-gradient(135deg, var(--card-bg), rgba(18, 22, 28, 0.4));
+  background: #f7f5f0;
   border: 1px solid var(--glass-border);
   border-radius: 30px;
 }
@@ -482,7 +470,7 @@ body {
   display: flex;
   gap: 12px;
   padding: 12px;
-  background: linear-gradient(135deg, var(--glass-bg), rgba(18, 22, 28, 0.2));
+  background: #f7f5f0;
   border: 1px solid var(--glass-border);
   border-radius: 20px;
   cursor: pointer;
@@ -577,7 +565,7 @@ body {
 }
 
 .history-item {
-  background: linear-gradient(135deg, var(--card-bg), rgba(18, 22, 28, 0.4));
+  background: #f7f5f0;
   border: 1px solid var(--glass-border);
   border-radius: 24px;
   padding: 16px;
@@ -629,7 +617,7 @@ body {
   align-items: center;
   gap: 16px;
   padding: 16px;
-  background: linear-gradient(135deg, var(--card-bg), rgba(18, 22, 28, 0.4));
+  background: #f7f5f0;
   border: 1px solid var(--glass-border);
   border-radius: 20px;
 }
@@ -650,7 +638,7 @@ body {
   align-items: center;
   gap: 12px;
   padding: 12px 20px;
-  background: linear-gradient(135deg, var(--card-bg), rgba(18, 22, 28, 0.4));
+  background: #f7f5f0;
   border: 1px solid var(--glass-border);
   border-radius: 30px;
   margin-bottom: 24px;
@@ -763,7 +751,7 @@ body {
   width: 56px;
   height: 56px;
   border-radius: 20px;
-  background: linear-gradient(135deg, var(--card-bg), rgba(18, 22, 28, 0.8));
+  background: #f7f5f0;
   border: 1px solid var(--glass-border);
   color: var(--text-secondary);
   font-size: 1.5rem;
@@ -784,7 +772,7 @@ body {
   width: 80px;
   height: 80px;
   border-radius: 40px;
-  background: linear-gradient(135deg, var(--card-bg), rgba(18, 22, 28, 0.8));
+  background: #f7f5f0;
   border: 3px solid var(--primary);
   cursor: pointer;
   display: flex;
@@ -843,7 +831,7 @@ body {
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  background: linear-gradient(135deg, var(--card-bg), rgba(18, 22, 28, 0.4));
+  background: #f7f5f0;
   color: var(--text-primary);
   transition: all 0.3s ease;
   position: relative;
@@ -910,7 +898,7 @@ body {
 .analyzing-container {
   text-align: center;
   padding: 80px 20px;
-  background: linear-gradient(135deg, var(--card-bg), rgba(18, 22, 28, 0.4));
+  background: #f7f5f0;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--glass-border);
@@ -970,7 +958,7 @@ body {
 
 /* ===== RESULT CARD ===== */
 .result-card {
-  background: linear-gradient(135deg, var(--card-bg), rgba(18, 22, 28, 0.4));
+  background: #f7f5f0;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--glass-border);
@@ -997,7 +985,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: linear-gradient(135deg, var(--card-bg), rgba(18, 22, 28, 0.8));
+  background: #f7f5f0;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   padding: 12px 20px;
@@ -1068,8 +1056,8 @@ body {
 }
 
 .severity-tag.severity-baixa {
-  border-color: #00ff88;
-  color: #00ff88;
+  border-color: var(--g6);
+  color: var(--g6);
 }
 
 .severity-tag.severity-moderada {
@@ -1102,7 +1090,7 @@ body {
 .info-section {
   margin-bottom: 24px;
   padding: 20px;
-  background: linear-gradient(135deg, var(--glass-bg), rgba(18, 22, 28, 0.2));
+  background: #f7f5f0;
   border: 1px solid var(--glass-border);
   border-radius: 24px;
 }
@@ -1155,7 +1143,7 @@ body {
 }
 
 .action-btn.secondary {
-  background: linear-gradient(135deg, var(--card-bg), rgba(18, 22, 28, 0.4));
+  background: #f7f5f0;
   border: 1px solid var(--glass-border);
   color: var(--text-primary);
 }
@@ -1184,8 +1172,8 @@ body {
 .activity-card {
   display: flex;
   gap: 16px;
-  padding: 20px;
-  background: linear-gradient(135deg, var(--card-bg), rgba(18, 22, 28, 0.4));
+  padding: 16px;
+  background: #F5F5F5;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--glass-border);
@@ -1199,7 +1187,7 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(0, 255, 136, 0.1), transparent 70%);
+  background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(86, 168, 112, 0.1), transparent 70%);
   opacity: 0;
   transition: opacity 0.3s;
   pointer-events: none;
@@ -1227,7 +1215,7 @@ body {
 }
 
 .activity-icon.relatorio {
-  background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 255, 136, 0.1));
+  background: linear-gradient(135deg, rgba(86, 168, 112, 0.2), rgba(86, 168, 112, 0.1));
   color: var(--primary);
 }
 
@@ -1259,12 +1247,6 @@ body {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 8px;
-}
-
-.activity-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-primary);
 }
 
 .activity-time {
@@ -1327,7 +1309,7 @@ body {
   display: flex;
   gap: 12px;
   padding: 12px;
-  background: linear-gradient(135deg, var(--card-bg), rgba(18, 22, 28, 0.4));
+  background: #f7f5f0;
   border: 1px solid var(--glass-border);
   border-radius: 20px;
   cursor: pointer;
@@ -1401,7 +1383,7 @@ body {
 }
 
 .severity-badge.baixa {
-  background: rgba(0, 255, 136, 0.2);
+  background: rgba(86, 168, 112, 0.2);
   color: var(--primary);
   border: 1px solid var(--primary);
 }
@@ -1750,20 +1732,22 @@ body {
   align-items: center;
   gap: 10px;
   padding: 10px 20px;
-  background: rgba(18, 22, 28, 0.6);
-  backdrop-filter: blur(8px);
+  background: #F5F5F5;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 40px;
-  color: #9aaebf;
+  color: var(--g4);
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
+  margin: 20px 0 20px 0;
 }
 
 .explore-tab-icon {
   font-size: 20px;
+  color: inherit;
   transition: all 0.2s ease;
 }
 
@@ -1774,26 +1758,27 @@ body {
 
 /* Hover effect */
 .explore-tab:hover {
-  background: rgba(0, 255, 136, 0.1);
-  border-color: rgba(0, 255, 136, 0.3);
-  color: #fff;
+  background: rgba(86, 168, 112, 0.18);
+  border-color: rgba(45, 97, 64, 0.45);
+  color: var(--g1);
   transform: translateY(-1px);
 }
 
 .explore-tab:hover .explore-tab-icon {
   transform: scale(1.05);
-  color: #00ff88;
+  color: inherit;
 }
 
 /* Active state */
 .explore-tab.active {
-  background: linear-gradient(135deg, rgba(0, 255, 136, 0.15), rgba(0, 102, 255, 0.1));
-  border-color: rgba(0, 255, 136, 0.4);
-  color: #fff;
+  background: linear-gradient(135deg, rgba(86, 168, 112, 0.24), rgba(45, 97, 64, 0.12));
+  border-color: rgba(45, 97, 64, 0.55);
+  color: var(--g1);
+  box-shadow: 0 8px 18px rgba(15, 35, 24, 0.18);
 }
 
 .explore-tab.active .explore-tab-icon {
-  color: #00ff88;
+  color: inherit;
 }
 
 /* Responsividade */
@@ -1857,43 +1842,43 @@ body {
 
 /* Forçar ícones específicos do clima por estilo inline */
 span[style*="color: var(--primary)"] {
-  color: #00ffaa !important;
+  color: var(--g6) !important;
 }
 
 /* Forçar ícones no loading e erro */
 .loadingIcon .material-symbols-outlined,
 .errorIcon .material-symbols-outlined {
-  color: #00ffaa !important;
+  color: var(--g6) !important;
 }
 
 /* Forçar ícones nos cards de estatística */
 .statCard .material-symbols-outlined {
-  color: #00ffaa !important;
+  color: var(--g6) !important;
 }
 
 /* Forçar ícones nas recomendações */
 .recommendation .material-symbols-outlined {
-  color: #00ffaa !important;
+  color: var(--g6) !important;
 }
 
 /* Forçar ícone do título de recomendações */
 .recommendationsTitle .material-symbols-outlined {
-  color: #00ffaa !important;
+  color: var(--g6) !important;
 }
 
 /* Forçar ícone da data */
 .date .material-symbols-outlined {
-  color: #00ffaa !important;
+  color: var(--g6) !important;
 }
 
 /* Forçar ícones de temperatura */
 .tempDetail .material-symbols-outlined,
 .tempMin .material-symbols-outlined,
 .tempMax .material-symbols-outlined {
-  color: #00ffaa !important;
+  color: var(--g6) !important;
 }
 
 /* Forçar ícone do footer */
 .footer .material-symbols-outlined {
-  color: #00ffaa !important;
+  color: var(--g6) !important;
 }

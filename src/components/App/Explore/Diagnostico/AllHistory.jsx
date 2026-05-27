@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import "../../../../styles/App/AllHistory.css"
 
-export default function AllHistory() {
+export default function AllHistory({ onBack }) {
   const navigate = useNavigate()
   const [history, setHistory] = useState([])
   const [filteredHistory, setFilteredHistory] = useState([])
@@ -12,6 +12,8 @@ export default function AllHistory() {
 
   // Carregar histórico do localStorage
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" })
+
     const saved = localStorage.getItem("diagnosticHistory")
     if (saved) {
       const parsedHistory = JSON.parse(saved)
@@ -69,15 +71,158 @@ export default function AllHistory() {
     }
   }
 
-  // Função para exportar histórico
+  const sanitizePdfText = (value) => {
+    return String(value ?? "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^\x20-\x7E]/g, "")
+      .replace(/\\/g, "\\\\")
+      .replace(/\(/g, "\\(")
+      .replace(/\)/g, "\\)")
+  }
+
+  const wrapPdfText = (text, maxLength = 74) => {
+    const words = sanitizePdfText(text).split(" ")
+    const lines = []
+    let current = ""
+
+    words.forEach((word) => {
+      const next = current ? `${current} ${word}` : word
+      if (next.length > maxLength && current) {
+        lines.push(current)
+        current = word
+      } else {
+        current = next
+      }
+    })
+
+    if (current) lines.push(current)
+    return lines
+  }
+
+  const buildPdf = (lines) => {
+    const pageWidth = 595
+    const pageHeight = 842
+    const margin = 48
+    const lineHeight = 16
+    const pages = []
+    let currentPage = []
+    let y = pageHeight - margin
+
+    lines.forEach((line) => {
+      const wrapped = wrapPdfText(line.text, line.maxLength)
+      wrapped.forEach((wrappedLine, index) => {
+        if (y < margin) {
+          pages.push(currentPage)
+          currentPage = []
+          y = pageHeight - margin
+        }
+
+        currentPage.push({
+          text: wrappedLine,
+          x: margin + (line.indent || 0),
+          y,
+          size: line.size || 11,
+          bold: line.bold || false,
+        })
+        y -= line.after && index === wrapped.length - 1 ? line.after : lineHeight
+      })
+    })
+
+    if (currentPage.length) pages.push(currentPage)
+
+    const objects = []
+    const addObject = (content) => {
+      objects.push(content)
+      return objects.length
+    }
+
+    const fontRegular = addObject("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>")
+    const fontBold = addObject("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>")
+    const pageRefs = []
+
+    pages.forEach((page) => {
+      const content = [
+        "BT",
+        ...page.map((item) => {
+          const font = item.bold ? "F2" : "F1"
+          return `/${font} ${item.size} Tf 1 0 0 1 ${item.x} ${item.y} Tm (${item.text}) Tj`
+        }),
+        "ET",
+      ].join("\n")
+      const contentRef = addObject(`<< /Length ${content.length} >>\nstream\n${content}\nendstream`)
+      const pageRef = addObject(
+        `<< /Type /Page /Parent 0 0 R /MediaBox [0 0 ${pageWidth} ${pageHeight}] /Resources << /Font << /F1 ${fontRegular} 0 R /F2 ${fontBold} 0 R >> >> /Contents ${contentRef} 0 R >>`
+      )
+      pageRefs.push(pageRef)
+    })
+
+    const pagesRef = addObject(`<< /Type /Pages /Kids [${pageRefs.map((ref) => `${ref} 0 R`).join(" ")}] /Count ${pageRefs.length} >>`)
+    pageRefs.forEach((pageRef) => {
+      objects[pageRef - 1] = objects[pageRef - 1].replace("/Parent 0 0 R", `/Parent ${pagesRef} 0 R`)
+    })
+    const catalogRef = addObject(`<< /Type /Catalog /Pages ${pagesRef} 0 R >>`)
+
+    let pdf = "%PDF-1.4\n"
+    const offsets = [0]
+    objects.forEach((object, index) => {
+      offsets.push(pdf.length)
+      pdf += `${index + 1} 0 obj\n${object}\nendobj\n`
+    })
+
+    const xrefOffset = pdf.length
+    pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`
+    offsets.slice(1).forEach((offset) => {
+      pdf += `${String(offset).padStart(10, "0")} 00000 n \n`
+    })
+    pdf += `trailer\n<< /Size ${objects.length + 1} /Root ${catalogRef} 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`
+
+    return new Blob([pdf], { type: "application/pdf" })
+  }
+
+  // Função para exportar histórico em PDF legível
   const exportHistory = () => {
-    const dataStr = JSON.stringify(history, null, 2)
-    const dataUri = "data:application/json;charset=utf-8,"+ encodeURIComponent(dataStr)
-    const exportFileDefaultName = `diagnosticos_${new Date().toISOString()}.json`
+    const totalDiagnostics = history.length
+    const averageConfidence = history.length > 0
+      ? Math.round(history.reduce((acc, item) => acc + item.confidence, 0) / history.length)
+      : 0
+    const mostCommonDisease = history.length > 0
+      ? Object.entries(history.reduce((acc, item) => {
+          acc[item.disease] = (acc[item.disease] || 0) + 1
+          return acc
+        }, {})).sort((a, b) => b[1] - a[1])[0]?.[0] || "Nenhum"
+      : "Nenhum"
+
+    const lines = [
+      { text: "Historico de Diagnosticos", size: 20, bold: true, after: 24 },
+      { text: `Gerado em: ${new Date().toLocaleString("pt-BR")}`, size: 10, after: 22 },
+      { text: "Resumo", size: 14, bold: true, after: 18 },
+      { text: `Total de diagnosticos: ${totalDiagnostics}`, after: 16 },
+      { text: `Confianca media: ${averageConfidence}%`, after: 16 },
+      { text: `Doenca mais comum: ${mostCommonDisease}`, after: 24 },
+      { text: "Como interpretar", size: 14, bold: true, after: 18 },
+      { text: "Alta confianca: resultado com 80% ou mais de certeza.", after: 16 },
+      { text: "Media confianca: resultado entre 50% e 79%. Vale conferir com outra foto.", after: 16 },
+      { text: "Baixa confianca: resultado abaixo de 50%. Tire uma nova foto com melhor iluminacao.", after: 24 },
+      { text: "Diagnosticos", size: 14, bold: true, after: 18 },
+    ]
+
+    history.forEach((item, index) => {
+      lines.push(
+        { text: `${index + 1}. ${item.disease}`, bold: true, after: 16 },
+        { text: `Data: ${item.date}`, indent: 16, after: 16 },
+        { text: `Confianca: ${item.confidence}% (${getConfidenceText(item.confidence)})`, indent: 16, after: 16 },
+        { text: "Observacao: use este resultado como apoio e acompanhe a planta nos proximos dias.", indent: 16, after: 22 }
+      )
+    })
+
+    const pdfBlob = buildPdf(lines)
+    const url = URL.createObjectURL(pdfBlob)
     const linkElement = document.createElement("a")
-    linkElement.setAttribute("href", dataUri)
-    linkElement.setAttribute("download", exportFileDefaultName)
+    linkElement.href = url
+    linkElement.download = `diagnosticos_${new Date().toISOString().slice(0, 10)}.pdf`
     linkElement.click()
+    URL.revokeObjectURL(url)
   }
 
   // Estatísticas
@@ -110,7 +255,7 @@ export default function AllHistory() {
     <div className="all-history-container">
       {/* Header */}
       <div className="history-header">
-        <button className="back-button" onClick={() => navigate(-1)}>
+        <button className="back-button" onClick={onBack || (() => navigate(-1))}>
           <span className="material-symbols-outlined">arrow_back</span>
         </button>
         <h1>Histórico de Diagnósticos</h1>
@@ -232,7 +377,7 @@ export default function AllHistory() {
             ) : (
               <p>Realize seu primeiro diagnóstico tirando uma foto ou selecionando da galeria</p>
             )}
-            <button className="new-diagnostic-btn" onClick={() => navigate(-1)}>
+            <button className="new-diagnostic-btn" onClick={onBack || (() => navigate(-1))}>
               <span className="material-symbols-outlined">add</span>
               Novo diagnóstico
             </button>

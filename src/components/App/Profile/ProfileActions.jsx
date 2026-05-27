@@ -50,7 +50,7 @@ export default function ProfileActions({
         <div className="btn-progress" style={{ width: saving ? '100%' : '0%' }}></div>
       </button>
       
-      <button className="action-btn secondary" onClick={onCancel}>
+      <button className="action-btn danger" onClick={onCancel}>
         <div className="btn-glow"></div>
         <span className="material-symbols-outlined">close</span>
         <span>Cancelar</span>

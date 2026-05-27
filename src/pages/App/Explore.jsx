@@ -90,7 +90,7 @@ export default function Explore() {
     <div className="explore-container">
       <ParticleBackground />
 
-      <AppHeader title="Explorar" showNotification={true} />
+      
 
       {/* ================= TABS UI ================= */}
       <div className="explore-tabs-modern">

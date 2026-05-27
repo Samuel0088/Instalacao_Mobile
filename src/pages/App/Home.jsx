@@ -86,16 +86,17 @@ export default function Home() {
       <ParticleBackground />
       <MouseGlow />
       
-      <AppHeader title="Zenith" showLogo={true} showNotification={true} />
+      <AppHeader
+        userName={userName}
+        hasFarm={hasFarm}
+        farmName={farmData?.name}
+        onRegister={() => navigate("/cadastrar-fazenda")}
+        showNotification={true}
+        showHomeContent={true}
+      />
       
       <div className="home-container">
-        <WelcomeSection 
-          userName={userName}
-          hasFarm={hasFarm}
-          farmName={farmData?.name}
-          onRegister={() => navigate("/cadastrar-fazenda")}
-        />
-
+        
         {hasFarm && <FarmInfoCard farmData={farmData} />}
 
         <MetricsGrid hasFarm={hasFarm} weather={weather} farmData={farmData} />

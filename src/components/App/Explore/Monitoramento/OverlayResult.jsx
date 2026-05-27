@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import styles from "../../../../styles/App/MonitoramentoView.module.css";
 
 const LEGENDA = [
-  { cor: "#22c55e", rotulo: "Vegetação saudável" },
+  { cor: "#56a870", rotulo: "Vegetação saudável" },
   { cor: "#f59e0b", rotulo: "Alerta moderado" },
   { cor: "#ef4444", rotulo: "Falha crítica" },
   { cor: "#3b82f6", rotulo: "Caminho (ignorado)" },

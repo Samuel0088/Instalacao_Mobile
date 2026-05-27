@@ -102,10 +102,10 @@ export default function DiarioTab() {
 
   const getTypeColor = (type) => {
     switch(type) {
-      case "tratamento": return "#00ff88"
-      case "irrigacao": return "#0066ff"
-      case "alerta": return "#ffaa00"
-      default: return "#8b9eb0"
+      case "tratamento": return "#2d6140"
+      case "irrigacao": return "#0077ff"
+      case "alerta": return "#ff9f1c"
+      default: return "#3d8057"
     }
   }
 
