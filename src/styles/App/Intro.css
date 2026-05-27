@@ -40,9 +40,17 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+html, body, #root {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  background: #112e1e; /* mesma cor do fundo */
+}
+
 body {
   font-family: var(--font-b);
-  background: var(--g-deep);
   color: var(--t-white);
   -webkit-font-smoothing: antialiased;
 }
@@ -54,8 +62,7 @@ body {
   position: relative;
   min-height: 100svh;
   width: 100%;
-  max-width: 430px;
-  margin: 0 auto;
+  margin: 0;
   background:
     /* ruído sutil por cima */
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E"),
@@ -76,8 +83,6 @@ body {
 /* Desktop: apresenta como card mobile centralizado */
 @media (min-width: 480px) {
   .iv-root {
-    margin: 28px auto;
-    border-radius: 44px;
     box-shadow:
       0 0  0 1px rgba(255,255,255,0.06),
       0 40px 100px rgba(0,0,0,0.55),
