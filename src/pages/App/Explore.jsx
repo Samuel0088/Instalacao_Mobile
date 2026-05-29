@@ -1,0 +1,147 @@
+// pages/App/Explore.jsx
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+
+import AppHeader from "../../components/App/Global/AppHeader";
+import MenuBar from "../../components/App/Global/MenuBar";
+
+import DiagnosticoTab from "../../components/App/Explore/Diagnostico/DiagnosticoTab";
+import MonitoramentoView from "../../components/App/Explore/Monitoramento/MonitoramentoView"; // ✅ NOVO
+import ClimaTab from "../../components/App/Explore/ClimaTab";
+import DiarioTab from "../../components/App/Explore/DiarioTab";
+import MapaTab from "../../components/App/Explore/MapaTab";
+import EstoqueTab from "../../components/App/Explore/EstoqueTab";
+import AtividadesTab from "../../components/App/Explore/AtividadesTab";
+import LucroTab from "../../components/App/Explore/LucroTab";
+
+import ParticleBackground from "../../components/App/Home/ParticleBackground";
+
+import "../../styles/App/Explore.css";
+
+// ================= TABS =================
+const tabs = [
+  { id: "diagnostico", label: "Diagnóstico", icon: "eco" },
+  { id: "clima", label: "Clima", icon: "cloud" },
+  { id: "diario", label: "Diário", icon: "menu_book" },
+  { id: "lucro", label: "Lucro", icon: "paid" },
+  { id: "estoque", label: "Estoque", icon: "inventory" },
+  { id: "atividades", label: "Atividades", icon: "assignment" }
+];
+
+const mergedTabs = {
+  monitoramento: "diagnostico",
+  mapa: "clima"
+};
+
+function normalizeTab(tabId) {
+  return mergedTabs[tabId] || tabId;
+}
+
+export default function Explore() {
+  const location = useLocation();
+
+  // 🔒 valida tabs válidas
+  const validTabs = tabs.map((t) => t.id);
+
+  const [activeTab, setActiveTab] = useState(() => {
+    const savedTab = localStorage.getItem("activeExploreTab");
+    const normalizedTab = normalizeTab(savedTab);
+    return validTabs.includes(normalizedTab) ? normalizedTab : "diagnostico";
+  });
+
+  // ================= CONTROLADOR DE TAB =================
+  useEffect(() => {
+    const requestedTab = normalizeTab(location.state?.activeTab);
+
+    if (requestedTab && validTabs.includes(requestedTab)) {
+      setActiveTab(requestedTab);
+      localStorage.setItem("activeExploreTab", requestedTab);
+    } else {
+      const savedTab = normalizeTab(localStorage.getItem("activeExploreTab"));
+      if (savedTab && validTabs.includes(savedTab)) {
+        setActiveTab(savedTab);
+      }
+    }
+  }, [location]);
+
+  useEffect(() => {
+    localStorage.setItem("activeExploreTab", activeTab);
+  }, [activeTab]);
+
+  // ================= RENDER =================
+  const renderTab = () => {
+    switch (activeTab) {
+      case "diagnostico":
+        return (
+          <div className="merged-tab-stack">
+            <DiagnosticoTab active />
+            <MonitoramentoView />
+          </div>
+        );
+
+      case "clima":
+        return (
+          <div className="merged-tab-stack">
+            <ClimaTab />
+            <MapaTab />
+          </div>
+        );
+
+      case "diario":
+        return <DiarioTab />;
+
+      case "lucro":
+        return <LucroTab />;
+
+      case "estoque":
+        return <EstoqueTab />;
+
+      case "atividades":
+        return <AtividadesTab />;
+
+      default:
+        return <DiagnosticoTab />;
+    }
+  };
+
+  return (
+    <div className="explore-container">
+      <ParticleBackground />
+
+      
+
+      {/* ================= TABS UI ================= */}
+      <div className="explore-tabs-modern">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            className={`explore-tab ${activeTab === tab.id ? "active" : ""}`}
+            onClick={() => setActiveTab(tab.id)}
+          >
+            <span className="explore-tab-icon material-symbols-outlined">
+              {tab.icon}
+            </span>
+            <span className="explore-tab-label">{tab.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* ================= CONTEÚDO ================= */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          className="tab-content"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.2 }}
+        >
+          {renderTab()}
+        </motion.div>
+      </AnimatePresence>
+
+      <MenuBar />
+    </div>
+  );
+}

@@ -1,0 +1,472 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+html,
+body,
+#root{
+  width:100%;
+  min-height:100%;
+  overflow-x:hidden;
+}
+
+body{
+  font-family:'Inter',sans-serif;
+  background:#07110b;
+}
+
+/* ROOT */
+
+.intro{
+  position:relative;
+
+  min-height:100vh;
+
+  overflow-x:hidden;
+
+  background:#07110b;
+}
+
+/* BACKGROUND */
+
+.intro-bg{
+  position:absolute;
+  inset:0;
+
+  background:
+    url("/assets/image/soja-intro.jpg");
+
+  background-size:cover;
+  background-position:center;
+
+  transform:scale(1.04);
+}
+
+.intro-overlay{
+  position:absolute;
+  inset:0;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0,0,0,.72) 0%,
+      rgba(0,0,0,.42) 36%,
+      rgba(0,0,0,.82) 100%
+    );
+}
+
+.intro-gradient{
+  position:absolute;
+
+  top:-140px;
+  right:-140px;
+
+  width:340px;
+  height:340px;
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(71,227,140,.22),
+      transparent 70%
+    );
+
+  filter:blur(60px);
+}
+
+/* HERO */
+
+.intro-hero{
+  position:relative;
+  z-index:2;
+
+  min-height:100vh;
+
+  display:flex;
+  flex-direction:column;
+
+  padding:
+    20px
+    22px
+    34px;
+}
+
+/* BADGE */
+
+.intro-badge{
+  width:max-content;
+
+  display:flex;
+  align-items:center;
+
+  gap:8px;
+
+  padding:
+    12px
+    16px;
+
+  border-radius:999px;
+
+  background:
+    rgba(255,255,255,.08);
+
+  border:
+    1px solid rgba(255,255,255,.10);
+
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+
+  color:white;
+
+  font-size:.76rem;
+  font-weight:700;
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,.18);
+}
+
+/* CONTENT */
+
+.intro-content{
+  flex:1;
+
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+
+  padding-top:20px;
+}
+
+/* TITLE */
+
+.intro-text h1{
+  font-size:clamp(3rem,10vw,4.2rem);
+
+  line-height:1.02;
+
+  letter-spacing:-0.045em;
+
+  font-weight:900;
+
+  color:white;
+
+  max-width:340px;
+
+  overflow:visible;
+
+  padding-bottom:8px;
+
+  text-shadow:
+    0 10px 30px rgba(0,0,0,.35);
+}
+
+.intro-text h1 span{
+  display:block;
+
+  background:
+    linear-gradient(
+      135deg,
+      #d7ffe7 0%,
+      #7dffb1 40%,
+      #47e38c 100%
+    );
+
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+
+  filter:
+    drop-shadow(
+      0 0 18px rgba(71,227,140,.22)
+    );
+}
+
+/* MINI LABEL */
+
+.intro-mini-label{
+  margin-top:18px;
+
+  display:flex;
+  align-items:center;
+
+  gap:12px;
+
+  max-width:300px;
+}
+
+.mini-line{
+  width:42px;
+  height:1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #47e38c,
+      transparent
+    );
+}
+
+.intro-mini-label p{
+  color:rgba(255,255,255,.72);
+
+  font-size:.84rem;
+
+  line-height:1.6;
+}
+
+/* DESCRIPTION */
+
+.intro-description{
+  margin-top:20px;
+
+  max-width:330px;
+
+  color:rgba(255,255,255,.84);
+
+  font-size:.98rem;
+
+  line-height:1.8;
+}
+
+/* FEATURES */
+
+.intro-features{
+  margin-top:30px;
+
+  display:flex;
+  flex-wrap:wrap;
+
+  gap:10px;
+}
+
+.feature-chip{
+  display:flex;
+  align-items:center;
+
+  gap:8px;
+
+  padding:
+    11px
+    14px;
+
+  border-radius:999px;
+
+  background:
+    rgba(255,255,255,.08);
+
+  border:
+    1px solid rgba(255,255,255,.10);
+
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+
+  color:white;
+
+  font-size:.78rem;
+  font-weight:600;
+
+  transition:.25s ease;
+}
+
+.feature-chip:hover{
+  transform:
+    translateY(-2px);
+
+  background:
+    rgba(255,255,255,.12);
+
+  border:
+    1px solid rgba(71,227,140,.28);
+}
+
+/* ACTIONS */
+
+.intro-actions{
+  margin-top:34px;
+
+  display:flex;
+  flex-direction:column;
+
+  gap:14px;
+}
+
+.intro-actions button{
+  height:56px;
+
+  border:none;
+
+  border-radius:20px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  gap:10px;
+
+  font-size:.95rem;
+  font-weight:700;
+
+  cursor:pointer;
+
+  transition:.25s ease;
+}
+
+/* PRIMARY */
+
+.btn-primary{
+  background:
+    linear-gradient(
+      135deg,
+      #47e38c,
+      #1d8c53
+    );
+
+  color:white;
+
+  box-shadow:
+    0 18px 34px rgba(29,140,83,.35);
+}
+
+.btn-primary:hover{
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 24px 42px rgba(29,140,83,.45);
+}
+
+/* SECONDARY */
+
+.btn-secondary{
+  background:
+    rgba(255,255,255,.08);
+
+  border:
+    1px solid rgba(255,255,255,.10);
+
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+
+  color:white;
+}
+
+.btn-secondary:hover{
+  transform:
+    translateY(-2px);
+
+  background:
+    rgba(255,255,255,.12);
+}
+
+/* CARD */
+
+.intro-card{
+  margin-top:30px;
+
+  display:flex;
+  align-items:center;
+
+  gap:16px;
+
+  padding:20px;
+
+  border-radius:28px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,255,255,.08),
+      rgba(255,255,255,.04)
+    );
+
+  border:
+    1px solid rgba(255,255,255,.10);
+
+  backdrop-filter:blur(22px);
+  -webkit-backdrop-filter:blur(22px);
+
+  box-shadow:
+    0 12px 34px rgba(0,0,0,.20);
+}
+
+.intro-card-logo{
+  width:78px;
+  height:78px;
+
+  border-radius:22px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:
+    rgba(255,255,255,.06);
+
+  border:
+    1px solid rgba(255,255,255,.08);
+
+  flex-shrink:0;
+
+  overflow:hidden;
+
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+
+  box-shadow:
+    0 0 30px rgba(71,227,140,.12);
+}
+
+.intro-card-logo img{
+  width:100%;
+  height:100%;
+
+  object-fit:contain;
+
+  padding:10px;
+}
+
+.intro-card h3{
+  color:white;
+
+  font-size:1.5rem;
+  font-weight:800;
+
+  letter-spacing:-0.04em;
+}
+
+.intro-card p{
+  margin-top:6px;
+
+  color:rgba(255,255,255,.68);
+
+  font-size:.88rem;
+
+  line-height:1.6;
+}
+
+/* RESPONSIVE */
+
+@media (max-width:380px){
+
+  .intro-text h1{
+    font-size:2.6rem;
+  }
+
+  .intro-description{
+    font-size:.92rem;
+  }
+
+  .intro-actions button{
+    height:52px;
+  }
+
+  .intro-card{
+    padding:18px;
+  }
+
+}
