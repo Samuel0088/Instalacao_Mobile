@@ -13,6 +13,7 @@ import DiarioTab from "../../components/App/Explore/DiarioTab";
 import MapaTab from "../../components/App/Explore/MapaTab";
 import EstoqueTab from "../../components/App/Explore/EstoqueTab";
 import AtividadesTab from "../../components/App/Explore/AtividadesTab";
+import LucroTab from "../../components/App/Explore/LucroTab";
 
 import ParticleBackground from "../../components/App/Home/ParticleBackground";
 
@@ -25,6 +26,7 @@ const tabs = [
   { id: "clima", label: "Clima", icon: "cloud" },
   { id: "diario", label: "Diário", icon: "menu_book" },
   { id: "mapa", label: "Mapa", icon: "map" },
+  { id: "lucro", label: "Lucro", icon: "paid" },
   { id: "estoque", label: "Estoque", icon: "inventory" },
   { id: "atividades", label: "Atividades", icon: "assignment" }
 ];
@@ -74,6 +76,9 @@ export default function Explore() {
 
       case "mapa":
         return <MapaTab />;
+
+      case "lucro":
+        return <LucroTab />;
 
       case "estoque":
         return <EstoqueTab />;

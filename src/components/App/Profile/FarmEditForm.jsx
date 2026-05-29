@@ -17,6 +17,7 @@ const FarmEditForm = ({ farmData, onSave, onCancel, saving }) => {
   })
 
   const [errors, setErrors] = useState({})
+  const [cepLoading, setCepLoading] = useState(false)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -26,26 +27,67 @@ const FarmEditForm = ({ farmData, onSave, onCancel, saving }) => {
     }
   }
 
-  const validateForm = () => {
+  const buscarEnderecoPorCep = async (baseData = formData) => {
+    const cepLimpo = baseData.cep.replace(/\D/g, "")
+
+    if (cepLimpo.length !== 8) return baseData
+
+    try {
+      setCepLoading(true)
+      const response = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`)
+      const data = await response.json()
+
+      if (data.erro) {
+        setErrors(prev => ({ ...prev, cep: "CEP não encontrado" }))
+        return baseData
+      }
+
+      const updatedData = {
+        ...baseData,
+        bairro: data.bairro || baseData.bairro,
+        municipio: data.localidade || baseData.municipio,
+        uf: data.uf || baseData.uf
+      }
+
+      setFormData(updatedData)
+
+      setErrors(prev => ({
+        ...prev,
+        cep: "",
+        municipio: "",
+        uf: ""
+      }))
+
+      return updatedData
+    } catch (error) {
+      console.error("Erro ao buscar CEP:", error)
+      setErrors(prev => ({ ...prev, cep: "Não foi possível buscar o CEP" }))
+      return baseData
+    } finally {
+      setCepLoading(false)
+    }
+  }
+
+  const validateForm = (data = formData) => {
     const newErrors = {}
 
-    if (!formData.name.trim()) {
+    if (!data.name.trim()) {
       newErrors.name = "Nome da fazenda é obrigatório"
     }
 
-    if (!formData.area_total) {
+    if (!data.area_total) {
       newErrors.area_total = "Área total é obrigatória"
-    } else if (isNaN(formData.area_total) || parseFloat(formData.area_total) <= 0) {
+    } else if (isNaN(data.area_total) || parseFloat(data.area_total) <= 0) {
       newErrors.area_total = "Área deve ser um número positivo"
     }
 
-    if (!formData.municipio.trim()) {
+    if (!data.municipio.trim()) {
       newErrors.municipio = "Município é obrigatório"
     }
 
-    if (!formData.uf.trim()) {
+    if (!data.uf.trim()) {
       newErrors.uf = "UF é obrigatória"
-    } else if (formData.uf.length > 2) {
+    } else if (data.uf.length > 2) {
       newErrors.uf = "Use apenas a sigla (ex: SP)"
     }
 
@@ -53,10 +95,13 @@ const FarmEditForm = ({ farmData, onSave, onCancel, saving }) => {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    if (validateForm()) {
-      onSave(formData)
+    const updatedFormData = await buscarEnderecoPorCep(formData)
+    setFormData(updatedFormData)
+
+    if (validateForm(updatedFormData)) {
+      onSave(updatedFormData)
     }
   }
 
@@ -196,9 +241,12 @@ const FarmEditForm = ({ farmData, onSave, onCancel, saving }) => {
                 name="cep"
                 value={formData.cep}
                 onChange={handleChange}
+                onBlur={buscarEnderecoPorCep}
                 className="tech-input"
-                disabled={saving}
+                disabled={saving || cepLoading}
               />
+              {cepLoading && <span className="error-message">Buscando CEP...</span>}
+              {errors.cep && <span className="error-message">{errors.cep}</span>}
             </div>
           </div>
 

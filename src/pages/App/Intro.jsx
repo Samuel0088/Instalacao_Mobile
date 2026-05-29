@@ -1,177 +1,190 @@
-// Intro.jsx — Premium · AgroVoo
 import { useNavigate } from "react-router-dom"
-import { useEffect, useRef, useState } from "react"
+
+import {
+  ShieldCheck,
+  Radar,
+  TrendingUp,
+  ArrowRight,
+ Sparkles,
+  ScanSearch,
+  MonitorSmartphone,
+} from "lucide-react"
+
 import "../../styles/App/Intro.css"
-import Logo from "/public/assets/image/Logo-redonda.png"
 
-/* ── Partículas flutuantes ── */
-const PARTICLES = Array.from({ length: 22 }, (_, i) => {
-  const s = ((i * 7919 + 1234) % 1000) / 1000
-  const x = ((i * 6271 + 4567) % 1000) / 1000
-  const y = ((i * 3491 + 8901) % 1000) / 1000
-  const d = ((i * 2333 + 2345) % 1000) / 1000
-  return {
-    width:           `${s * 4 + 2}px`,
-    height:          `${s * 4 + 2}px`,
-    left:            `${x * 100}%`,
-    top:             `${y * 100}%`,
-    animationDuration:`${d * 18 + 12}s`,
-    animationDelay:  `${s * 10}s`,
-    opacity:         s * 0.35 + 0.12,
-  }
-})
-
-/* ── Stats data ── */
-const STATS = [
-  { value: "98%",   label: "de precisão na detecção",    accent: false },
-  { value: "24/7",  label: "de monitoramento contínuo",  accent: true  },
-  { value: "−40%",  label: "de perdas evitadas",         accent: false },
-]
+const Logo = "/assets/image/Logo-redonda.png"
 
 export default function Intro() {
-  const navigate  = useNavigate()
-  const [loaded, setLoaded] = useState(false)
-  const rootRef   = useRef(null)
 
-  /* stagger trigger */
-  useEffect(() => {
-    const t = requestAnimationFrame(() => setLoaded(true))
-    return () => cancelAnimationFrame(t)
-  }, [])
-
-  /* parallax leve no hero */
-  useEffect(() => {
-    const el = rootRef.current
-    if (!el) return
-    const onMove = (e) => {
-      const bx = (e.clientX / window.innerWidth  - 0.5) * 12
-      const by = (e.clientY / window.innerHeight - 0.5) * 8
-      el.style.setProperty("--px", `${bx}px`)
-      el.style.setProperty("--py", `${by}px`)
-    }
-    window.addEventListener("mousemove", onMove, { passive: true })
-    return () => window.removeEventListener("mousemove", onMove)
-  }, [])
+  const navigate = useNavigate()
 
   return (
-    <div className={`iv-root${loaded ? " iv-loaded" : ""}`} ref={rootRef}>
 
-      {/* ── Camadas de fundo ── */}
-      <div className="iv-bg" aria-hidden="true">
-        <div className="iv-bg__noise" />
-        <div className="iv-bg__vignette" />
-        <div className="iv-bg__blob iv-bg__blob--a" />
-        <div className="iv-bg__blob iv-bg__blob--b" />
-        <div className="iv-bg__blob iv-bg__blob--c" />
-        <div className="iv-bg__grid" />
+    <main className="intro">
+
+      {/* BACKGROUND */}
+      <div className="intro-bg">
+
+        <div className="intro-overlay" />
+
+        <div className="intro-gradient" />
+
       </div>
 
-      {/* ── Partículas ── */}
-      <div className="iv-particles" aria-hidden="true">
-        {PARTICLES.map((s, i) => (
-          <span key={i} className="iv-ptcl" style={s} />
-        ))}
-      </div>
+      {/* HERO */}
+      <section className="intro-hero">
 
-      {/* ══════════════════════════════
-          HERO
-      ══════════════════════════════ */}
-      <section className="iv-hero">
-        {/* Blob orgânico canto direito */}
-        <div className="iv-hero__blob" aria-hidden="true" />
+        {/* BADGE */}
+        <div className="intro-badge">
 
-        <div className="iv-hero__content iv-anim iv-anim--1">
-          {/* Badge */}
-          <div className="iv-badge">
-            <span className="iv-badge__pulse" />
-            <span className="iv-badge__text">TECNOLOGIA AGRO 4.0</span>
-          </div>
+          <ScanSearch size={14} />
 
-          {/* Título */}
-          <h1 className="iv-title">
-            <span className="iv-title__a">MONITORAMENTO</span>
-            <span className="iv-title__b">INTELIGENTE</span>
-          </h1>
+          <span>
+            Drone agrícola com inteligência artificial
+          </span>
 
-          {/* Subtítulo */}
-          <p className="iv-hero__sub">
-            Drones autônomos com IA para proteção inteligente das suas plantações.
-          </p>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════
-          LOGO CARD
-      ══════════════════════════════ */}
-      <div className="iv-logo-card iv-anim iv-anim--2">
-        {/* Brilho interno */}
-        <div className="iv-logo-card__sheen" aria-hidden="true" />
-        <div className="iv-logo-card__corner" aria-hidden="true" />
-
-        <div className="iv-logo-card__body">
-          <div className="iv-logo-card__frame">
-            <img src={Logo} alt="Zenith" className="iv-logo-card__img" />
-            <div className="iv-logo-card__ring" />
-          </div>
-
-          <div className="iv-logo-card__info">
-            <p className="iv-logo-card__name">Zenith</p>
-            <p className="iv-logo-card__tag">Sua precisão agrícola no ponto mais alto</p>
-          </div>
         </div>
 
-        {/* Decoração geométrica */}
-        <div className="iv-logo-card__deco" aria-hidden="true">
-          <span /><span /><span />
-        </div>
-      </div>
+        {/* CONTENT */}
+        <div className="intro-content">
 
-      {/* ══════════════════════════════
-          STATS
-      ══════════════════════════════ */}
-      <section className="iv-stats iv-anim iv-anim--3" aria-label="Indicadores">
-        <div className="iv-stats__wrap">
-          {STATS.map((s, i) => (
-            <div key={i} className={`iv-stat iv-stat--${i + 1}`}>
-              <div
-                className="iv-stat__pill"
-                role="img"
-                aria-label={`${s.value} ${s.label}`}
-              >
-                <strong className={`iv-stat__val${s.accent ? " iv-stat__val--green" : ""}`}>
-                  {s.value}
-                </strong>
-                <span className="iv-stat__lbl">&nbsp;{s.label}</span>
-              </div>
+          {/* TEXT */}
+          <div className="intro-text">
+
+            <h1>
+
+              Monitoramento
+
+              <span>
+                Inteligente</span>
+
+            </h1>
+
+            {/* MINI LABEL */}
+            <div className="intro-mini-label">
+
+              <span className="mini-line" />
+
+              <p>
+                Tecnologia aérea inteligente para
+                análise agrícola em tempo real
+              </p>
+
             </div>
-          ))}
+
+            {/* DESCRIPTION */}
+            <p className="intro-description">
+
+              Plataforma agrícola com drones inteligentes,
+              monitoramento contínuo e análise avançada
+              para proteção de lavouras de alta precisão.
+
+            </p>
+
+          </div>
+
+          {/* FEATURES */}
+          <div className="intro-features">
+
+            <div className="feature-chip">
+
+              <ShieldCheck size={15} />
+
+              <span>
+                Alta precisão
+              </span>
+
+            </div>
+
+            <div className="feature-chip">
+
+              <Radar size={15} />
+
+              <span>
+                Tempo real
+              </span>
+
+            </div>
+
+            <div className="feature-chip">
+
+              <TrendingUp size={15} />
+
+              <span>
+                Menos perdas
+              </span>
+
+            </div>
+
+          </div>
+
+          {/* ACTIONS */}
+          <div className="intro-actions">
+
+            <button
+              className="btn-primary"
+              onClick={() => navigate("/register")}
+            >
+
+              <Sparkles size={18} />
+
+              <span>
+                Começar agora
+              </span>
+
+              <ArrowRight size={18} />
+
+            </button>
+
+            <button
+              className="btn-secondary"
+              onClick={() => navigate("/login")}
+            >
+
+              <MonitorSmartphone size={18} />
+
+              <span>
+                Já tenho conta
+              </span>
+
+            </button>
+
+          </div>
+
+          {/* CARD */}
+          <div className="intro-card">
+
+            <div className="intro-card-logo">
+
+              <img
+                src={Logo}
+                alt="Zenith Logo"
+                draggable="false"
+              />
+
+            </div>
+
+            <div>
+
+              <h3>
+                Zenith
+              </h3>
+
+              <p>
+                Plataforma inteligente de drones agrícolas
+                para monitoramento e proteção de lavouras.
+              </p>
+
+            </div>
+
+          </div>
+
         </div>
+
       </section>
 
-      {/* ══════════════════════════════
-          CTA
-      ══════════════════════════════ */}
-      <div className="iv-cta iv-anim iv-anim--4">
-        <button className="iv-cta__btn iv-cta__btn--green"
-          onClick={() => navigate("/login")}>
-          <span>Acessar plataforma</span>
-          <span className="iv-cta__shine" aria-hidden="true" />
-        </button>
-        <button className="iv-cta__btn iv-cta__btn--dark"
-          onClick={() => navigate("/register")}>
-          <span>Começar agora</span>
-        </button>
-      </div>
+    </main>
 
-      {/* ── Rodapé link ── */}
-      <footer className="iv-footer iv-anim iv-anim--5">
-        <p>Já é produtor?{" "}
-          <a href="/login" className="iv-footer__link">
-            Entrar na plataforma <span>→</span>
-          </a>
-        </p>
-      </footer>
-
-    </div>
   )
+
 }
