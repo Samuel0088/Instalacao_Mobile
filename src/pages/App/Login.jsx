@@ -4,6 +4,8 @@ import { auth } from "../../services/firebase"
 import {
   signInWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider,
   OAuthProvider,
 } from "firebase/auth"
@@ -38,6 +40,14 @@ const FIREBASE_ERROR_MESSAGES = {
     "Muitas tentativas! Aguarde um momento antes de tentar novamente. ⏳",
   "auth/network-request-failed":
     "Erro de conexão! Verifique sua internet. 🌐",
+  "auth/popup-blocked":
+    "O navegador bloqueou a janela. Vamos abrir o login em tela cheia.",
+  "auth/popup-closed-by-user":
+    "Login cancelado antes de concluir.",
+  "auth/unauthorized-domain":
+    "Este domínio não está autorizado no Firebase Authentication.",
+  "auth/operation-not-allowed":
+    "Este provedor precisa ser ativado no Firebase Authentication.",
 }
 
 const FIREBASE_ERROR_DEFAULT = "Erro ao fazer login. Tente novamente mais tarde."
@@ -196,6 +206,26 @@ export default function Login({ setAppLoading }) {
   const showAlertMsg  = useCallback((type, text) => setAlert({ type, text }), [])
   const clearAlertMsg = useCallback(() => setAlert({ type: "", text: "" }), [])
 
+  useEffect(() => {
+    async function finishRedirectLogin() {
+      try {
+        const result = await getRedirectResult(auth)
+
+        if (result?.user) {
+          showAlertMsg("success", "Login realizado com sucesso! 🚀")
+          setAppLoading(true)
+          navTimerRef.current = setTimeout(() => navigate("/home"), 1500)
+        }
+      } catch (error) {
+        console.error(error)
+        const message = FIREBASE_ERROR_MESSAGES[error.code] ?? FIREBASE_ERROR_DEFAULT
+        showAlertMsg("error", message)
+      }
+    }
+
+    finishRedirectLogin()
+  }, [navigate, setAppLoading, showAlertMsg])
+
   /* ── Handlers ── */
   const handleEmailChange     = useCallback((e) => setEmail(e.target.value), [])
   const handlePasswordChange  = useCallback((e) => setPassword(e.target.value), [])
@@ -241,50 +271,47 @@ export default function Login({ setAppLoading }) {
   )
 
   const googleProvider = new GoogleAuthProvider()
+  googleProvider.setCustomParameters({ prompt: "select_account" })
+
   const outlookProvider = new OAuthProvider("microsoft.com")
+  outlookProvider.addScope("email")
+  outlookProvider.addScope("profile")
+  outlookProvider.setCustomParameters({
+    prompt: "select_account",
+    tenant: "common"
+  })
+
+  const signInWithProvider = async (provider, successMessage) => {
+    setLoading(true)
+    clearAlertMsg()
+
+    try {
+      await signInWithPopup(auth, provider)
+      showAlertMsg("success", successMessage)
+      setAppLoading(true)
+      navTimerRef.current = setTimeout(() => navigate("/home"), 1500)
+    } catch (error) {
+      console.error(error)
+
+      if (error.code === "auth/popup-blocked") {
+        showAlertMsg("error", FIREBASE_ERROR_MESSAGES[error.code])
+        await signInWithRedirect(auth, provider)
+        return
+      }
+
+      const message = FIREBASE_ERROR_MESSAGES[error.code] ?? FIREBASE_ERROR_DEFAULT
+      showAlertMsg("error", message)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleGoogleLogin = async () => {
-  try {
-    setLoading(true)
-
-    await signInWithPopup(auth, googleProvider)
-
-    showAlertMsg("success", "Login com Google realizado com sucesso! 🚀")
-
-    setAppLoading(true)
-
-    navTimerRef.current = setTimeout(() => {
-      navigate("/home")
-    }, 1500)
-
-  } catch (error) {
-    console.error(error)
-    showAlertMsg("error", "Erro ao entrar com Google.")
-  } finally {
-    setLoading(false)
-  }
+    await signInWithProvider(googleProvider, "Login com Google realizado com sucesso! 🚀")
 }
 
 const handleOutlookLogin = async () => {
-  try {
-    setLoading(true)
-
-    await signInWithPopup(auth, outlookProvider)
-
-    showAlertMsg("success", "Login com Outlook realizado com sucesso! 📧")
-
-    setAppLoading(true)
-
-    navTimerRef.current = setTimeout(() => {
-      navigate("/home")
-    }, 1500)
-
-  } catch (error) {
-    console.error(error)
-    showAlertMsg("error", "Erro ao entrar com Outlook.")
-  } finally {
-    setLoading(false)
-  }
+    await signInWithProvider(outlookProvider, "Login com Outlook realizado com sucesso! 📧")
 }
 
   /* ── RENDER ── */

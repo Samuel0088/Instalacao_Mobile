@@ -26,7 +26,7 @@ export function useFarm() {
       unsubscribeFarm = onSnapshot(
         q,
         (snapshot) => {
-        if (!snapshot.empty) {
+          if (!snapshot.empty) {
             const farmDoc = snapshot.docs[0]
             setFarmData({
               id: farmDoc.id,

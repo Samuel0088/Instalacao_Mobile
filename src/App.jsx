@@ -1,5 +1,5 @@
 // App.jsx do PWA
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom"
 import { useState, useEffect } from "react"
 import { AnimatePresence } from "framer-motion"
 
@@ -10,6 +10,7 @@ import Home from "./pages/App/Home"
 import Profile from "./pages/App/Profile"
 import ForgotPassword from "./pages/App/ForgotPassword"
 import Explore from "./pages/App/Explore"
+import Planos from "./pages/App/Planos"
 
 // Componentes
 import SplashScreen from "./components/App/Global/SplashScreen"
@@ -19,6 +20,15 @@ import AccessibilityTextControls from "./components/App/Global/AccessibilityText
 
 // Estilos
 import "./App.css"
+
+function AccessibilityGate() {
+  const location = useLocation()
+  const hiddenRoutes = ["/", "/login", "/register", "/cadastrar-fazenda"]
+
+  if (hiddenRoutes.includes(location.pathname)) return null
+
+  return <AccessibilityTextControls />
+}
 
 function App() {
   const [loading, setLoading] = useState(false)
@@ -152,8 +162,9 @@ const handleInstall = async () => {
               <Route path="/profile" element={<Profile />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/explore" element={<Explore />} />
+              <Route path="/plans" element={<Planos />} />
             </Routes>
-            <AccessibilityTextControls />
+            <AccessibilityGate />
           </>
         )}
       </AnimatePresence>

@@ -1,6 +1,6 @@
 // components/AppHeader.jsx
 
-import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 import "../../../styles/Global/AppHeader.css"
 
 export default function AppHeader({
@@ -12,41 +12,7 @@ export default function AppHeader({
   showHomeContent = false,
 }) {
 
-  const [deferredPrompt, setDeferredPrompt] = useState(null)
-
-  useEffect(() => {
-
-    const handleBeforeInstallPrompt = (e) => {
-      e.preventDefault()
-      setDeferredPrompt(e)
-    }
-
-    window.addEventListener(
-      "beforeinstallprompt",
-      handleBeforeInstallPrompt
-    )
-
-    return () => {
-      window.removeEventListener(
-        "beforeinstallprompt",
-        handleBeforeInstallPrompt
-      )
-    }
-
-  }, [])
-
-  const handleInstallClick = async () => {
-
-    if (!deferredPrompt) return
-
-    deferredPrompt.prompt()
-
-    const { outcome } = await deferredPrompt.userChoice
-
-    if (outcome === "accepted") {
-      setDeferredPrompt(null)
-    }
-  }
+  const navigate = useNavigate()
 
   return (
     <header
@@ -70,7 +36,7 @@ export default function AppHeader({
 
         <button
           className="install-btn"
-          onClick={handleInstallClick}
+          onClick={() => navigate("/plans")}
         >
           Planos
         </button>

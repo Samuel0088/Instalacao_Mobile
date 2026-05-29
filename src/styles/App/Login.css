@@ -736,19 +736,7 @@ input { font-family: inherit; }
    DECORATIVE CIRCLES
 ========================= */
 .login-deco-circle {
-  position: absolute;
-  width: 130px;
-  height: 130px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 40% 40%,
-    rgba(42, 122, 66, 0.55),
-    rgba(22, 77, 43, 0.25)
-  );
-  pointer-events: none;
-  z-index: 0;
-  will-change: transform;
-  filter: blur(0px);
+  display: none;
 }
 
 .login-deco-circle--br {

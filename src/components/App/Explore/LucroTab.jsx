@@ -7,9 +7,18 @@ const DEFAULT_PRODUTIVIDADE = 60
 
 function parseNumber(value) {
   if (value === null || value === undefined) return 0
-  const match = String(value).replace(",", ".").match(/-?\d+(\.\d+)?/)
-  const normalized = match?.[0] || ""
-  const parsed = Number(normalized)
+  const numbers = String(value)
+    .replace(",", ".")
+    .match(/-?\d+(\.\d+)?/g)
+    ?.map(Number)
+    .filter((number) => Number.isFinite(number))
+
+  if (!numbers?.length) return 0
+  if (numbers.length >= 2 && String(value).includes("-")) {
+    return (numbers[0] + numbers[1]) / 2
+  }
+
+  const parsed = numbers[0]
   return Number.isFinite(parsed) ? parsed : 0
 }
 

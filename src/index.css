@@ -51,8 +51,9 @@ body {
 
 .accessibility-widget {
   position: fixed;
-  top: 76px;
-  left: calc(100vw - 60px);
+  top: 96px;
+  right: 16px;
+  left: auto;
   z-index: 10000;
 }
 
@@ -71,12 +72,11 @@ body {
   background: var(--g4);
   color: #fff;
   box-shadow: 0 12px 28px rgba(15, 35, 24, 0.22);
-  cursor: grab;
-  touch-action: none;
+  cursor: pointer;
 }
 
 .accessibility-toggle:active {
-  cursor: grabbing;
+  transform: scale(0.98);
 }
 
 .accessibility-toggle .material-symbols-outlined {

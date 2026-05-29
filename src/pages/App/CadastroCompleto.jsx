@@ -283,7 +283,6 @@ export default function CadastroCompleto() {
       </div>
 
       <main className="cadastro-card">
-
         <div className="cadastro-header">
 
           <div className="etapa-indicador">
@@ -437,6 +436,15 @@ export default function CadastroCompleto() {
               {loading
                 ? "Criando conta..."
                 : "Próximo →"}
+            </button>
+
+            <button
+              type="button"
+              className="cadastro-login-back"
+              onClick={() => navigate("/login")}
+            >
+              <span className="material-symbols-outlined">arrow_back</span>
+              Voltar para login
             </button>
 
           </div>

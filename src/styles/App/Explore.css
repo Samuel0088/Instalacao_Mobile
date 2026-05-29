@@ -1838,6 +1838,14 @@ body {
   animation: fadeSlideUp 0.3s ease-out;
 }
 
+.merged-tab-stack {
+  display: grid;
+  gap: 28px;
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
 /* ===== LUCRO TAB ===== */
 .lucro-container {
   width: 100%;

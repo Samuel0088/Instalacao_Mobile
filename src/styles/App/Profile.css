@@ -333,6 +333,11 @@ body {
   color: var(--text-secondary);
 }
 
+.profile-badge-tech .material-symbols-outlined {
+  color: var(--g4);
+  font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 0, "opsz" 24;
+}
+
 .badge-dot {
   width: 8px;
   height: 8px;

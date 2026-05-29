@@ -130,7 +130,7 @@ export default function Home() {
           />
         </section>
 
-        <ExploreModules onNavigate={navigate} />
+        <ExploreModules />
         <AppFooter />
       </div>
 
