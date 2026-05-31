@@ -124,6 +124,13 @@ body {
   text-align: center;
 }
 
+.drone-icon-img {
+  width: 1em;
+  height: 1em;
+  object-fit: contain;
+  display: block;
+}
+
 #root {
   width: 100%;
   min-height: 100vh;

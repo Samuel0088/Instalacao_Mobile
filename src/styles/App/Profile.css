@@ -122,6 +122,11 @@ body {
   color: var(--g1);
 }
 
+.profile-loading-drone-icon {
+  width: 58px;
+  height: 58px;
+}
+
 .profile-loading-logo-glow {
   position: absolute;
   inset: -6px;

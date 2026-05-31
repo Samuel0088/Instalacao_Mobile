@@ -40,7 +40,7 @@ export default function MetricsGrid({ hasFarm, weather, farmData }) {
 
         <MetricCard 
           type="drone" 
-          icon="flight" 
+          icon="drone" 
           label="Drone" 
           sublabel="DJI Phantom 4" 
           hasFarm={hasFarm}

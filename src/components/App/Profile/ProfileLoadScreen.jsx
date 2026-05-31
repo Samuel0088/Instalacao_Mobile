@@ -1,10 +1,12 @@
 // components/Profile/ProfileLoadingScreen.jsx
-export default function ProfileLoadingScreen() {
+import DroneIcon from "../Global/DroneIcon"
+
+export default function ProfileLoadingScreen({ message = "Carregando seu perfil..." }) {
   return (
     <div className="profile-loading-screen">
       <div className="profile-loading-content">
         <div className="profile-loading-logo">
-          <span className="material-symbols-outlined">agriculture</span>
+          <DroneIcon className="profile-loading-drone-icon" />
           <div className="profile-loading-logo-glow"></div>
         </div>
         <div className="profile-loading-spinner">
@@ -12,7 +14,7 @@ export default function ProfileLoadingScreen() {
           <div className="spinner-ring"></div>
           <div className="spinner-ring"></div>
         </div>
-        <p>Carregando seu perfil...</p>
+        <p>{message}</p>
         <span className="profile-loading-subtitle">Agricultura de Precisão</span>
       </div>
     </div>

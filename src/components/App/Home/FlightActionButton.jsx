@@ -1,11 +1,13 @@
 // components/Home/FlightActionButton.jsx
+import DroneIcon from "../Global/DroneIcon"
+
 export default function FlightActionButton({ onNavigate }) {
   return (
     <section className="action-section">
       <button className="flight-action-btn glass" onClick={onNavigate}>
         <div className="btn-content">
           <div className="btn-icon-wrapper">
-            <span className="material-symbols-outlined btn-icon">rocket_launch</span>
+            <DroneIcon className="btn-drone-icon" />
             <div className="btn-icon-glow"></div>
           </div>
           <div className="btn-text">

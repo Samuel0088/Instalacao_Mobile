@@ -10,6 +10,7 @@ const plans = [
     period: "/mês",
     description: "Para começar a acompanhar sua propriedade com dados simples.",
     features: ["Clima e mapa", "Diário da plantação", "Cadastro de uma fazenda"],
+    icon: "nest_eco",
     highlighted: false
   },
   {
@@ -19,6 +20,7 @@ const plans = [
     period: "/mês",
     description: "Para quem quer diagnóstico, plantio e estimativas financeiras.",
     features: ["Diagnóstico + plantio", "Estimativa de lucro", "Cotação dinâmica da soja"],
+    icon: "monitoring",
     highlighted: true
   },
   {
@@ -28,6 +30,7 @@ const plans = [
     period: "/mês",
     description: "Para produtores que precisam gerenciar a operação completa.",
     features: ["Tudo do Pro", "Atividades e estoque", "Suporte prioritário"],
+    icon: "hub",
     highlighted: false
   }
 ]
@@ -37,14 +40,27 @@ export default function Planos() {
 
   return (
     <div className="plans-page">
-      <header className="plans-header">
-        <button className="plans-back-btn" onClick={() => navigate("/home")}>
-          <span className="material-symbols-outlined">arrow_back</span>
-        </button>
-        <div>
+      <header className="plans-hero">
+        <div className="plans-topbar">
+          <button className="plans-back-btn" onClick={() => navigate("/home")}>
+            <span className="material-symbols-outlined">arrow_back</span>
+          </button>
           <span className="plans-kicker">Assinatura</span>
-          <h1>Planos</h1>
-          <p>Escolha o pacote que combina com a sua rotina no campo.</p>
+        </div>
+
+        <div className="plans-hero-content">
+          <div>
+            <h1>Planos</h1>
+            <p>Ferramentas para monitorar a lavoura, prever riscos e acompanhar a safra com mais precisão.</p>
+          </div>
+          <div className="plans-hero-icon">
+            <span className="material-symbols-outlined">psychiatry</span>
+          </div>
+        </div>
+
+        <div className="plans-toggle" aria-label="Ciclo de cobrança">
+          <button className="active">Mensal</button>
+          <button>Anual</button>
         </div>
       </header>
 
@@ -57,7 +73,10 @@ export default function Planos() {
             {plan.highlighted && <span className="plan-badge">Mais escolhido</span>}
 
             <div className="plan-card-header">
-              <h2>{plan.name}</h2>
+              <div className="plan-title-row">
+                <span className="plan-icon material-symbols-outlined">{plan.icon}</span>
+                <h2>{plan.name}</h2>
+              </div>
               <div className="plan-price">
                 <strong>{plan.price}</strong>
                 <span>{plan.period}</span>

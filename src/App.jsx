@@ -1,6 +1,6 @@
 // App.jsx do PWA
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { AnimatePresence } from "framer-motion"
 
 import Intro from "./pages/App/Intro"
@@ -17,6 +17,7 @@ import SplashScreen from "./components/App/Global/SplashScreen"
 import InstallPrompt from "./components/App/Global/InstallPrompt"
 import InstallSuccess from "./components/App/Global/InstallSuccess"
 import AccessibilityTextControls from "./components/App/Global/AccessibilityTextControls"
+import ProfileLoadingScreen from "./components/App/Profile/ProfileLoadScreen"
 
 // Estilos
 import "./App.css"
@@ -28,6 +29,28 @@ function AccessibilityGate() {
   if (hiddenRoutes.includes(location.pathname)) return null
 
   return <AccessibilityTextControls />
+}
+
+function RouteChangeLoader() {
+  const location = useLocation()
+  const firstRenderRef = useRef(true)
+  const [showRouteLoading, setShowRouteLoading] = useState(false)
+
+  useEffect(() => {
+    if (firstRenderRef.current) {
+      firstRenderRef.current = false
+      return
+    }
+
+    setShowRouteLoading(true)
+    const timer = setTimeout(() => setShowRouteLoading(false), 650)
+
+    return () => clearTimeout(timer)
+  }, [location.pathname])
+
+  if (!showRouteLoading) return null
+
+  return <ProfileLoadingScreen message="Carregando..." />
 }
 
 function App() {
@@ -164,6 +187,7 @@ const handleInstall = async () => {
               <Route path="/explore" element={<Explore />} />
               <Route path="/plans" element={<Planos />} />
             </Routes>
+            <RouteChangeLoader />
             <AccessibilityGate />
           </>
         )}

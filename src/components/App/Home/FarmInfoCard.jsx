@@ -1,3 +1,5 @@
+import DroneIcon from "../Global/DroneIcon"
+
 export default function FarmInfoCard({ farmData }) {
   if (!farmData) return null
 
@@ -5,7 +7,7 @@ export default function FarmInfoCard({ farmData }) {
     <div className="farm-info-card glass">
       <div className="farm-info-content">
         <div className="farm-icon">
-          <span className="material-symbols-outlined">agriculture</span>
+          <DroneIcon className="farm-drone-icon" />
           <div className="icon-glow"></div>
         </div>
 

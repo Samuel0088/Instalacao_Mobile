@@ -1,4 +1,6 @@
 // components/Home/MetricCard.jsx
+import DroneIcon from "../Global/DroneIcon"
+
 export default function MetricCard({ 
   type, 
   icon, 
@@ -27,7 +29,11 @@ export default function MetricCard({
       <div className="card-corner"></div>
       <div className="card-header">
         <div className={`card-icon ${type}`}>
-          <span className="material-symbols-outlined">{icon}</span>
+          {icon === "drone" ? (
+            <DroneIcon className="metric-drone-icon" />
+          ) : (
+            <span className="material-symbols-outlined">{icon}</span>
+          )}
         </div>
         <div className="card-info">
           <span className="card-label">{label}</span>

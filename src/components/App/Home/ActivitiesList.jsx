@@ -1,6 +1,7 @@
 // components/Home/ActivitiesList.jsx
 import { useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
+import DroneIcon from "../Global/DroneIcon"
 
 export default function ActivitiesList({ hasFarm, onViewAll, onRegister }) {
   const navigate = useNavigate()
@@ -112,7 +113,7 @@ export default function ActivitiesList({ hasFarm, onViewAll, onRegister }) {
       {/* Voo de Mapeamento - Vai para o mapa */}
       <div className="activity-card glass" onClick={() => navigate("/explore", { state: { activeTab: "mapa" } })}>
         <div className="activity-icon mapeamento">
-          <span className="material-symbols-outlined">flight_takeoff</span>
+          <DroneIcon className="activity-drone-icon" />
           <div className="icon-pulse"></div>
         </div>
         <div className="activity-content">

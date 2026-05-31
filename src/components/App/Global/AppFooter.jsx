@@ -1,4 +1,6 @@
 // components/Home/AppFooter.jsx
+import DroneIcon from "./DroneIcon"
+
 export default function AppFooter() {
   return (
     <footer className="app-footer">
@@ -6,7 +8,7 @@ export default function AppFooter() {
       <div className="footer-content">
         <div className="footer-section">
           <div className="footer-logo">
-            <span className="material-symbols-outlined">agriculture</span>
+            <DroneIcon className="footer-drone-icon" />
             <span>Zenith</span>
           </div>
           <p className="footer-description">

@@ -1,5 +1,6 @@
 const AGRODOC_COTACAO_API_URL = "https://agrodocai.com.br/api/v1/cotacao"
 const GIRORURAL_API_URL = "https://api.girorural.com/api/v1"
+const REDACAO_AGRO_API_URL = "https://www.redacaoagro.com.br/api/cotacoes.php"
 
 function normalizeText(value = "") {
   return String(value)
@@ -44,7 +45,8 @@ function getCotacaoValue(data) {
     data?.soja_uf?.preco,
     data?.soja_uf?.valor,
     data?.cotacao?.valor,
-    data?.cotacao?.preco
+    data?.cotacao?.preco,
+    data?.commodities?.soja?.valor
   ]
 
   return candidates.map(toNumber).find((value) => value > 0)
@@ -165,11 +167,34 @@ async function fetchAgroDoc(localizacao = {}) {
   return formatCotacao(data, localizacao, data?.fonte || "AgroDoc AI")
 }
 
+async function fetchRedacaoAgro(localizacao = {}) {
+  const response = await fetch(REDACAO_AGRO_API_URL)
+
+  if (!response.ok) {
+    throw new Error("Não foi possível buscar a cotação na Redação Agro")
+  }
+
+  const data = await response.json()
+  const item = {
+    ...data?.commodities?.soja,
+    praca: [localizacao.municipio, localizacao.uf].filter(Boolean).join(" - ") || "Referência CEPEA/ESALQ",
+    unidade: "saca de 60 kg",
+    data: data?.data || data?.ticker?.data || null
+  }
+
+  return formatCotacao(item, localizacao, "Redação Agro")
+}
+
 export async function buscarCotacaoSoja(localizacao = {}) {
   try {
     return await fetchGiroRural(localizacao)
   } catch (giroRuralError) {
-    console.warn("GiroRural indisponível, usando AgroDoc:", giroRuralError)
-    return fetchAgroDoc(localizacao)
+    console.warn("GiroRural indisponível, tentando Redação Agro:", giroRuralError)
+    try {
+      return await fetchRedacaoAgro(localizacao)
+    } catch (redacaoAgroError) {
+      console.warn("Redação Agro indisponível, usando AgroDoc:", redacaoAgroError)
+      return fetchAgroDoc(localizacao)
+    }
   }
 }

@@ -421,6 +421,13 @@ body {
   color: var(--icon);
 }
 
+.farm-drone-icon {
+  width: 34px;
+  height: 34px;
+  position: relative;
+  z-index: 2;
+}
+
 .icon-glow {
   position: absolute;
   inset: -4px;
@@ -654,6 +661,11 @@ body {
 
 .card-icon span {
   font-size: 22px;
+}
+
+.metric-drone-icon {
+  width: 25px;
+  height: 25px;
 }
 
 .card-info {
@@ -931,6 +943,13 @@ body {
   color: white;
 }
 
+.btn-drone-icon {
+  width: 30px;
+  height: 30px;
+  position: relative;
+  z-index: 2;
+}
+
 .btn-icon {
   font-size: 28px;
   color: #1cffb3;
@@ -1121,6 +1140,13 @@ body {
 
 .activity-icon span {
   font-size: 24px;
+  position: relative;
+  z-index: 2;
+}
+
+.activity-drone-icon {
+  width: 30px;
+  height: 30px;
   position: relative;
   z-index: 2;
 }
@@ -1477,6 +1503,11 @@ body {
 .footer-logo span:first-child {
   font-size: 32px;
   color: var(--primary);
+}
+
+.footer-drone-icon {
+  width: 32px;
+  height: 32px;
 }
 
 .footer-logo span:last-child {

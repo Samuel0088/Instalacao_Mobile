@@ -22,20 +22,17 @@ import "../../styles/App/Explore.css";
 // ================= TABS =================
 const tabs = [
   { id: "diagnostico", label: "Diagnóstico", icon: "eco" },
+  { id: "monitoramento", label: "Plantio", icon: "analytics" },
   { id: "clima", label: "Clima", icon: "cloud" },
   { id: "diario", label: "Diário", icon: "menu_book" },
+  { id: "mapa", label: "Mapa", icon: "map" },
   { id: "lucro", label: "Lucro", icon: "paid" },
   { id: "estoque", label: "Estoque", icon: "inventory" },
   { id: "atividades", label: "Atividades", icon: "assignment" }
 ];
 
-const mergedTabs = {
-  monitoramento: "diagnostico",
-  mapa: "clima"
-};
-
 function normalizeTab(tabId) {
-  return mergedTabs[tabId] || tabId;
+  return tabId;
 }
 
 export default function Explore() {
@@ -73,23 +70,19 @@ export default function Explore() {
   const renderTab = () => {
     switch (activeTab) {
       case "diagnostico":
-        return (
-          <div className="merged-tab-stack">
-            <DiagnosticoTab active />
-            <MonitoramentoView />
-          </div>
-        );
+        return <DiagnosticoTab active />;
+
+      case "monitoramento":
+        return <MonitoramentoView />;
 
       case "clima":
-        return (
-          <div className="merged-tab-stack">
-            <ClimaTab />
-            <MapaTab />
-          </div>
-        );
+        return <ClimaTab />;
 
       case "diario":
         return <DiarioTab />;
+
+      case "mapa":
+        return <MapaTab />;
 
       case "lucro":
         return <LucroTab />;
