@@ -1,131 +1,193 @@
-import { useState } from "react"
-import { auth } from "../../services/firebase"
-import { sendPasswordResetEmail } from "firebase/auth"
+import { useState, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
-import "../../styles/App/Login.css"
+import { sendPasswordResetEmail } from "firebase/auth"
+import { auth } from "../../services/firebase"
+
+import "../../styles/App/ForgotPassword.css"
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+const FIREBASE_ERROR_MESSAGES = {
+  "auth/user-not-found":
+    "Nenhuma conta encontrada com este email. 🌱",
+
+  "auth/invalid-email":
+    "Digite um email válido. 📧",
+
+  "auth/too-many-requests":
+    "Muitas tentativas. Aguarde alguns minutos. ⏳",
+
+  "auth/network-request-failed":
+    "Erro de conexão. Verifique sua internet. 🌐",
+}
+
+const DEFAULT_ERROR =
+  "Não foi possível enviar o email de recuperação."
 
 export default function ForgotPassword() {
   const navigate = useNavigate()
+
   const [email, setEmail] = useState("")
   const [loading, setLoading] = useState(false)
-  const [alertMessage, setAlertMessage] = useState({ type: "", text: "" })
+  const [alert, setAlert] = useState({
+    type: "",
+    text: "",
+  })
 
-  const handleResetPassword = async () => {
-    if (!email) {
-      setAlertMessage({
-        type: "error",
-        text: "Digite seu email para recuperar a senha! 📧"
-      })
-      return
+  const showAlert = useCallback((type, text) => {
+    setAlert({ type, text })
+  }, [])
+
+  const validateEmail = () => {
+    if (!email.trim()) {
+      showAlert(
+        "error",
+        "Digite o email cadastrado para recuperar sua senha."
+      )
+      return false
     }
 
+    if (!EMAIL_REGEX.test(email.trim())) {
+      showAlert(
+        "error",
+        "Digite um email válido."
+      )
+      return false
+    }
+
+    return true
+  }
+
+  const handleResetPassword = async () => {
+    if (!validateEmail()) return
+
     setLoading(true)
-    setAlertMessage({ type: "", text: "" })
+    setAlert({ type: "", text: "" })
 
     try {
-      await sendPasswordResetEmail(auth, email)
-      
-      setAlertMessage({
-        type: "success",
-        text: "Email de recuperação enviado! Verifique sua caixa de entrada. 📨"
-      })
+      await sendPasswordResetEmail(auth, email.trim())
+
+      showAlert(
+        "success",
+        "Email enviado com sucesso! Verifique sua caixa de entrada. 📨"
+      )
 
       setTimeout(() => {
         navigate("/login")
-      }, 3000)
+      }, 2500)
 
     } catch (error) {
-      let errorMessage = "Erro ao enviar email de recuperação!"
+      const message =
+        FIREBASE_ERROR_MESSAGES[error.code] ?? DEFAULT_ERROR
 
-      switch (error.code) {
-        case 'auth/user-not-found':
-          errorMessage = "Usuário não encontrado com este email! 🌱"
-          break
-        case 'auth/invalid-email':
-          errorMessage = "Email inválido! Digite um email válido."
-          break
-        case 'auth/too-many-requests':
-          errorMessage = "Muitas tentativas! Aguarde um momento. ⏳"
-          break
-        default:
-          errorMessage = "Erro ao enviar email. Tente novamente."
-      }
-
-      setAlertMessage({ type: "error", text: errorMessage })
+      showAlert("error", message)
     } finally {
       setLoading(false)
     }
   }
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
       handleResetPassword()
     }
   }
 
   return (
-    <div className="login-container">
-      <div className="login-background-layer login-background-layer-1"></div>
-      <div className="login-gradient-sphere login-gradient-sphere-1"></div>
-      <div className="login-gradient-sphere login-gradient-sphere-2"></div>
-      <div className="login-grid-pattern"></div>
+    <div className="forgot-page">
 
-      <div className="login-card">
-        <div className="login-header">
-          <h2>Recuperar Senha</h2>
-          <p className="login-subtitle">
-            Enviaremos um link para seu email
-          </p>
-        </div>
+      {/* HERO */}
+      <div className="forgot-hero">
+        <div className="forgot-hero__overlay" />
 
-        <div className="login-form">
-          <div className="input-group-login">
-            <label>Email</label>
-            <input
-              type="email"
-              placeholder="seu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              onKeyPress={handleKeyPress}
-              disabled={loading}
+        <div className="forgot-hero__content">
+          <div className="forgot-logo">
+            <img
+              src="assets/image/Logo-redonda.png"
+              alt="Zenith Agro"
+              className="forgot-logo__img"
             />
           </div>
 
-          {alertMessage.text && (
-            <div className={`alert-message-login ${alertMessage.type}`}>
-              {alertMessage.text}
-            </div>
-          )}
+          <p className="forgot-hero__subtitle">
+            Recuperação de acesso
+          </p>
 
-          <button
-            className="login-button"
-            onClick={handleResetPassword}
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <span className="loading-spinner-login"></span>
-                Enviando...
-              </>
-            ) : (
-              "Enviar email de recuperação"
-            )}
-          </button>
-
-          <button
-            className="login-button"
-            onClick={() => navigate("/login")}
-            style={{
-              background: "transparent",
-              border: "2px solid #F5B342",
-              marginTop: "10px",
-              boxShadow: "none"
-            }}
-          >
-            Voltar para o Login
-          </button>
+          <h1 className="forgot-hero__title">
+            Esqueceu a senha?
+          </h1>
         </div>
       </div>
+
+      {/* CARD */}
+      <main className="forgot-card">
+
+        <div className="forgot-header">
+          <h2 className="forgot-header__title">
+            Recuperar senha
+          </h2>
+
+          <p className="forgot-header__text">
+            Informe o email da sua conta e enviaremos
+            um link para redefinir sua senha.
+          </p>
+        </div>
+
+        <div className="forgot__field">
+          <label
+            htmlFor="forgot-email"
+            className="forgot__label"
+          >
+            Email
+          </label>
+
+          <input
+            id="forgot-email"
+            type="email"
+            className="forgot__input"
+            placeholder="seuemail@gmail.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={handleKeyDown}
+            disabled={loading}
+            autoComplete="email"
+          />
+        </div>
+
+        {alert.text && (
+          <div
+            className={`forgot__alert forgot__alert--${alert.type}`}
+          >
+            {alert.text}
+          </div>
+        )}
+
+        <button
+          className={`forgot__btn-primary ${
+            loading ? "forgot__btn-primary--loading" : ""
+          }`}
+          onClick={handleResetPassword}
+          disabled={loading}
+        >
+          {loading ? (
+            <>
+              <span className="forgot__spinner" />
+              Enviando...
+            </>
+          ) : (
+            "Enviar recuperação"
+          )}
+        </button>
+
+        <button
+          className="forgot__btn-secondary"
+          onClick={() => navigate("/login")}
+          disabled={loading}
+        >
+          Voltar para login
+        </button>
+
+      </main>
+
     </div>
   )
 }
