@@ -80,7 +80,7 @@ export default function MonitoramentoView() {
       <div className={styles.cabecalho}>
         <h2 className={styles.titulo}>Monitoramento de Plantação</h2>
         <p className={styles.subtitulo}>
-          Análise automática via imagem de drone ou câmera
+          Análise visual por imagem aérea ou galeria
         </p>
       </div>
 

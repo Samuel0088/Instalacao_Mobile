@@ -9,8 +9,6 @@ import { doc, getDoc, query, where, getDocs, collection } from "firebase/firesto
 // Componentes
 import ParticleBackground from "../../components/App/Home/ParticleBackground"
 import MouseGlow from "../../components/App/Home/MouseGlow"
-import LoadingScreen from "../../components/App/Home/LoadingScreen"
-import WelcomeSection from "../../components/App/Home/WelcomeSection"
 import FarmInfoCard from "../../components/App/Home/FarmInfoCard"
 import MetricsGrid from "../../components/App/Home/MetricsGrid"
 import FlightActionButton from "../../components/App/Home/FlightActionButton"
@@ -26,14 +24,12 @@ export default function Home() {
   const [userData, setUserData] = useState(null)
   const [farmData, setFarmData] = useState(null)
   const [weather, setWeather] = useState(null)
-  const [loading, setLoading] = useState(true)
   
   const navigate = useNavigate()
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        setLoading(false)
         return
       }
 
@@ -66,8 +62,6 @@ export default function Home() {
         }
       } catch (error) {
         console.error("Erro ao carregar dados:", error)
-      } finally {
-        setLoading(false)
       }
     })
 
@@ -76,10 +70,6 @@ export default function Home() {
 
   const hasFarm = !!farmData
   const userName = userData?.name?.split(' ')[0]
-
-  if (loading) {
-    return <LoadingScreen />
-  }
 
   return (
     <>

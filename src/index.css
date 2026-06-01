@@ -49,6 +49,46 @@ body {
   background: #f8f9fa;
 }
 
+html[data-text-size="1"] :where(
+  p,
+  li,
+  label,
+  input,
+  textarea,
+  select,
+  button,
+  .card-label,
+  .card-sublabel,
+  .card-value,
+  .card-unit,
+  .section-title,
+  .plan-tier,
+  .plan-price span,
+  .explore-tab-label
+) {
+  font-size: 1.08em;
+}
+
+html[data-text-size="2"] :where(
+  p,
+  li,
+  label,
+  input,
+  textarea,
+  select,
+  button,
+  .card-label,
+  .card-sublabel,
+  .card-value,
+  .card-unit,
+  .section-title,
+  .plan-tier,
+  .plan-price span,
+  .explore-tab-label
+) {
+  font-size: 1.18em;
+}
+
 .accessibility-widget {
   position: fixed;
   top: 96px;

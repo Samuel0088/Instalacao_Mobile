@@ -45,14 +45,16 @@ export default function UploadImage({ onSelect, onCamera, disabled }) {
       onDragLeave={() => setArrastando(false)}
       onDrop={handleDrop}
     >
-      <span className={styles.uploadIcone} aria-hidden="true">
-        {disabled ? "⏳" : "📷"}
-      </span>
+      <div className={styles.uploadVisual} aria-hidden="true">
+        <span className="material-symbols-outlined">
+          {disabled ? "progress_activity" : "satellite_alt"}
+        </span>
+      </div>
       <span className={styles.uploadTexto}>
-        {disabled ? "Processando imagem..." : "Selecione uma imagem para análise"}
+        {disabled ? "Processando imagem..." : "Enviar imagem da plantação"}
       </span>
       <span className={styles.uploadDica}>
-        JPG, PNG · Da câmera ou galeria
+        JPG ou PNG · Foto aérea, folha ou talhão
       </span>
 
       <div className={styles.uploadAcoes}>
@@ -62,8 +64,8 @@ export default function UploadImage({ onSelect, onCamera, disabled }) {
           onClick={() => !disabled && onCamera?.()}
           disabled={disabled}
         >
-          <span className="material-symbols-outlined" aria-hidden="true">photo_camera</span>
-          Tirar foto
+          <span className="material-symbols-outlined" aria-hidden="true">center_focus_strong</span>
+          Capturar imagem
         </button>
         <button
           type="button"

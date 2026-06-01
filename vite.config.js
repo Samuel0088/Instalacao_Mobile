@@ -22,13 +22,13 @@ export default defineConfig({
   background_color: '#f7f5f0',
    icons: [
   {
-    src: "/assets/icons/icon-droneP.png",
+    src: "/assets/icons/Logo.png",
     sizes: "192x192",
     type: "image/png",
     purpose: "any"
   },
   {
-   src: "/assets/icons/icon-droneG.png",
+   src: "/assets/icons/Logo.png",
     sizes: "512x512",
     type: "image/png",
     purpose: "any"

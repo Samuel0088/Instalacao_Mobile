@@ -6,6 +6,7 @@ const plans = [
   {
     id: "essencial",
     name: "Essencial",
+    tier: "Entrada",
     price: "R$ 29,90",
     period: "/mês",
     description: "Para começar a acompanhar sua propriedade com dados simples.",
@@ -16,6 +17,7 @@ const plans = [
   {
     id: "pro",
     name: "Pro",
+    tier: "Produtor",
     price: "R$ 59,90",
     period: "/mês",
     description: "Para quem quer diagnóstico, plantio e estimativas financeiras.",
@@ -26,6 +28,7 @@ const plans = [
   {
     id: "safra",
     name: "Safra",
+    tier: "Operação",
     price: "R$ 99,90",
     period: "/mês",
     description: "Para produtores que precisam gerenciar a operação completa.",
@@ -49,18 +52,28 @@ export default function Planos() {
         </div>
 
         <div className="plans-hero-content">
-          <div>
-            <h1>Planos</h1>
-            <p>Ferramentas para monitorar a lavoura, prever riscos e acompanhar a safra com mais precisão.</p>
+          <div className="plans-hero-eyebrow">
+            <span className="material-symbols-outlined">eco</span>
+            <span>Safra inteligente</span>
           </div>
-          <div className="plans-hero-icon">
-            <span className="material-symbols-outlined">psychiatry</span>
+
+          <h1>Planos</h1>
+          <p>Ferramentas para monitorar a lavoura, prever riscos e acompanhar a safra com mais precisão.</p>
+
+          <div className="plans-toggle-row">
+            <div className="plans-toggle" aria-label="Ciclo de cobrança">
+              <button className="active">Mensal</button>
+              <button>Anual</button>
+            </div>
+            <span className="plans-savings-badge">
+              <span className="material-symbols-outlined">local_offer</span>
+              Economize no anual
+            </span>
           </div>
         </div>
 
-        <div className="plans-toggle" aria-label="Ciclo de cobrança">
-          <button className="active">Mensal</button>
-          <button>Anual</button>
+        <div className="plans-hero-field" aria-hidden="true">
+          <span className="material-symbols-outlined">psychiatry</span>
         </div>
       </header>
 
@@ -74,8 +87,13 @@ export default function Planos() {
 
             <div className="plan-card-header">
               <div className="plan-title-row">
-                <span className="plan-icon material-symbols-outlined">{plan.icon}</span>
-                <h2>{plan.name}</h2>
+                <span className="plan-icon">
+                  <span className="material-symbols-outlined">{plan.icon}</span>
+                </span>
+                <div className="plan-name-group">
+                  <h2>{plan.name}</h2>
+                  <span className="plan-tier">{plan.tier}</span>
+                </div>
               </div>
               <div className="plan-price">
                 <strong>{plan.price}</strong>
@@ -83,12 +101,16 @@ export default function Planos() {
               </div>
             </div>
 
+            <div className="plan-divider"></div>
+
             <p>{plan.description}</p>
 
             <ul>
               {plan.features.map((feature) => (
                 <li key={feature}>
-                  <span className="material-symbols-outlined">check_circle</span>
+                  <span className="plan-feat-icon">
+                    <span className="material-symbols-outlined">check</span>
+                  </span>
                   {feature}
                 </li>
               ))}
@@ -96,6 +118,7 @@ export default function Planos() {
 
             <button className="plan-action-btn">
               Escolher plano
+              <span className="material-symbols-outlined">arrow_forward</span>
             </button>
           </article>
         ))}
