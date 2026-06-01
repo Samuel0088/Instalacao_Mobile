@@ -173,7 +173,6 @@ O projeto está alinhado aos seguintes Objetivos de Desenvolvimento Sustentável
 
 | Integrante |
 |------------|
-
 | Leonardo Carrilho Macedo |
 | Octavio Augusto Rezende Silva |
 | Pietro De Araujo Mansano Gimenez |
