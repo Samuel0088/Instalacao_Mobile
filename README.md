@@ -173,10 +173,11 @@ O projeto está alinhado aos seguintes Objetivos de Desenvolvimento Sustentável
 
 | Integrante |
 |------------|
-| Samuel Vieira Freitas dos Reis |
+
 | Leonardo Carrilho Macedo |
 | Octavio Augusto Rezende Silva |
-
+| Pietro De Araujo Mansano Gimenez |
+| Samuel Vieira Freitas dos Reis |
 ---
 
 ## Instituição
