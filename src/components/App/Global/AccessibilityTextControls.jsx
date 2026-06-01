@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react"
 const LEVELS = [
   { label: "Normal", value: 1 },
   { label: "Grande", value: 1.22 },
-  { label: "Extra", value: 1.48 },
+  { label: "Extra", value: 1.42 },
 ]
 
 export default function AccessibilityTextControls() {

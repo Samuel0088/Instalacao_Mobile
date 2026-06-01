@@ -86,7 +86,7 @@ html[data-text-size="2"] :where(
   .plan-price span,
   .explore-tab-label
 ) {
-  font-size: 1.18em;
+  font-size: 1.14em;
 }
 
 .accessibility-widget {

@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom"
-import MenuBar from "../../components/App/Global/MenuBar"
 import "../../styles/App/Planos.css"
 
 const plans = [
@@ -124,7 +123,6 @@ export default function Planos() {
         ))}
       </main>
 
-      <MenuBar />
     </div>
   )
 }

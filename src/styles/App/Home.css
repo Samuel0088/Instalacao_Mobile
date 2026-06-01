@@ -1264,13 +1264,15 @@ body {
   background: var(--glass-bg);
   border: 2px solid var(--glass-border);
   border-radius: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
 }
 
 .empty-icon span {
+  display: grid;
+  place-items: center;
   font-size: 40px;
+  line-height: 1;
   color: var(--text-muted);
   position: relative;
   z-index: 2;
@@ -1278,9 +1280,13 @@ body {
 
 .empty-icon-ring {
   position: absolute;
-  inset: -8px;
+  top: 50%;
+  left: 50%;
+  width: 96px;
+  height: 96px;
+  margin: -48px 0 0 -48px;
   border: 2px solid var(--primary);
-  border-radius: 48px;
+  border-radius: 50%;
   animation: spin 10s linear infinite;
   opacity: 0.3;
 }
@@ -1337,7 +1343,7 @@ body {
   font-size: 14px !important;
   line-height: 1.15;
   overflow-wrap: anywhere;
-  text-align: left;
+  text-align: center;
 }
 
 .empty-action-btn .btn-glow {
