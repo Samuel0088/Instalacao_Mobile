@@ -1846,6 +1846,218 @@ body {
   margin: 0 auto;
 }
 
+/* ===== LEGISLACAO DRONES ===== */
+.drone-law-container {
+  max-width: 860px;
+  margin: 0 auto;
+  display: grid;
+  gap: 18px;
+  color: var(--g1);
+}
+
+.drone-law-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 24px;
+  border: 1px solid rgba(45, 97, 64, 0.16);
+  border-radius: 28px;
+  background:
+    linear-gradient(135deg, rgba(247, 245, 240, 0.98), rgba(232, 245, 235, 0.96)),
+    radial-gradient(circle at 88% 8%, rgba(0, 102, 255, 0.12), transparent 32%);
+  box-shadow: 0 16px 34px rgba(15, 35, 24, 0.1);
+}
+
+.drone-law-hero::after {
+  content: "";
+  position: absolute;
+  right: -34px;
+  bottom: -44px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: rgba(86, 168, 112, 0.13);
+  pointer-events: none;
+}
+
+.drone-law-kicker {
+  display: inline-flex;
+  margin-bottom: 10px;
+  color: var(--g5);
+  font-size: 0.76rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.drone-law-hero h2 {
+  margin: 0 0 10px;
+  color: var(--g1);
+  font-size: clamp(1.9rem, 8vw, 3rem);
+  line-height: 1;
+}
+
+.drone-law-hero p {
+  max-width: 620px;
+  margin: 0;
+  color: #617062;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.55;
+}
+
+.drone-law-alert {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: rgba(255, 170, 0, 0.14);
+  border: 1px solid rgba(255, 170, 0, 0.28);
+  color: #72521a;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.drone-law-alert .material-symbols-outlined {
+  color: #a06b00;
+  font-size: 22px;
+  flex: 0 0 auto;
+}
+
+.drone-law-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.drone-law-card,
+.drone-law-section,
+.drone-law-agency {
+  background: #f7f5f0;
+  border: 1px solid rgba(45, 97, 64, 0.12);
+  box-shadow: 0 12px 28px rgba(15, 35, 24, 0.08);
+}
+
+.drone-law-card {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 22px;
+}
+
+.drone-law-card-icon {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 15px;
+  background: rgba(45, 97, 64, 0.1);
+  color: var(--g4);
+  font-size: 24px;
+}
+
+.drone-law-card h3,
+.drone-law-section-title h3 {
+  margin: 0;
+  color: var(--g1);
+  font-size: 1rem;
+}
+
+.drone-law-card p,
+.drone-law-agency p,
+.drone-law-note {
+  margin: 6px 0 0;
+  color: #617062;
+  font-size: 0.86rem;
+  line-height: 1.48;
+}
+
+.drone-law-section {
+  padding: 16px;
+  border-radius: 24px;
+}
+
+.drone-law-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.drone-law-section-title > .material-symbols-outlined {
+  color: var(--g5);
+}
+
+.drone-law-agencies {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.drone-law-agency {
+  padding: 14px;
+  border-radius: 18px;
+}
+
+.drone-law-agency > .material-symbols-outlined {
+  color: var(--g5);
+  font-size: 24px;
+}
+
+.drone-law-agency strong {
+  display: block;
+  margin-top: 8px;
+  color: var(--g1);
+  font-size: 0.95rem;
+}
+
+.drone-law-links {
+  display: grid;
+  gap: 10px;
+}
+
+.drone-law-links a {
+  min-height: 48px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid rgba(45, 97, 64, 0.12);
+  color: var(--g4);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.drone-law-links a .material-symbols-outlined {
+  color: inherit;
+  font-size: 20px;
+}
+
+.drone-law-note {
+  padding: 0 4px 8px;
+  font-size: 0.78rem;
+}
+
+@media (max-width: 700px) {
+  .drone-law-grid,
+  .drone-law-agencies {
+    grid-template-columns: 1fr;
+  }
+
+  .drone-law-hero,
+  .drone-law-section {
+    border-radius: 22px;
+  }
+}
+
 /* ===== LUCRO TAB ===== */
 .lucro-container {
   width: 100%;

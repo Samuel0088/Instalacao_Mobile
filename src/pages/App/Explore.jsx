@@ -14,6 +14,7 @@ import MapaTab from "../../components/App/Explore/MapaTab";
 import EstoqueTab from "../../components/App/Explore/EstoqueTab";
 import AtividadesTab from "../../components/App/Explore/AtividadesTab";
 import LucroTab from "../../components/App/Explore/LucroTab";
+import LegislacaoDronesTab from "../../components/App/Explore/LegislacaoDronesTab";
 
 import ParticleBackground from "../../components/App/Home/ParticleBackground";
 
@@ -28,7 +29,8 @@ const tabs = [
   { id: "mapa", label: "Mapa", icon: "map" },
   { id: "lucro", label: "Lucro", icon: "paid" },
   { id: "estoque", label: "Estoque", icon: "inventory" },
-  { id: "atividades", label: "Atividades", icon: "assignment" }
+  { id: "atividades", label: "Atividades", icon: "assignment" },
+  { id: "legislacao", label: "Legislação", icon: "gavel" }
 ];
 
 function normalizeTab(tabId) {
@@ -92,6 +94,9 @@ export default function Explore() {
 
       case "atividades":
         return <AtividadesTab />;
+
+      case "legislacao":
+        return <LegislacaoDronesTab />;
 
       default:
         return <DiagnosticoTab />;
