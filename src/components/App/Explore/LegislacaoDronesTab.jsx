@@ -23,23 +23,23 @@ const officialLinks = [
 
 const checklist = [
   {
-    title: "Drone regularizado",
-    text: "Equipamentos com mais de 250 g devem ser cadastrados na ANAC. O número de cadastro precisa identificar a aeronave.",
+    title: "Cadastro e identificação",
+    text: "No Brasil, drones usados como RPAS/VANT precisam seguir as regras da ANAC. Em geral, aeronaves acima de 250 g devem ser cadastradas e identificadas com o número de registro visível no equipamento. O cadastro ajuda a vincular a aeronave ao operador responsável.",
     icon: "badge"
   },
   {
-    title: "Rádio homologado",
-    text: "Drone e controle usam radiofrequência. Antes de operar, confirme se o equipamento é homologado pela Anatel.",
+    title: "Homologação Anatel",
+    text: "O drone, o rádio controle e módulos de transmissão usam radiofrequência. Por isso, o equipamento deve ser homologado pela Anatel antes do uso, evitando interferências e problemas legais na operação.",
     icon: "verified"
   },
   {
-    title: "Voo autorizado",
-    text: "O acesso ao espaço aéreo deve ser verificado no SARPAS/DECEA, principalmente perto de aeródromos, áreas restritas e infraestruturas sensíveis.",
+    title: "Autorização de voo",
+    text: "Antes de decolar, o operador deve verificar o espaço aéreo pelo SARPAS/DECEA. Isso é essencial perto de aeroportos, helipontos, áreas militares, cidades, linhas de transmissão e locais com restrições temporárias.",
     icon: "approval"
   },
   {
-    title: "Operação segura",
-    text: "Planeje altitude, local de decolagem, linha visual, pessoas próximas e interrupção imediata caso haja aeronave tripulada na área.",
+    title: "Segurança operacional",
+    text: "Mesmo em área rural, planeje altitude, rota, vento, bateria, linha visual, distância de pessoas e animais, obstáculos e ponto de pouso. Se aparecer aeronave tripulada, a prioridade é sempre dela.",
     icon: "health_and_safety"
   }
 ]
@@ -47,17 +47,17 @@ const checklist = [
 const agencies = [
   {
     name: "ANAC",
-    role: "Cadastro, classes da aeronave e regras civis do RPAS.",
+    role: "Define regras civis para aeronaves não tripuladas, cadastro, classes operacionais, responsabilidades do piloto remoto e condições gerais para operar com segurança.",
     icon: "assignment"
   },
   {
     name: "DECEA",
-    role: "Solicitação e autorização de acesso ao espaço aéreo pelo SARPAS.",
+    role: "Gerencia o acesso ao espaço aéreo. Pelo SARPAS, o operador informa local, horário, altura e finalidade do voo para obter autorização quando necessária.",
     icon: "public"
   },
   {
     name: "Anatel",
-    role: "Homologação de equipamentos que emitem radiofrequência.",
+    role: "Cuida da homologação dos equipamentos de telecomunicação, como controle remoto, transmissão de vídeo, telemetria e módulos de comunicação.",
     icon: "cell_tower"
   }
 ]
@@ -69,15 +69,10 @@ export default function LegislacaoDronesTab() {
         <span className="drone-law-kicker">Uso responsável de drones</span>
         <h2>Legislação para voar sem risco</h2>
         <p>
-          A maioria dos problemas começa antes da decolagem: equipamento sem homologação,
-          falta de cadastro ou voo solicitado de forma incorreta. Use este guia como
-          checklist rápido antes de operar na fazenda.
+          Drones agrícolas também são veículos aéreos não tripulados. Na prática,
+          operar corretamente envolve três frentes: aeronave regularizada, rádio
+          homologado e acesso ao espaço aéreo autorizado quando aplicável.
         </p>
-        <div className="drone-law-alert">
-          <span className="material-symbols-outlined">warning</span>
-          <strong>Estimativa do evento ESALQ:</strong>
-          cerca de 75% dos usuários citados não seguem corretamente a legislação.
-        </div>
       </div>
 
       <div className="drone-law-grid">

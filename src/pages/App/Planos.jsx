@@ -19,8 +19,8 @@ const plans = [
     tier: "Produtor",
     price: "R$ 59,90",
     period: "/mês",
-    description: "Para quem quer diagnóstico, plantio e estimativas financeiras.",
-    features: ["Diagnóstico + plantio", "Estimativa de lucro", "Cotação dinâmica da soja", "Suporte prioritário"],
+    description: "Para quem quer diagnóstico, plantio e acompanhamento técnico da lavoura.",
+    features: ["Diagnóstico + plantio", "Monitoramento de soja", "Cotação dinâmica da soja", "Suporte prioritário"],
     icon: "grass",
     highlighted: true
   },

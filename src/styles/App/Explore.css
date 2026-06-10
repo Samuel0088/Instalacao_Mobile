@@ -1942,29 +1942,37 @@ body {
 }
 
 .drone-law-card {
-  display: flex;
-  gap: 12px;
-  padding: 16px;
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
   border-radius: 22px;
 }
 
 .drone-law-card-icon {
-  width: 44px;
-  height: 44px;
-  display: grid;
-  place-items: center;
+  width: 48px;
+  height: 48px;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
   flex: 0 0 auto;
-  border-radius: 15px;
+  align-self: center;
+  border-radius: 16px;
   background: rgba(45, 97, 64, 0.1);
   color: var(--g4);
-  font-size: 24px;
+  font-size: 24px !important;
+  line-height: 1;
+  font-variation-settings: "FILL" 0, "wght" 600, "GRAD" 0, "opsz" 24;
+  text-align: center;
+  transform: translateY(1px);
 }
 
 .drone-law-card h3,
 .drone-law-section-title h3 {
   margin: 0;
   color: var(--g1);
-  font-size: 1rem;
+  font-size: 1.02rem;
 }
 
 .drone-law-card p,
@@ -1972,8 +1980,8 @@ body {
 .drone-law-note {
   margin: 6px 0 0;
   color: #617062;
-  font-size: 0.86rem;
-  line-height: 1.48;
+  font-size: 0.88rem;
+  line-height: 1.58;
 }
 
 .drone-law-section {
@@ -1999,13 +2007,24 @@ body {
 }
 
 .drone-law-agency {
-  padding: 14px;
+  padding: 16px;
   border-radius: 18px;
+  text-align: center;
 }
 
 .drone-law-agency > .material-symbols-outlined {
+  width: 44px;
+  height: 44px;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  border-radius: 15px;
+  background: rgba(45, 97, 64, 0.1);
   color: var(--g5);
-  font-size: 24px;
+  font-size: 24px !important;
+  line-height: 1;
+  transform: translateY(1px);
 }
 
 .drone-law-agency strong {
@@ -2055,6 +2074,11 @@ body {
   .drone-law-hero,
   .drone-law-section {
     border-radius: 22px;
+  }
+
+  .drone-law-card {
+    grid-template-columns: 48px 1fr;
+    padding: 16px;
   }
 }
 
