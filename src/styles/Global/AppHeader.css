@@ -62,21 +62,46 @@
   justify-content: space-between;
 }
 
+.header-brand {
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: var(--primary-light);
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
 /* BOTÃO NOTIFICAÇÃO */
 .notification-btn {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  min-width: 40px;
+  max-width: 40px;
+  height: 40px;
+  min-height: 40px;
+  max-height: 40px;
+  aspect-ratio: 1;
+  padding: 0;
 
   border: none;
   outline: none;
 
   border-radius: 50%;
 
-  background: transparent;
+  background: rgba(255, 255, 255, 0.12);
 
   display: flex;
   align-items: center;
   justify-content: center;
+  flex: 0 0 40px;
 
   cursor: pointer;
 
@@ -85,11 +110,46 @@
 
 .notification-btn span {
   color: white;
-  font-size: 22px;
+  font-size: 20px;
+  line-height: 1;
 }
 
 .notification-btn:hover {
   background: rgba(255, 255, 255, 0.08);
+}
+
+.profile-avatar-btn {
+  width: 42px;
+  min-width: 42px;
+  max-width: 42px;
+  height: 42px;
+  min-height: 42px;
+  max-height: 42px;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 2px solid rgba(255, 255, 255, 0.78);
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 42px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.16);
+}
+
+.profile-avatar-btn span {
+  display: block;
+  color: #fff;
+  font-size: 23px;
+  line-height: 1;
+  transform: translateY(1px);
+}
+
+.profile-avatar-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.86);
 }
 
 /* BOTÃO PLANOS */

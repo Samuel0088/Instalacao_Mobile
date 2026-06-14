@@ -23,23 +23,29 @@ export default function AppHeader({
 
       {/* TOPO */}
       <div className="header-top">
-
-        {showNotification && (
-          <button className="notification-btn">
-
-            <span className="material-symbols-outlined">
-              notifications
-            </span>
-
-          </button>
-        )}
-
-        <button
-          className="install-btn"
-          onClick={() => navigate("/plans")}
-        >
-          Planos
+        <button className="header-brand" onClick={() => navigate("/home")}>
+          Zenith
         </button>
+
+        <div className="header-actions">
+          {showNotification && (
+            <button className="notification-btn" aria-label="Notificações">
+
+              <span className="material-symbols-outlined">
+                notifications
+              </span>
+
+            </button>
+          )}
+
+          <button
+            className="profile-avatar-btn"
+            onClick={() => navigate("/profile")}
+            aria-label="Abrir perfil"
+          >
+            <span>🌽</span>
+          </button>
+        </div>
 
       </div>
 
