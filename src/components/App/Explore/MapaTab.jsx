@@ -66,6 +66,245 @@ function generateZones(points) {
   ]
 }
 
+function getAreaStatusTone(status = "") {
+  const normalized = status.toLowerCase()
+  if (normalized.includes("crítico")) return "critical"
+  if (normalized.includes("atenção")) return "warning"
+  return "healthy"
+}
+
+function getAreaMetrics(area) {
+  const seed = Number(String(area?.id || 0).slice(-3)) || 127
+  const tone = getAreaStatusTone(area?.status)
+
+  return {
+    moisture: tone === "critical" ? 42 : tone === "warning" ? 58 : 74,
+    fertility: Math.min(96, 66 + (seed % 28)),
+    yield: Math.min(94, 70 + (seed % 22)),
+    pest: tone === "critical" ? 86 : tone === "warning" ? 62 : 24,
+  }
+}
+
+function createFieldProjection(coordinates = []) {
+  if (!coordinates || coordinates.length < 3) return null
+
+  const lats = coordinates.map(([lat]) => lat)
+  const lngs = coordinates.map(([, lng]) => lng)
+  const minLat = Math.min(...lats)
+  const maxLat = Math.max(...lats)
+  const minLng = Math.min(...lngs)
+  const maxLng = Math.max(...lngs)
+  const latRange = maxLat - minLat || 0.0001
+  const lngRange = maxLng - minLng || 0.0001
+  const width = 620
+  const height = 380
+  const padding = 52
+
+  const points = coordinates.map(([lat, lng]) => {
+    const x = padding + ((lng - minLng) / lngRange) * (width - padding * 2)
+    const y = padding + ((maxLat - lat) / latRange) * (height - padding * 2)
+    return { x, y }
+  })
+
+  const pointsString = points.map(point => `${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(" ")
+  const center = points.reduce(
+    (acc, point) => ({ x: acc.x + point.x / points.length, y: acc.y + point.y / points.length }),
+    { x: 0, y: 0 }
+  )
+
+  return { points, pointsString, center, width, height }
+}
+
+function getFieldMarkers(area, projection) {
+  if (!area || !projection) return []
+
+  const tone = getAreaStatusTone(area.status)
+  const seed = Number(String(area.id).slice(-4)) || 731
+  const issueCount = tone === "critical" ? 18 : tone === "warning" ? 10 : 5
+  const markers = []
+
+  for (let index = 0; index < issueCount; index += 1) {
+    const angle = (seed + index * 49) * 0.017
+    const radiusX = 46 + ((seed + index * 23) % 120)
+    const radiusY = 24 + ((seed + index * 17) % 70)
+    markers.push({
+      x: projection.center.x + Math.cos(angle) * radiusX,
+      y: projection.center.y + Math.sin(angle) * radiusY,
+      tone: index % 4 === 0 || tone === "critical" ? "critical" : "warning"
+    })
+  }
+
+  return markers
+}
+
+function FieldSparkline({ type = "good" }) {
+  const path = type === "danger"
+    ? "M4 42 C42 42 44 8 72 8 S96 9 126 9"
+    : "M4 34 C30 32 42 20 62 18 S78 30 92 22 112 20 126 20"
+
+  return (
+    <svg viewBox="0 0 130 52" className="metric-sparkline" aria-hidden="true">
+      <path d="M4 44 H126" />
+      <path d={path} />
+    </svg>
+  )
+}
+
+function MetricCard({ icon, label, value, tone = "good" }) {
+  return (
+    <div className={`farm3d-metric ${tone}`}>
+      <div className="metric-icon">{icon}</div>
+      <div>
+        <span>{label}</span>
+        <strong>{value}%</strong>
+      </div>
+      <FieldSparkline type={tone === "danger" ? "danger" : "good"} />
+    </div>
+  )
+}
+
+function Field3DView({ area }) {
+  if (!area) {
+    return (
+      <section className="farm3d-panel empty">
+        <div>
+          <span className="farm3d-eyebrow">Modelo 3D</span>
+          <h3>Selecione uma área para gerar a plantação em 3D</h3>
+          <p>Depois de desenhar a lavoura, toque em um card de área para abrir a maquete visual com os pontos de atenção.</p>
+        </div>
+      </section>
+    )
+  }
+
+  const projection = createFieldProjection(area.coordinates)
+  const metrics = getAreaMetrics(area)
+  const markers = getFieldMarkers(area, projection)
+  const tone = getAreaStatusTone(area.status)
+  const alertText = tone === "critical"
+    ? "Ir primeiro aos pontos vermelhos: risco alto de pragas e queda de produtividade."
+    : tone === "warning"
+      ? "Verificar as faixas amarelas: solo e irrigação precisam de acompanhamento."
+      : "Área estável: manter rotina de monitoramento e irrigação programada."
+
+  if (!projection) return null
+
+  return (
+    <section className="farm3d-panel">
+      <div className="farm3d-heading">
+        <div>
+          <span className="farm3d-eyebrow">Modelo 3D da plantação</span>
+          <h3>Área #{String(area.id).slice(-6)}</h3>
+          <p>{formatArea(area.areaHa)} mapeados para inspeção rápida do produtor</p>
+        </div>
+        <div className={`farm3d-status ${tone}`}>
+          <span></span>
+          {area.status || "Saudável"}
+        </div>
+      </div>
+
+      <div className="farm3d-dashboard">
+        <aside className="farm3d-side left">
+          <div className="weather-card">
+            <strong>28°C, céu limpo</strong>
+            <span>Sem chuva nas próximas horas</span>
+          </div>
+          <div className="distribution-card">
+            <h4>Distribuição da área</h4>
+            <div className="crop-ring">
+              <span></span>
+            </div>
+            <div className="crop-legend">
+              <p><i></i> Soja <strong>68%</strong></p>
+              <p><i></i> Milho <strong>18%</strong></p>
+              <p><i></i> Atenção <strong>14%</strong></p>
+            </div>
+          </div>
+        </aside>
+
+        <div className="farm3d-scene" aria-label="Plantação em 3D da área selecionada">
+          <div className="farm3d-ground"></div>
+          <svg
+            className="farm3d-field"
+            viewBox={`0 0 ${projection.width} ${projection.height}`}
+            role="img"
+            aria-label="Maquete 3D da área selecionada"
+          >
+            <defs>
+              <clipPath id={`field-clip-${area.id}`}>
+                <polygon points={projection.pointsString} />
+              </clipPath>
+              <linearGradient id={`field-gradient-${area.id}`} x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0%" stopColor="#2f8f45" />
+                <stop offset="54%" stopColor="#78b56a" />
+                <stop offset="100%" stopColor="#215c32" />
+              </linearGradient>
+              <pattern id={`field-lines-${area.id}`} width="46" height="46" patternUnits="userSpaceOnUse" patternTransform="rotate(-12)">
+                <rect width="46" height="46" fill="transparent" />
+                <path d="M0 12 H46 M0 30 H46" stroke="rgba(255,255,255,0.24)" strokeWidth="3" />
+              </pattern>
+            </defs>
+
+            <polygon className="field-shadow" points={projection.pointsString} transform="translate(16 24)" />
+            <polygon className="field-base" points={projection.pointsString} fill={`url(#field-gradient-${area.id})`} />
+            <polygon className="field-texture" points={projection.pointsString} fill={`url(#field-lines-${area.id})`} />
+
+            <g clipPath={`url(#field-clip-${area.id})`}>
+              <path className="water-channel" d={`M20 ${projection.center.y - 14} C180 ${projection.center.y - 70} 352 ${projection.center.y + 72} 600 ${projection.center.y - 18}`} />
+              <path className="field-road" d={`M70 ${projection.center.y + 96} C220 ${projection.center.y + 28} 390 ${projection.center.y + 126} 570 ${projection.center.y + 70}`} />
+              <rect className="zone zone-blue" x="54" y="64" width="210" height="114" rx="16" transform={`rotate(-12 ${projection.center.x} ${projection.center.y})`} />
+              <rect className="zone zone-light" x="340" y="88" width="200" height="130" rx="16" transform={`rotate(10 ${projection.center.x} ${projection.center.y})`} />
+              <rect className="zone zone-warning" x="190" y="232" width="250" height="104" rx="16" transform={`rotate(-5 ${projection.center.x} ${projection.center.y})`} />
+            </g>
+
+            <polygon className="field-border" points={projection.pointsString} />
+
+            {markers.map((marker, index) => (
+              <circle
+                key={`${marker.x}-${marker.y}-${index}`}
+                className={`field-marker ${marker.tone}`}
+                cx={marker.x}
+                cy={marker.y}
+                r={marker.tone === "critical" ? 5 : 4}
+              />
+            ))}
+
+            <g className="site-pin" transform={`translate(${projection.center.x - 8} ${projection.center.y - 12})`}>
+              <circle r="16" />
+              <circle r="7" />
+            </g>
+          </svg>
+
+          <div className="farm3d-label site-a">Talhão A<br /><strong>Soja</strong></div>
+          <div className="farm3d-label site-b">Talhão B<br /><strong>Irrigação</strong></div>
+          <div className="farm3d-label site-c">Talhão C<br /><strong>Pragas</strong></div>
+        </div>
+
+        <aside className="farm3d-side right">
+          <MetricCard icon="💧" label="Umidade do solo" value={metrics.moisture} />
+          <MetricCard icon="🌿" label="Fertilidade" value={metrics.fertility} />
+          <MetricCard icon="📈" label="Produção prevista" value={metrics.yield} />
+          <MetricCard icon="⚠️" label="Risco de pragas" value={metrics.pest} tone={metrics.pest > 70 ? "danger" : "warning"} />
+        </aside>
+      </div>
+
+      <div className="farm3d-actions">
+        <div>
+          <strong>Rota recomendada</strong>
+          <span>{alertText}</span>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            document.querySelector(".mapa-area")?.scrollIntoView({ behavior: "smooth", block: "center" })
+          }}
+        >
+          Ver no mapa
+        </button>
+      </div>
+    </section>
+  )
+}
+
 export default function MapaTab() {
   const { farmData } = useFarm()
 
@@ -429,6 +668,7 @@ export default function MapaTab() {
   const totalArea = areas.reduce((sum, a) => sum + (a.areaHa || 0), 0)
   const visibleAreas = areas.slice(0, visibleAreasCount)
   const hasMoreAreas = visibleAreasCount < areas.length
+  const selectedArea = areas.find(area => area.id === selectedAreaId) || areas[areas.length - 1] || null
 
   return (
     <div className="mapa-container">
@@ -479,6 +719,8 @@ export default function MapaTab() {
       <div className="mapa-area">
         <div ref={mapContainerRef} className="map-container"></div>
       </div>
+
+      <Field3DView area={selectedArea} />
 
       <div className="areas-grid">
         <div className="areas-header">
