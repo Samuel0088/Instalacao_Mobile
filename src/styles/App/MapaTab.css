@@ -496,6 +496,13 @@
   perspective: 900px;
   display: grid;
   place-items: center;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.farm3d-scene:active {
+  cursor: grabbing;
 }
 
 .farm3d-ground {
@@ -510,13 +517,21 @@
   transform: rotate(-8deg);
 }
 
-.farm3d-field {
+.farm3d-stage {
+  position: relative;
   width: min(94%, 680px);
-  max-height: 430px;
-  overflow: visible;
-  transform: rotateX(58deg) rotateZ(-14deg) translateY(4px);
+  aspect-ratio: 620 / 380;
+  transform-origin: center;
   transform-style: preserve-3d;
   filter: drop-shadow(0 28px 18px rgba(35, 54, 38, 0.22));
+  will-change: transform;
+}
+
+.farm3d-field {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  display: block;
 }
 
 .field-shadow {
@@ -607,6 +622,8 @@
   font-weight: 700;
   line-height: 1.2;
   box-shadow: 0 10px 22px rgba(32, 57, 42, 0.16);
+  transform: translateZ(22px);
+  pointer-events: none;
 }
 
 .farm3d-label strong {
@@ -626,6 +643,37 @@
 .site-c {
   right: 21%;
   bottom: 28%;
+}
+
+.farm3d-controls {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  gap: 8px;
+  padding: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(45, 97, 64, 0.12);
+  box-shadow: 0 12px 26px rgba(32, 57, 42, 0.15);
+}
+
+.farm3d-controls button {
+  width: 38px;
+  height: 38px;
+  min-height: 38px;
+  border: none;
+  border-radius: 50%;
+  background: var(--g4);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.farm3d-controls button:hover {
+  background: var(--g5);
 }
 
 .farm3d-metric {
@@ -735,25 +783,46 @@
   }
 
   .farm3d-scene {
-    min-height: 300px;
+    min-height: 330px;
+    border-radius: 16px;
   }
 
-  .farm3d-field {
-    width: 112%;
-    transform: rotateX(58deg) rotateZ(-14deg) translateY(12px);
+  .farm3d-stage {
+    width: 98%;
+    filter: drop-shadow(0 20px 14px rgba(35, 54, 38, 0.2));
   }
 
   .farm3d-label {
     font-size: 10px;
     padding: 6px 8px;
+    border-radius: 9px;
+  }
+
+  .site-a {
+    left: 50%;
+    top: 42%;
   }
 
   .site-b {
-    left: 18%;
+    left: 22%;
+    top: 30%;
   }
 
   .site-c {
-    right: 10%;
+    right: 12%;
+    bottom: 24%;
+  }
+
+  .farm3d-controls {
+    right: 10px;
+    bottom: 10px;
+  }
+
+  .farm3d-controls button {
+    width: 34px;
+    height: 34px;
+    min-height: 34px;
+    font-size: 16px;
   }
 
   .farm3d-metric {

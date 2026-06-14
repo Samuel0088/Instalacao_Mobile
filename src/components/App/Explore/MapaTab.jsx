@@ -164,6 +164,25 @@ function MetricCard({ icon, label, value, tone = "good" }) {
 }
 
 function Field3DView({ area }) {
+  const dragRef = useRef(null)
+  const [sceneView, setSceneView] = useState({
+    rotateX: 58,
+    rotateZ: -14,
+    scale: 1,
+    panX: 0,
+    panY: 0,
+  })
+
+  useEffect(() => {
+    setSceneView({
+      rotateX: 58,
+      rotateZ: -14,
+      scale: 1,
+      panX: 0,
+      panY: 0,
+    })
+  }, [area?.id])
+
   if (!area) {
     return (
       <section className="farm3d-panel empty">
@@ -187,6 +206,55 @@ function Field3DView({ area }) {
       : "Área estável: manter rotina de monitoramento e irrigação programada."
 
   if (!projection) return null
+
+  const updateScale = (direction) => {
+    setSceneView(view => ({
+      ...view,
+      scale: Math.min(1.45, Math.max(0.82, view.scale + direction * 0.12))
+    }))
+  }
+
+  const resetScene = () => {
+    setSceneView({
+      rotateX: 58,
+      rotateZ: -14,
+      scale: 1,
+      panX: 0,
+      panY: 0,
+    })
+  }
+
+  const handleScenePointerDown = (event) => {
+    event.currentTarget.setPointerCapture(event.pointerId)
+    dragRef.current = {
+      id: event.pointerId,
+      x: event.clientX,
+      y: event.clientY,
+      view: sceneView,
+    }
+  }
+
+  const handleScenePointerMove = (event) => {
+    const drag = dragRef.current
+    if (!drag || drag.id !== event.pointerId) return
+
+    const deltaX = event.clientX - drag.x
+    const deltaY = event.clientY - drag.y
+
+    setSceneView({
+      ...drag.view,
+      rotateX: Math.min(68, Math.max(44, drag.view.rotateX - deltaY * 0.12)),
+      rotateZ: Math.min(10, Math.max(-34, drag.view.rotateZ + deltaX * 0.12)),
+      panX: Math.min(42, Math.max(-42, drag.view.panX + deltaX * 0.08)),
+      panY: Math.min(26, Math.max(-26, drag.view.panY + deltaY * 0.06)),
+    })
+  }
+
+  const handleScenePointerEnd = () => {
+    dragRef.current = null
+  }
+
+  const sceneTransform = `translate(${sceneView.panX}px, ${sceneView.panY}px) rotateX(${sceneView.rotateX}deg) rotateZ(${sceneView.rotateZ}deg) scale(${sceneView.scale})`
 
   return (
     <section className="farm3d-panel">
@@ -221,62 +289,77 @@ function Field3DView({ area }) {
           </div>
         </aside>
 
-        <div className="farm3d-scene" aria-label="Plantação em 3D da área selecionada">
+        <div
+          className="farm3d-scene"
+          aria-label="Plantação em 3D da área selecionada"
+          onPointerDown={handleScenePointerDown}
+          onPointerMove={handleScenePointerMove}
+          onPointerUp={handleScenePointerEnd}
+          onPointerCancel={handleScenePointerEnd}
+        >
           <div className="farm3d-ground"></div>
-          <svg
-            className="farm3d-field"
-            viewBox={`0 0 ${projection.width} ${projection.height}`}
-            role="img"
-            aria-label="Maquete 3D da área selecionada"
-          >
-            <defs>
-              <clipPath id={`field-clip-${area.id}`}>
-                <polygon points={projection.pointsString} />
-              </clipPath>
-              <linearGradient id={`field-gradient-${area.id}`} x1="0" x2="1" y1="0" y2="1">
-                <stop offset="0%" stopColor="#2f8f45" />
-                <stop offset="54%" stopColor="#78b56a" />
-                <stop offset="100%" stopColor="#215c32" />
-              </linearGradient>
-              <pattern id={`field-lines-${area.id}`} width="46" height="46" patternUnits="userSpaceOnUse" patternTransform="rotate(-12)">
-                <rect width="46" height="46" fill="transparent" />
-                <path d="M0 12 H46 M0 30 H46" stroke="rgba(255,255,255,0.24)" strokeWidth="3" />
-              </pattern>
-            </defs>
+          <div className="farm3d-stage" style={{ transform: sceneTransform }}>
+            <svg
+              className="farm3d-field"
+              viewBox={`0 0 ${projection.width} ${projection.height}`}
+              role="img"
+              aria-label="Maquete 3D da área selecionada"
+            >
+              <defs>
+                <clipPath id={`field-clip-${area.id}`}>
+                  <polygon points={projection.pointsString} />
+                </clipPath>
+                <linearGradient id={`field-gradient-${area.id}`} x1="0" x2="1" y1="0" y2="1">
+                  <stop offset="0%" stopColor="#2f8f45" />
+                  <stop offset="54%" stopColor="#78b56a" />
+                  <stop offset="100%" stopColor="#215c32" />
+                </linearGradient>
+                <pattern id={`field-lines-${area.id}`} width="46" height="46" patternUnits="userSpaceOnUse" patternTransform="rotate(-12)">
+                  <rect width="46" height="46" fill="transparent" />
+                  <path d="M0 12 H46 M0 30 H46" stroke="rgba(255,255,255,0.24)" strokeWidth="3" />
+                </pattern>
+              </defs>
 
-            <polygon className="field-shadow" points={projection.pointsString} transform="translate(16 24)" />
-            <polygon className="field-base" points={projection.pointsString} fill={`url(#field-gradient-${area.id})`} />
-            <polygon className="field-texture" points={projection.pointsString} fill={`url(#field-lines-${area.id})`} />
+              <polygon className="field-shadow" points={projection.pointsString} transform="translate(16 24)" />
+              <polygon className="field-base" points={projection.pointsString} fill={`url(#field-gradient-${area.id})`} />
+              <polygon className="field-texture" points={projection.pointsString} fill={`url(#field-lines-${area.id})`} />
 
-            <g clipPath={`url(#field-clip-${area.id})`}>
-              <path className="water-channel" d={`M20 ${projection.center.y - 14} C180 ${projection.center.y - 70} 352 ${projection.center.y + 72} 600 ${projection.center.y - 18}`} />
-              <path className="field-road" d={`M70 ${projection.center.y + 96} C220 ${projection.center.y + 28} 390 ${projection.center.y + 126} 570 ${projection.center.y + 70}`} />
-              <rect className="zone zone-blue" x="54" y="64" width="210" height="114" rx="16" transform={`rotate(-12 ${projection.center.x} ${projection.center.y})`} />
-              <rect className="zone zone-light" x="340" y="88" width="200" height="130" rx="16" transform={`rotate(10 ${projection.center.x} ${projection.center.y})`} />
-              <rect className="zone zone-warning" x="190" y="232" width="250" height="104" rx="16" transform={`rotate(-5 ${projection.center.x} ${projection.center.y})`} />
-            </g>
+              <g clipPath={`url(#field-clip-${area.id})`}>
+                <path className="water-channel" d={`M20 ${projection.center.y - 14} C180 ${projection.center.y - 70} 352 ${projection.center.y + 72} 600 ${projection.center.y - 18}`} />
+                <path className="field-road" d={`M70 ${projection.center.y + 96} C220 ${projection.center.y + 28} 390 ${projection.center.y + 126} 570 ${projection.center.y + 70}`} />
+                <rect className="zone zone-blue" x="54" y="64" width="210" height="114" rx="16" transform={`rotate(-12 ${projection.center.x} ${projection.center.y})`} />
+                <rect className="zone zone-light" x="340" y="88" width="200" height="130" rx="16" transform={`rotate(10 ${projection.center.x} ${projection.center.y})`} />
+                <rect className="zone zone-warning" x="190" y="232" width="250" height="104" rx="16" transform={`rotate(-5 ${projection.center.x} ${projection.center.y})`} />
+              </g>
 
-            <polygon className="field-border" points={projection.pointsString} />
+              <polygon className="field-border" points={projection.pointsString} />
 
-            {markers.map((marker, index) => (
-              <circle
-                key={`${marker.x}-${marker.y}-${index}`}
-                className={`field-marker ${marker.tone}`}
-                cx={marker.x}
-                cy={marker.y}
-                r={marker.tone === "critical" ? 5 : 4}
-              />
-            ))}
+              {markers.map((marker, index) => (
+                <circle
+                  key={`${marker.x}-${marker.y}-${index}`}
+                  className={`field-marker ${marker.tone}`}
+                  cx={marker.x}
+                  cy={marker.y}
+                  r={marker.tone === "critical" ? 5 : 4}
+                />
+              ))}
 
-            <g className="site-pin" transform={`translate(${projection.center.x - 8} ${projection.center.y - 12})`}>
-              <circle r="16" />
-              <circle r="7" />
-            </g>
-          </svg>
+              <g className="site-pin" transform={`translate(${projection.center.x - 8} ${projection.center.y - 12})`}>
+                <circle r="16" />
+                <circle r="7" />
+              </g>
+            </svg>
 
-          <div className="farm3d-label site-a">Talhão A<br /><strong>Soja</strong></div>
-          <div className="farm3d-label site-b">Talhão B<br /><strong>Irrigação</strong></div>
-          <div className="farm3d-label site-c">Talhão C<br /><strong>Pragas</strong></div>
+            <div className="farm3d-label site-a">Talhão A<br /><strong>Soja</strong></div>
+            <div className="farm3d-label site-b">Talhão B<br /><strong>Irrigação</strong></div>
+            <div className="farm3d-label site-c">Talhão C<br /><strong>Pragas</strong></div>
+          </div>
+
+          <div className="farm3d-controls" onPointerDown={(event) => event.stopPropagation()}>
+            <button type="button" onClick={() => updateScale(1)} aria-label="Aproximar modelo 3D">+</button>
+            <button type="button" onClick={() => updateScale(-1)} aria-label="Afastar modelo 3D">−</button>
+            <button type="button" onClick={resetScene} aria-label="Restaurar visão 3D">↺</button>
+          </div>
         </div>
 
         <aside className="farm3d-side right">
