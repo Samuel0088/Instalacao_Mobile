@@ -214,6 +214,7 @@ function Field3DView({ area }) {
   const dragRef = useRef(null)
   const pointersRef = useRef(new Map())
   const pinchRef = useRef(null)
+  const touchGestureRef = useRef(null)
   const sceneViewRef = useRef(null)
   const [sceneView, setSceneView] = useState({
     rotateX: 58,
@@ -226,6 +227,7 @@ function Field3DView({ area }) {
   useEffect(() => {
     pointersRef.current.clear()
     pinchRef.current = null
+    touchGestureRef.current = null
     dragRef.current = null
     setSceneView({
       rotateX: 58,
@@ -284,6 +286,7 @@ function Field3DView({ area }) {
   const resetScene = () => {
     pointersRef.current.clear()
     pinchRef.current = null
+    touchGestureRef.current = null
     dragRef.current = null
     setSceneView({
       rotateX: 58,
@@ -372,6 +375,106 @@ function Field3DView({ area }) {
     dragRef.current = null
   }
 
+  const getTouchDistance = (touches) => {
+    if (touches.length < 2) return 0
+
+    return Math.hypot(
+      touches[1].clientX - touches[0].clientX,
+      touches[1].clientY - touches[0].clientY
+    )
+  }
+
+  const getTouchCenter = (touches) => {
+    if (touches.length < 2) {
+      return {
+        x: touches[0]?.clientX || 0,
+        y: touches[0]?.clientY || 0,
+      }
+    }
+
+    return {
+      x: (touches[0].clientX + touches[1].clientX) / 2,
+      y: (touches[0].clientY + touches[1].clientY) / 2,
+    }
+  }
+
+  const handleSceneTouchStart = (event) => {
+    if (event.touches.length === 1) {
+      const touch = event.touches[0]
+      touchGestureRef.current = {
+        type: "drag",
+        x: touch.clientX,
+        y: touch.clientY,
+        view: sceneViewRef.current || sceneView,
+      }
+      return
+    }
+
+    if (event.touches.length >= 2) {
+      event.preventDefault()
+      const center = getTouchCenter(event.touches)
+      touchGestureRef.current = {
+        type: "pinch",
+        distance: getTouchDistance(event.touches),
+        centerX: center.x,
+        centerY: center.y,
+        view: sceneViewRef.current || sceneView,
+      }
+    }
+  }
+
+  const handleSceneTouchMove = (event) => {
+    const gesture = touchGestureRef.current
+    if (!gesture) return
+
+    if (event.touches.length >= 2) {
+      event.preventDefault()
+      const nextDistance = getTouchDistance(event.touches)
+      const center = getTouchCenter(event.touches)
+      if (!nextDistance || !gesture.distance) return
+
+      const nextScale = gesture.view.scale * (nextDistance / gesture.distance)
+      setSceneView({
+        ...gesture.view,
+        scale: Math.min(1.65, Math.max(0.72, nextScale)),
+        panX: Math.min(52, Math.max(-52, gesture.view.panX + (center.x - gesture.centerX) * 0.05)),
+        panY: Math.min(34, Math.max(-34, gesture.view.panY + (center.y - gesture.centerY) * 0.05)),
+      })
+      return
+    }
+
+    if (event.touches.length === 1 && gesture.type === "drag") {
+      const touch = event.touches[0]
+      const deltaX = touch.clientX - gesture.x
+      const deltaY = touch.clientY - gesture.y
+
+      setSceneView({
+        ...gesture.view,
+        rotateX: Math.min(68, Math.max(44, gesture.view.rotateX - deltaY * 0.12)),
+        rotateZ: Math.min(10, Math.max(-34, gesture.view.rotateZ + deltaX * 0.12)),
+        panX: Math.min(42, Math.max(-42, gesture.view.panX + deltaX * 0.08)),
+        panY: Math.min(26, Math.max(-26, gesture.view.panY + deltaY * 0.06)),
+      })
+    }
+  }
+
+  const handleSceneTouchEnd = (event) => {
+    if (event.touches.length === 0) {
+      touchGestureRef.current = null
+      return
+    }
+
+    if (event.touches.length === 1) {
+      const touch = event.touches[0]
+      touchGestureRef.current = {
+        type: "drag",
+        x: touch.clientX,
+        y: touch.clientY,
+        view: sceneViewRef.current || sceneView,
+      }
+    }
+  }
+
   const sceneTransform = `translate(${sceneView.panX}px, ${sceneView.panY}px) rotateX(${sceneView.rotateX}deg) rotateZ(${sceneView.rotateZ}deg) scale(${sceneView.scale})`
 
   return (
@@ -414,6 +517,10 @@ function Field3DView({ area }) {
           onPointerMove={handleScenePointerMove}
           onPointerUp={handleScenePointerEnd}
           onPointerCancel={handleScenePointerEnd}
+          onTouchStart={handleSceneTouchStart}
+          onTouchMove={handleSceneTouchMove}
+          onTouchEnd={handleSceneTouchEnd}
+          onTouchCancel={handleSceneTouchEnd}
         >
           <div className="farm3d-ground"></div>
           <div className="farm3d-stage" style={{ transform: sceneTransform }}>

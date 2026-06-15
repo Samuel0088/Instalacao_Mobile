@@ -498,7 +498,14 @@
   place-items: center;
   cursor: grab;
   touch-action: none;
+  overscroll-behavior: contain;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
   user-select: none;
+}
+
+.farm3d-scene * {
+  touch-action: none;
 }
 
 .farm3d-scene:active {
