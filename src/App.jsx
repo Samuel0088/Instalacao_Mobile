@@ -131,13 +131,7 @@ function App() {
       e.preventDefault()
       console.log('📲 Evento beforeinstallprompt capturado')
       setDeferredPrompt(e)
-      
-      // Se veio com install=true, disparar automaticamente
-      if (shouldInstall) {
-        setTimeout(() => {
-          handleInstall()
-        }, 1500)
-      }
+      setShowInstallPrompt(true)
     }
 
     
@@ -168,7 +162,8 @@ const handleInstall = async () => {
     return
   }
 
-  deferredPrompt.prompt()
+  setShowInstallPrompt(false)
+  await deferredPrompt.prompt()
 
   const choiceResult = await deferredPrompt.userChoice
 
