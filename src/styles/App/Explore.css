@@ -1723,7 +1723,7 @@ body {
   background:
     radial-gradient(circle at 16% 0%, rgba(255, 255, 255, 0.16), transparent 32%),
     linear-gradient(180deg, #3f8a5d 0%, #34764f 100%);
-  border-top: 1px solid transparent;
+  border-top: 0;
   box-shadow: none;
 }
 

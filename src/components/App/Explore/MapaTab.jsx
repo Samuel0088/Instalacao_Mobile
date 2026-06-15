@@ -47,19 +47,27 @@ function getAreaStatus() {
 }
 
 function generateZones(points) {
-  // ✅ agora aceita a partir de 3 pontos
   if (!points || points.length < 3) return []
 
-  const half = Math.floor(points.length / 2)
+  const center = points.reduce(
+    (acc, point) => ({
+      lat: acc.lat + point.lat / points.length,
+      lng: acc.lng + point.lng / points.length,
+    }),
+    { lat: 0, lng: 0 }
+  )
+  const split = Math.max(1, Math.ceil(points.length / 2))
+  const firstEdge = points.slice(0, split + 1)
+  const secondEdge = [...points.slice(split), points[0]]
 
   return [
     {
-      coordinates: points.slice(0, half).map(p => [p.lat, p.lng]),
+      coordinates: [center, ...firstEdge].map(p => [p.lat, p.lng]),
       color: "#2196F3",
       status: "Precisa de água"
     },
     {
-      coordinates: points.slice(half).map(p => [p.lat, p.lng]),
+      coordinates: [center, ...secondEdge].map(p => [p.lat, p.lng]),
       color: "#FF5722",
       status: "Solo fraco"
     }
@@ -100,11 +108,13 @@ function createFieldProjection(coordinates = []) {
   const height = 380
   const padding = 52
 
-  const points = coordinates.map(([lat, lng]) => {
+  const projectCoordinate = ([lat, lng]) => {
     const x = padding + ((lng - minLng) / lngRange) * (width - padding * 2)
     const y = padding + ((maxLat - lat) / latRange) * (height - padding * 2)
     return { x, y }
-  })
+  }
+
+  const points = coordinates.map(projectCoordinate)
 
   const pointsString = points.map(point => `${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(" ")
   const center = points.reduce(
@@ -112,7 +122,44 @@ function createFieldProjection(coordinates = []) {
     { x: 0, y: 0 }
   )
 
-  return { points, pointsString, center, width, height }
+  return { points, pointsString, center, width, height, projectCoordinate }
+}
+
+function getStatusColors(area) {
+  const tone = getAreaStatusTone(area?.status)
+
+  if (tone === "critical") {
+    return { start: "#8f2d25", middle: "#cf5b46", end: "#5f1f1a" }
+  }
+
+  if (tone === "warning") {
+    return { start: "#9d7a20", middle: "#d9b64c", end: "#5f5120" }
+  }
+
+  return { start: area?.color || "#2f8f45", middle: "#78b56a", end: "#215c32" }
+}
+
+function getProjectedZones(area, projection) {
+  if (!area?.zones?.length || !projection) return []
+
+  return area.zones
+    .filter(zone => zone.coordinates?.length >= 3)
+    .map((zone, index) => {
+      const projected = zone.coordinates.map(projection.projectCoordinate)
+      const points = projected.map(point => `${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(" ")
+      const center = projected.reduce(
+        (acc, point) => ({ x: acc.x + point.x / projected.length, y: acc.y + point.y / projected.length }),
+        { x: 0, y: 0 }
+      )
+
+      return {
+        ...zone,
+        id: `${area.id}-zone-${index}`,
+        points,
+        center,
+        opacity: zone.color === "#2196F3" ? 0.46 : 0.42
+      }
+    })
 }
 
 function getFieldMarkers(area, projection) {
@@ -165,6 +212,9 @@ function MetricCard({ icon, label, value, tone = "good" }) {
 
 function Field3DView({ area }) {
   const dragRef = useRef(null)
+  const pointersRef = useRef(new Map())
+  const pinchRef = useRef(null)
+  const sceneViewRef = useRef(null)
   const [sceneView, setSceneView] = useState({
     rotateX: 58,
     rotateZ: -14,
@@ -174,6 +224,9 @@ function Field3DView({ area }) {
   })
 
   useEffect(() => {
+    pointersRef.current.clear()
+    pinchRef.current = null
+    dragRef.current = null
     setSceneView({
       rotateX: 58,
       rotateZ: -14,
@@ -182,6 +235,10 @@ function Field3DView({ area }) {
       panY: 0,
     })
   }, [area?.id])
+
+  useEffect(() => {
+    sceneViewRef.current = sceneView
+  }, [sceneView])
 
   if (!area) {
     return (
@@ -199,6 +256,8 @@ function Field3DView({ area }) {
   const metrics = getAreaMetrics(area)
   const markers = getFieldMarkers(area, projection)
   const tone = getAreaStatusTone(area.status)
+  const fieldColors = getStatusColors(area)
+  const projectedZones = getProjectedZones(area, projection)
   const alertText = tone === "critical"
     ? "Ir primeiro aos pontos vermelhos: risco alto de pragas e queda de produtividade."
     : tone === "warning"
@@ -210,11 +269,22 @@ function Field3DView({ area }) {
   const updateScale = (direction) => {
     setSceneView(view => ({
       ...view,
-      scale: Math.min(1.45, Math.max(0.82, view.scale + direction * 0.12))
+      scale: Math.min(1.55, Math.max(0.76, view.scale + direction * 0.12))
     }))
   }
 
+  const getPointerDistance = () => {
+    const pointers = Array.from(pointersRef.current.values())
+    if (pointers.length < 2) return 0
+
+    const [first, second] = pointers
+    return Math.hypot(second.x - first.x, second.y - first.y)
+  }
+
   const resetScene = () => {
+    pointersRef.current.clear()
+    pinchRef.current = null
+    dragRef.current = null
     setSceneView({
       rotateX: 58,
       rotateZ: -14,
@@ -226,15 +296,48 @@ function Field3DView({ area }) {
 
   const handleScenePointerDown = (event) => {
     event.currentTarget.setPointerCapture(event.pointerId)
+    pointersRef.current.set(event.pointerId, {
+      x: event.clientX,
+      y: event.clientY,
+    })
+
+    if (pointersRef.current.size >= 2) {
+      pinchRef.current = {
+        distance: getPointerDistance(),
+        scale: sceneViewRef.current?.scale || sceneView.scale,
+      }
+      dragRef.current = null
+      return
+    }
+
     dragRef.current = {
       id: event.pointerId,
       x: event.clientX,
       y: event.clientY,
-      view: sceneView,
+      view: sceneViewRef.current || sceneView,
     }
   }
 
   const handleScenePointerMove = (event) => {
+    if (!pointersRef.current.has(event.pointerId)) return
+
+    pointersRef.current.set(event.pointerId, {
+      x: event.clientX,
+      y: event.clientY,
+    })
+
+    if (pointersRef.current.size >= 2 && pinchRef.current) {
+      const nextDistance = getPointerDistance()
+      if (!nextDistance || !pinchRef.current.distance) return
+
+      const nextScale = pinchRef.current.scale * (nextDistance / pinchRef.current.distance)
+      setSceneView(view => ({
+        ...view,
+        scale: Math.min(1.55, Math.max(0.76, nextScale))
+      }))
+      return
+    }
+
     const drag = dragRef.current
     if (!drag || drag.id !== event.pointerId) return
 
@@ -250,7 +353,22 @@ function Field3DView({ area }) {
     })
   }
 
-  const handleScenePointerEnd = () => {
+  const handleScenePointerEnd = (event) => {
+    pointersRef.current.delete(event.pointerId)
+    pinchRef.current = null
+
+    const remainingPointer = Array.from(pointersRef.current.entries())[0]
+    if (remainingPointer) {
+      const [id, pointer] = remainingPointer
+      dragRef.current = {
+        id,
+        x: pointer.x,
+        y: pointer.y,
+        view: sceneViewRef.current || sceneView,
+      }
+      return
+    }
+
     dragRef.current = null
   }
 
@@ -310,9 +428,9 @@ function Field3DView({ area }) {
                   <polygon points={projection.pointsString} />
                 </clipPath>
                 <linearGradient id={`field-gradient-${area.id}`} x1="0" x2="1" y1="0" y2="1">
-                  <stop offset="0%" stopColor="#2f8f45" />
-                  <stop offset="54%" stopColor="#78b56a" />
-                  <stop offset="100%" stopColor="#215c32" />
+                  <stop offset="0%" stopColor={fieldColors.start} />
+                  <stop offset="54%" stopColor={fieldColors.middle} />
+                  <stop offset="100%" stopColor={fieldColors.end} />
                 </linearGradient>
                 <pattern id={`field-lines-${area.id}`} width="46" height="46" patternUnits="userSpaceOnUse" patternTransform="rotate(-12)">
                   <rect width="46" height="46" fill="transparent" />
@@ -327,9 +445,24 @@ function Field3DView({ area }) {
               <g clipPath={`url(#field-clip-${area.id})`}>
                 <path className="water-channel" d={`M20 ${projection.center.y - 14} C180 ${projection.center.y - 70} 352 ${projection.center.y + 72} 600 ${projection.center.y - 18}`} />
                 <path className="field-road" d={`M70 ${projection.center.y + 96} C220 ${projection.center.y + 28} 390 ${projection.center.y + 126} 570 ${projection.center.y + 70}`} />
-                <rect className="zone zone-blue" x="54" y="64" width="210" height="114" rx="16" transform={`rotate(-12 ${projection.center.x} ${projection.center.y})`} />
-                <rect className="zone zone-light" x="340" y="88" width="200" height="130" rx="16" transform={`rotate(10 ${projection.center.x} ${projection.center.y})`} />
-                <rect className="zone zone-warning" x="190" y="232" width="250" height="104" rx="16" transform={`rotate(-5 ${projection.center.x} ${projection.center.y})`} />
+                {projectedZones.length > 0 ? (
+                  projectedZones.map(zone => (
+                    <polygon
+                      key={zone.id}
+                      className="zone zone-map"
+                      points={zone.points}
+                      fill={zone.color}
+                      opacity={zone.opacity}
+                    />
+                  ))
+                ) : (
+                  <>
+                    <rect className="zone zone-light" x="340" y="88" width="200" height="130" rx="16" transform={`rotate(10 ${projection.center.x} ${projection.center.y})`} />
+                    {tone !== "healthy" && (
+                      <rect className="zone zone-warning" x="190" y="232" width="250" height="104" rx="16" transform={`rotate(-5 ${projection.center.x} ${projection.center.y})`} />
+                    )}
+                  </>
+                )}
               </g>
 
               <polygon className="field-border" points={projection.pointsString} />
@@ -351,8 +484,25 @@ function Field3DView({ area }) {
             </svg>
 
             <div className="farm3d-label site-a">Talhão A<br /><strong>Soja</strong></div>
-            <div className="farm3d-label site-b">Talhão B<br /><strong>Irrigação</strong></div>
-            <div className="farm3d-label site-c">Talhão C<br /><strong>Pragas</strong></div>
+            {projectedZones.slice(0, 2).map((zone, index) => (
+              <div
+                key={`${zone.id}-label`}
+                className={`farm3d-label zone-label zone-label-${index}`}
+                style={{
+                  left: `${(zone.center.x / projection.width) * 100}%`,
+                  top: `${(zone.center.y / projection.height) * 100}%`,
+                  borderColor: zone.color,
+                }}
+              >
+                Zona {index + 1}<br /><strong>{zone.status}</strong>
+              </div>
+            ))}
+            {projectedZones.length === 0 && (
+              <>
+                <div className="farm3d-label site-b">Talhão B<br /><strong>Irrigação</strong></div>
+                <div className="farm3d-label site-c">Talhão C<br /><strong>Pragas</strong></div>
+              </>
+            )}
           </div>
 
           <div className="farm3d-controls" onPointerDown={(event) => event.stopPropagation()}>

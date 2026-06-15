@@ -575,6 +575,13 @@
   stroke-width: 3;
 }
 
+.zone-map {
+  stroke: rgba(255, 255, 255, 0.88);
+  stroke-width: 4;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 3px 5px rgba(20, 43, 27, 0.18));
+}
+
 .zone-blue {
   fill: #36a9e1;
 }
@@ -628,6 +635,19 @@
 
 .farm3d-label strong {
   color: var(--g1);
+}
+
+.zone-label {
+  border: 2px solid var(--g4);
+  transform: translate(-50%, -50%) translateZ(28px);
+}
+
+.zone-label strong {
+  display: block;
+  max-width: 86px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .site-a {
