@@ -1,6 +1,6 @@
 // components/App/Global/InstallSuccess.jsx
 import { motion } from "framer-motion"
-import { FaCheckCircle, FaRocket, FaTimes } from 'react-icons/fa'
+import { FaCheck, FaHome, FaLeaf, FaMobileAlt, FaTimes } from 'react-icons/fa'
 import '../../../styles/Global/InstallSuccess.css'
 
 const InstallSuccess = ({ onClose, isIOS, isAndroid }) => {
@@ -24,45 +24,46 @@ const InstallSuccess = ({ onClose, isIOS, isAndroid }) => {
         </button>
 
         <div className="success-icon">
-          <FaCheckCircle size={64} color="#56a870" />
+          <FaCheck />
         </div>
 
-        <h2>Instalado com sucesso! 🎉</h2>
+        <span className="success-kicker">Zenith instalado</span>
+        <h2>Pronto para usar</h2>
 
         <div className="success-message">
-          <FaRocket size={20} />
-          <p>O AgroVoo foi instalado no seu dispositivo!</p>
+          <FaLeaf />
+          <p>O app foi adicionado ao seu dispositivo para abrir mais rápido, sem depender da aba do navegador.</p>
         </div>
 
         <div className="next-steps">
-          <h3>Próximos passos:</h3>
-          <ol>
+          <h3>Próximos passos</h3>
+          <div className="success-steps">
             {isAndroid && (
               <>
-                <li>Feche esta aba do navegador</li>
-                <li>Procure o ícone do <strong>AgroVoo</strong> na sua área de trabalho</li>
-                <li>Toque no ícone para abrir o app fora do navegador!</li>
+                <div><FaTimes /><span>Feche esta aba do navegador</span></div>
+                <div><FaHome /><span>Procure o ícone do <strong>Zenith</strong> na tela inicial</span></div>
+                <div><FaMobileAlt /><span>Toque no ícone para abrir como app</span></div>
               </>
             )}
             {isIOS && (
               <>
-                <li>Volte para a tela inicial do seu iPhone/iPad</li>
-                <li>Procure o ícone do <strong>AgroVoo</strong></li>
-                <li>Toque para abrir como um app nativo!</li>
+                <div><FaHome /><span>Volte para a tela inicial</span></div>
+                <div><FaLeaf /><span>Procure o ícone do <strong>Zenith</strong></span></div>
+                <div><FaMobileAlt /><span>Toque para abrir como app</span></div>
               </>
             )}
             {!isIOS && !isAndroid && (
               <>
-                <li>Feche esta aba do navegador</li>
-                <li>Procure o atalho do <strong>AgroVoo</strong> na sua área de trabalho</li>
-                <li>Clique para abrir como um app!</li>
+                <div><FaTimes /><span>Feche esta aba do navegador</span></div>
+                <div><FaHome /><span>Procure o atalho do <strong>Zenith</strong></span></div>
+                <div><FaMobileAlt /><span>Abra pelo atalho instalado</span></div>
               </>
             )}
-          </ol>
+          </div>
         </div>
 
         <button className="success-button" onClick={onClose}>
-          Entendi!
+          Entendi
         </button>
       </motion.div>
     </motion.div>
