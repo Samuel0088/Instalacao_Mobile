@@ -50,6 +50,11 @@ export default function MenuBar() {
   const location  = useLocation()
   const isActive  = (path) => location.pathname === path
   const activeIdx = items.findIndex(({ path }) => isActive(path))
+  const goToInternalPage = (path) => {
+    if (location.pathname === path) return
+    sessionStorage.setItem("zenithShowWhiteLoaderOnce", "true")
+    navigate(path)
+  }
 
   return (
     <nav className="nav">
@@ -73,7 +78,7 @@ export default function MenuBar() {
             >
               <button
                 className={`nav__item-btn${active ? " nav__item-btn--active" : ""}`}
-                onClick={() => navigate(path)}
+                onClick={() => goToInternalPage(path)}
                 aria-current={active ? "page" : undefined}
               >
                 <span className="material-symbols-outlined">{icon}</span>

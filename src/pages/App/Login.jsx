@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import { auth } from "../../services/firebase"
 import {
@@ -178,7 +178,12 @@ export default function Login({ setAppLoading }) {
   const [showPassword, setShowPassword] = useState(false)
   const [alert, setAlert]               = useState({ type: "", text: "" })
 
-  const navTimerRef = useRef(null)
+  const goHomeWithGreenLoading = useCallback(() => {
+    sessionStorage.removeItem("zenithShowWhiteLoaderOnce")
+    sessionStorage.setItem("zenithBlockWhiteLoaderUntil", String(Date.now() + 5000))
+    setAppLoading?.(true)
+    navigate("/home", { replace: true })
+  }, [navigate, setAppLoading])
 
   /* ── useEffect: verificar sessão + email salvo ── */
   useEffect(() => {
@@ -186,8 +191,7 @@ export default function Login({ setAppLoading }) {
 
     if (user) {
       devLog("Usuário já está logado:", user.email)
-      setAppLoading(true)
-      navTimerRef.current = setTimeout(() => navigate("/home"), 2000)
+      goHomeWithGreenLoading()
       return
     }
 
@@ -197,10 +201,7 @@ export default function Login({ setAppLoading }) {
       setRememberMe(true)
     }
 
-    return () => {
-      if (navTimerRef.current) clearTimeout(navTimerRef.current)
-    }
-  }, [navigate, setAppLoading])
+  }, [goHomeWithGreenLoading])
 
   /* ── Helpers de alerta ── */
   const showAlertMsg  = useCallback((type, text) => setAlert({ type, text }), [])
@@ -213,8 +214,7 @@ export default function Login({ setAppLoading }) {
 
         if (result?.user) {
           showAlertMsg("success", "Login realizado com sucesso! 🚀")
-          setAppLoading(true)
-          navTimerRef.current = setTimeout(() => navigate("/home"), 1500)
+          goHomeWithGreenLoading()
         }
       } catch (error) {
         console.error(error)
@@ -224,7 +224,7 @@ export default function Login({ setAppLoading }) {
     }
 
     finishRedirectLogin()
-  }, [navigate, setAppLoading, showAlertMsg])
+  }, [goHomeWithGreenLoading, showAlertMsg])
 
   /* ── Handlers ── */
   const handleEmailChange     = useCallback((e) => setEmail(e.target.value), [])
@@ -254,16 +254,14 @@ export default function Login({ setAppLoading }) {
         : localStorage.removeItem("rememberedEmail")
 
       showAlertMsg("success", "Bem-vindo de volta, produtor! 🚁")
-      setAppLoading(true)
-
-      navTimerRef.current = setTimeout(() => navigate("/home"), 2000)
+      goHomeWithGreenLoading()
     } catch (error) {
       const message = FIREBASE_ERROR_MESSAGES[error.code] ?? FIREBASE_ERROR_DEFAULT
       showAlertMsg("error", message)
     } finally {
       setLoading(false)
     }
-  }, [email, password, rememberMe, navigate, setAppLoading, showAlertMsg, clearAlertMsg])
+  }, [email, password, rememberMe, goHomeWithGreenLoading, showAlertMsg, clearAlertMsg])
 
   const handleKeyDown = useCallback(
     (e) => { if (e.key === "Enter") handleLogin() },
@@ -288,8 +286,7 @@ export default function Login({ setAppLoading }) {
     try {
       await signInWithPopup(auth, provider)
       showAlertMsg("success", successMessage)
-      setAppLoading(true)
-      navTimerRef.current = setTimeout(() => navigate("/home"), 1500)
+      goHomeWithGreenLoading()
     } catch (error) {
       console.error(error)
 

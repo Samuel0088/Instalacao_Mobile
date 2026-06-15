@@ -1,6 +1,6 @@
 // components/AppHeader.jsx
 
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import "../../../styles/Global/AppHeader.css"
 
 export default function AppHeader({
@@ -13,6 +13,13 @@ export default function AppHeader({
 }) {
 
   const navigate = useNavigate()
+  const location = useLocation()
+
+  const goToInternalPage = (path) => {
+    if (location.pathname === path) return
+    sessionStorage.setItem("zenithShowWhiteLoaderOnce", "true")
+    navigate(path)
+  }
 
   return (
     <header
@@ -23,7 +30,7 @@ export default function AppHeader({
 
       {/* TOPO */}
       <div className="header-top">
-        <button className="header-brand" onClick={() => navigate("/home")}>
+        <button className="header-brand" onClick={() => goToInternalPage("/home")}>
           Zenith
         </button>
 
@@ -40,7 +47,7 @@ export default function AppHeader({
 
           <button
             className="profile-avatar-btn"
-            onClick={() => navigate("/profile")}
+            onClick={() => goToInternalPage("/profile")}
             aria-label="Abrir perfil"
           >
             <span>🌽</span>

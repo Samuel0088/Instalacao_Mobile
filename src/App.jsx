@@ -6,6 +6,7 @@ import { AnimatePresence } from "framer-motion"
 import Intro from "./pages/App/Intro"
 import Login from "./pages/App/Login"
 import CadastroCompleto from "./pages/App/CadastroCompleto"
+import CadastrarFazenda from "./pages/App/CadastroFazenda"
 import Home from "./pages/App/Home"
 import Profile from "./pages/App/Profile"
 import ForgotPassword from "./pages/App/ForgotPassword"
@@ -34,11 +35,41 @@ function AccessibilityGate() {
 function RouteChangeLoader() {
   const location = useLocation()
   const firstRenderRef = useRef(true)
+  const previousPathRef = useRef(location.pathname)
   const [showRouteLoading, setShowRouteLoading] = useState(false)
+  const internalRoutes = ["/home", "/profile", "/explore", "/plans"]
 
   useEffect(() => {
     if (firstRenderRef.current) {
       firstRenderRef.current = false
+      previousPathRef.current = location.pathname
+      sessionStorage.removeItem("zenithShowWhiteLoaderOnce")
+      sessionStorage.removeItem("zenithSkipWhiteLoaderOnce")
+      return
+    }
+
+    const previousPath = previousPathRef.current
+    previousPathRef.current = location.pathname
+    const requestedWhiteLoader =
+      sessionStorage.getItem("zenithShowWhiteLoaderOnce") === "true"
+    const blockWhiteLoaderUntil = Number(
+      sessionStorage.getItem("zenithBlockWhiteLoaderUntil") || 0
+    )
+    const isWhiteLoaderBlocked = Date.now() < blockWhiteLoaderUntil
+
+    sessionStorage.removeItem("zenithShowWhiteLoaderOnce")
+
+    const shouldShowLoader =
+      requestedWhiteLoader &&
+      !isWhiteLoaderBlocked &&
+      internalRoutes.includes(previousPath) &&
+      internalRoutes.includes(location.pathname)
+
+    if (!shouldShowLoader) {
+      if (!isWhiteLoaderBlocked && blockWhiteLoaderUntil > 0) {
+        sessionStorage.removeItem("zenithBlockWhiteLoaderUntil")
+      }
+      setShowRouteLoading(false)
       return
     }
 
@@ -150,11 +181,15 @@ const handleInstall = async () => {
   setDeferredPrompt(null)
 }
 
+const finishInitialSplash = () => {
+  setLoading(false)
+}
+
   return (
     <BrowserRouter>
       <AnimatePresence mode="wait">
         {loading ? (
-          <SplashScreen key="splash" onComplete={() => setLoading(false)} />
+          <SplashScreen key="splash" onComplete={finishInitialSplash} />
         ) : (
           <>
             {/* Prompt de instalação */}
@@ -180,7 +215,8 @@ const handleInstall = async () => {
             <Routes key="app">
               <Route path="/" element={<Intro />} />
               <Route path="/login" element={<Login setAppLoading={setLoading} />} />
-              <Route path="/register" element={<CadastroCompleto />} />
+              <Route path="/register" element={<CadastroCompleto setAppLoading={setLoading} />} />
+              <Route path="/cadastrar-fazenda" element={<CadastrarFazenda setAppLoading={setLoading} />} />
               <Route path="/home" element={<Home />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />

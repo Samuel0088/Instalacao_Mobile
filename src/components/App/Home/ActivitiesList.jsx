@@ -37,12 +37,19 @@ export default function ActivitiesList({ hasFarm, onViewAll, onRegister }) {
 
   // Função para navegar para a página de atividades
   const goToActivities = () => {
+    sessionStorage.setItem("zenithShowWhiteLoaderOnce", "true")
     navigate("/explore", { state: { activeTab: "atividades" } })
   }
 
   // Função para navegar para o histórico completo de diagnósticos
   const goToHistory = () => {
+    sessionStorage.setItem("zenithShowWhiteLoaderOnce", "true")
     navigate("/explore", { state: { activeTab: "diagnostico", showHistory: true } })
+  }
+
+  const goToMap = () => {
+    sessionStorage.setItem("zenithShowWhiteLoaderOnce", "true")
+    navigate("/explore", { state: { activeTab: "mapa" } })
   }
 
   return (
@@ -111,7 +118,7 @@ export default function ActivitiesList({ hasFarm, onViewAll, onRegister }) {
       )}
 
       {/* Voo de Mapeamento - Vai para o mapa */}
-      <div className="activity-card glass" onClick={() => navigate("/explore", { state: { activeTab: "mapa" } })}>
+      <div className="activity-card glass" onClick={goToMap}>
         <div className="activity-icon mapeamento">
           <DroneIcon className="activity-drone-icon" />
           <div className="icon-pulse"></div>

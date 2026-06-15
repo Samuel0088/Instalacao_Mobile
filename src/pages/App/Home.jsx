@@ -26,6 +26,10 @@ export default function Home() {
   const [weather, setWeather] = useState(null)
   
   const navigate = useNavigate()
+  const goToInternalPage = (path, options) => {
+    sessionStorage.setItem("zenithShowWhiteLoaderOnce", "true")
+    navigate(path, options)
+  }
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -104,7 +108,7 @@ export default function Home() {
             {hasFarm && (
               <button 
                 className="view-all-btn" 
-                onClick={() => navigate("/explore", { state: { activeTab: "atividades" } })}
+                onClick={() => goToInternalPage("/explore", { state: { activeTab: "atividades" } })}
               >
                 <span>Ver todas</span>
                 <span className="material-symbols-outlined">arrow_forward</span>
@@ -115,7 +119,7 @@ export default function Home() {
 
           <ActivitiesList 
             hasFarm={hasFarm}
-            onViewAll={() => navigate("/explore", { state: { activeTab: "atividades" } })}
+            onViewAll={() => goToInternalPage("/explore", { state: { activeTab: "atividades" } })}
             onRegister={() => navigate("/cadastrar-fazenda")}
           />
         </section>

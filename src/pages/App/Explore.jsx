@@ -105,19 +105,21 @@ export default function Explore() {
       
 
       {/* ================= TABS UI ================= */}
-      <div className="explore-tabs-modern">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            className={`explore-tab ${activeTab === tab.id ? "active" : ""}`}
-            onClick={() => setActiveTab(tab.id)}
-          >
-            <span className="explore-tab-icon material-symbols-outlined">
-              {tab.icon}
-            </span>
-            <span className="explore-tab-label">{tab.label}</span>
-          </button>
-        ))}
+      <div className="explore-tabs-header">
+        <div className="explore-tabs-modern">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              className={`explore-tab ${activeTab === tab.id ? "active" : ""}`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              <span className="explore-tab-icon material-symbols-outlined">
+                {tab.icon}
+              </span>
+              <span className="explore-tab-label">{tab.label}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* ================= CONTEÚDO ================= */}

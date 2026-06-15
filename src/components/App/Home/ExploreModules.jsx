@@ -66,6 +66,7 @@ export default function ExploreModules({ onNavigate }) {
     if (onNavigate) {
       onNavigate(module)
     } else {
+      sessionStorage.setItem("zenithShowWhiteLoaderOnce", "true")
       navigate(module.path, { state: { activeTab: module.tab } })
     }
   }

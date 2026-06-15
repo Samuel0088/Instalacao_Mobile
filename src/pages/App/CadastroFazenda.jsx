@@ -5,7 +5,7 @@ import { db } from "../../services/firebase"
 import { addDoc, collection, query, where, getDocs } from "firebase/firestore"
 import "../../styles/App/CadastrarFazenda.css"
 
-export default function CadastrarFazenda() {
+export default function CadastrarFazenda({ setAppLoading }) {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
 
@@ -59,7 +59,10 @@ export default function CadastrarFazenda() {
       })
 
       alert("Fazenda cadastrada com sucesso!")
-      navigate("/home")
+      sessionStorage.removeItem("zenithShowWhiteLoaderOnce")
+      sessionStorage.setItem("zenithBlockWhiteLoaderUntil", String(Date.now() + 5000))
+      setAppLoading?.(true)
+      navigate("/home", { replace: true })
 
     } catch (error) {
       console.error(error)

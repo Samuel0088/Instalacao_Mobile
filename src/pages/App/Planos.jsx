@@ -39,6 +39,10 @@ const plans = [
 
 export default function Planos() {
   const navigate = useNavigate()
+  const goHome = () => {
+    sessionStorage.setItem("zenithShowWhiteLoaderOnce", "true")
+    navigate("/home")
+  }
 
   return (
     <div className="plans-page">
@@ -46,7 +50,7 @@ export default function Planos() {
       
       <header className="plans-hero">
         <div className="plans-topbar">
-          <button className="plans-back-btn" onClick={() => navigate("/home")}>
+          <button className="plans-back-btn" onClick={goHome}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>

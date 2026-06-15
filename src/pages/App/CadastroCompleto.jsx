@@ -7,7 +7,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth"
 import { doc, setDoc, addDoc, collection } from "firebase/firestore"
 import "../../styles/App/CadastroCompleto.css"
 
-export default function CadastroCompleto() {
+export default function CadastroCompleto({ setAppLoading }) {
   const navigate = useNavigate()
 
   const [etapa, setEtapa] = useState(1)
@@ -222,7 +222,10 @@ export default function CadastroCompleto() {
       })
 
       setTimeout(() => {
-        navigate("/home")
+        sessionStorage.removeItem("zenithShowWhiteLoaderOnce")
+        sessionStorage.setItem("zenithBlockWhiteLoaderUntil", String(Date.now() + 5000))
+        setAppLoading?.(true)
+        navigate("/home", { replace: true })
       }, 1800)
     } catch (error) {
       console.error(error)
