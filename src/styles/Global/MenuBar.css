@@ -1,0 +1,99 @@
+.nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: auto;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.nav::before {
+  content: "";
+  position: absolute;
+  inset: 0; 
+  background: #0f2318; /* cor diferente do svg */
+  border-radius: 6px;
+
+  transform: translateY(6px); /* desce um pouco pra aparecer */
+  z-index: 0;
+}
+
+/* SVG fundo */
+.nav__notch-svg {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  transform: none;
+  width: 100%;
+  min-width: 100%;
+  max-width: none;
+  height: 50px;
+  z-index: 0;
+}
+
+/* Container */
+.nav__items {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  min-width: 100%;
+  max-width: none;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Item */
+.nav__item {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Botão */
+.nav__item-btn {
+  width: 42px;
+  height: 42px;
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+/* Ícone */
+.material-symbols-outlined {
+  font-size: 22px;
+  color: rgba(255,255,255,0.6);
+}
+
+/* Hover */
+.nav__item-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* Ativo */
+.nav__item-btn--active {
+  width: 48px;
+  height: 48px;
+  background: #3d8057;
+  transform: translateY(-8px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.nav__item-btn--active .material-symbols-outlined {
+  color: var(--g7);
+  font-size: 24px;
+}

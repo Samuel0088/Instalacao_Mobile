@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paleta de Cores Expandida</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 40px;
+            font-size: 1rem;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            padding-left: 10px;
+            border-left: 4px solid #326A3B;
+        }
+
+        .colors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .color-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .color-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .color-swatch {
+            height: 180px;
+            position: relative;
+        }
+
+        .color-info {
+            padding: 20px;
+        }
+
+        .color-name {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+
+        .color-values {
+            font-size: 0.85rem;
+            color: #4a5568;
+            line-height: 1.8;
+        }
+
+        .color-value-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .label {
+            font-weight: 600;
+            color: #718096;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #326A3B;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-top: 8px;
+        }
+
+        .original {
+            background: #e53e3e;
+        }
+
+        .copy-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #326A3B;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+        }
+
+        .copy-notification.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="copy-notification" id="notification">Cor copiada!</div>
+    
+    <div class="container">
+        <h1>🎨 Paleta de Cores Expandida</h1>
+        <p class="subtitle">Clique em qualquer cor para copiar o código HEX</p>
+
+        <!-- Cores Originais -->
+        <div class="section">
+            <h2 class="section-title">Cores Originais</h2>
+            <div class="colors-grid" id="original-colors"></div>
+        </div>
+
+        <!-- Neutros -->
+        <div class="section">
+            <h2 class="section-title">Neutros & Cinzas</h2>
+            <div class="colors-grid" id="neutral-colors"></div>
+        </div>
+
+        <!-- Beges e Cremes -->
+        <div class="section">
+            <h2 class="section-title">Beges & Cremes</h2>
+            <div class="colors-grid" id="beige-colors"></div>
+        </div>
+
+        <!-- Verdes -->
+        <div class="section">
+            <h2 class="section-title">Verdes</h2>
+            <div class="colors-grid" id="green-colors"></div>
+        </div>
+    </div>
+
+    <script>
+        const originalColors = [
+            { name: 'Cinza Claro', hex: '#EBF4F3', rgb: 'rgb(235,244,243)', hsl: 'hsl(173,29%,94%)' },
+            { name: 'Creme', hex: '#F5F5E5', rgb: 'rgb(245,245,229)', hsl: 'hsl(60,44%,93%)' },
+            { name: 'Verde Floresta', hex: '#326A3B', rgb: 'rgb(50,106,59)', hsl: 'hsl(130,35%,31%)' },
+            { name: 'Verde Médio', hex: '#54A689', rgb: 'rgb(84,166,137)', hsl: 'hsl(159,32%,49%)' },
+            { name: 'Verde Claro', hex: '#79B688', rgb: 'rgb(121,182,136)', hsl: 'hsl(135,29%,59%)' }
+        ];
+
+        const neutralColors = [
+            { name: 'Branco Puro', hex: '#FFFFFF', rgb: 'rgb(255,255,255)', hsl: 'hsl(0,0%,100%)' },
+            { name: 'Cinza Gelo', hex: '#F8FAFA', rgb: 'rgb(248,250,250)', hsl: 'hsl(180,11%,98%)' },
+            { name: 'Cinza Névoa', hex: '#E8EEEE', rgb: 'rgb(232,238,238)', hsl: 'hsl(180,11%,92%)' },
+            { name: 'Cinza Prateado', hex: '#D4DEDE', rgb: 'rgb(212,222,222)', hsl: 'hsl(180,11%,85%)' },
+            { name: 'Cinza Médio', hex: '#A8B8B8', rgb: 'rgb(168,184,184)', hsl: 'hsl(180,9%,69%)' },
+            { name: 'Cinza Pedra', hex: '#8C9E9E', rgb: 'rgb(140,158,158)', hsl: 'hsl(180,9%,58%)' }
+        ];
+
+        const beigeColors = [
+            { name: 'Marfim', hex: '#FFFFF0', rgb: 'rgb(255,255,240)', hsl: 'hsl(60,100%,97%)' },
+            { name: 'Bege Claro', hex: '#FAF8E8', rgb: 'rgb(250,248,232)', hsl: 'hsl(53,56%,95%)' },
+            { name: 'Linho', hex: '#F0EDDC', rgb: 'rgb(240,237,220)', hsl: 'hsl(51,36%,90%)' },
+            { name: 'Areia', hex: '#E8E5CF', rgb: 'rgb(232,229,207)', hsl: 'hsl(53,29%,86%)' },
+            { name: 'Bege', hex: '#D9D5B8', rgb: 'rgb(217,213,184)', hsl: 'hsl(53,28%,79%)' },
+            { name: 'Caqui Claro', hex: '#C9C5A3', rgb: 'rgb(201,197,163)', hsl: 'hsl(54,24%,71%)' }
+        ];
+
+        const greenColors = [
+            { name: 'Verde Água Claro', hex: '#E8F5F0', rgb: 'rgb(232,245,240)', hsl: 'hsl(157,42%,93%)' },
+            { name: 'Menta Claro', hex: '#C8E8DB', rgb: 'rgb(200,232,219)', hsl: 'hsl(156,44%,85%)' },
+            { name: 'Verde Sálvia Claro', hex: '#9DD4BA', rgb: 'rgb(157,212,186)', hsl: 'hsl(152,39%,72%)' },
+            { name: 'Verde Jade', hex: '#6BBFA0', rgb: 'rgb(107,191,160)', hsl: 'hsl(158,40%,58%)' },
+            { name: 'Verde Esmeralda', hex: '#43A074', rgb: 'rgb(67,160,116)', hsl: 'hsl(152,41%,45%)' },
+            { name: 'Verde Musgo', hex: '#2D7A4F', rgb: 'rgb(45,122,79)', hsl: 'hsl(146,46%,33%)' },
+            { name: 'Verde Pinheiro', hex: '#1F5A35', rgb: 'rgb(31,90,53)', hsl: 'hsl(142,49%,24%)' },
+            { name: 'Verde Floresta Escuro', hex: '#1A4A2B', rgb: 'rgb(26,74,43)', hsl: 'hsl(141,48%,20%)' }
+        ];
+
+        function rgbToHex(rgb) {
+            const result = rgb.match(/\d+/g);
+            if (!result) return rgb;
+            const r = parseInt(result[0]).toString(16).padStart(2, '0');
+            const g = parseInt(result[1]).toString(16).padStart(2, '0');
+            const b = parseInt(result[2]).toString(16).padStart(2, '0');
+            return `#${r}${g}${b}`.toUpperCase();
+        }
+
+        function createColorCard(color, isOriginal = false) {
+            const card = document.createElement('div');
+            card.className = 'color-card';
+            card.innerHTML = `
+                <div class="color-swatch" style="background: ${color.hex}"></div>
+                <div class="color-info">
+                    <div class="color-name">
+                        ${color.name}
+                        ${isOriginal ? '<span class="badge original">ORIGINAL</span>' : ''}
+                    </div>
+                    <div class="color-values">
+                        <div class="color-value-row">
+                            <span class="label">HEX:</span>
+                            <span>${color.hex}</span>
+                        </div>
+                        <div class="color-value-row">
+                            <span class="label">RGB:</span>
+                            <span>${color.rgb}</span>
+                        </div>
+                        <div class="color-value-row">
+                            <span class="label">HSL:</span>
+                            <span>${color.hsl}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            card.addEventListener('click', () => {
+                navigator.clipboard.writeText(color.hex);
+                showNotification();
+            });
+            
+            return card;
+        }
+
+        function showNotification() {
+            const notification = document.getElementById('notification');
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+
+        // Renderizar cores
+        const originalGrid = document.getElementById('original-colors');
+        originalColors.forEach(color => {
+            originalGrid.appendChild(createColorCard(color, true));
+        });
+
+        const neutralGrid = document.getElementById('neutral-colors');
+        neutralColors.forEach(color => {
+            neutralGrid.appendChild(createColorCard(color));
+        });
+
+        const beigeGrid = document.getElementById('beige-colors');
+        beigeColors.forEach(color => {
+            beigeGrid.appendChild(createColorCard(color));
+        });
+
+        const greenGrid = document.getElementById('green-colors');
+        greenColors.forEach(color => {
+            greenGrid.appendChild(createColorCard(color));
+        });
+    </script>
+</body>
+</html>
