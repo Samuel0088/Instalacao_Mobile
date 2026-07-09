@@ -1387,7 +1387,11 @@
 .empty-title {
   font-size: 18px;
   font-weight: 600;
+<<<<<<< HEAD
+  color: var(--g4);
+=======
   color: var(--text-primary);
+>>>>>>> 78207e0fe292f7fc1b8ca037e740ca9b01104c8e
   margin-bottom: 8px;
 }
 
