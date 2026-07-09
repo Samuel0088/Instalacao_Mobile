@@ -89,7 +89,7 @@ export default function Home() {
         showHomeContent={true}
       />
       
-      <div className="home-container">
+      <div className="home-container" data-system-bar-color="#f7f5f0">
         
         {hasFarm && <FarmInfoCard farmData={farmData} />}
 

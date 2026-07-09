@@ -313,7 +313,7 @@ const handleOutlookLogin = async () => {
 
   /* ── RENDER ── */
   return (
-    <div className="login-page">
+    <div className="login-page" data-system-bar-color="#091c13">
 
       {/* ── HERO MOBILE ── */}
       <div className="login-hero" role="banner">

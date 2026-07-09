@@ -19,39 +19,10 @@ import InstallPrompt from "./components/App/Global/InstallPrompt"
 import InstallSuccess from "./components/App/Global/InstallSuccess"
 import AccessibilityTextControls from "./components/App/Global/AccessibilityTextControls"
 import ProfileLoadingScreen from "./components/App/Profile/ProfileLoadScreen"
+import SystemBarTheme from "./components/App/System/SystemBarTheme"
 
 // Estilos
 import "./App.css"
-
-const SYSTEM_BAR_COLORS = {
-  "/": "#07110b",
-  "/login": "#091c13",
-  "/register": "#f8fcf6",
-  "/cadastrar-fazenda": "#091c13",
-  "/home": "#07140d",
-  "/profile": "#f7f5f0",
-  "/forgot-password": "#f7f5f0",
-  "/explore": "#07140d",
-  "/plans": "#07140d",
-  default: "#3d8057",
-}
-
-function SystemBarTheme() {
-  const location = useLocation()
-
-  useEffect(() => {
-    const color = SYSTEM_BAR_COLORS[location.pathname] || SYSTEM_BAR_COLORS.default
-    const themeColorMeta = document.querySelector('meta[name="theme-color"]')
-    const navButtonMeta = document.querySelector('meta[name="msapplication-navbutton-color"]')
-
-    themeColorMeta?.setAttribute("content", color)
-    navButtonMeta?.setAttribute("content", color)
-    document.documentElement.style.backgroundColor = color
-    document.body.style.backgroundColor = color
-  }, [location.pathname])
-
-  return null
-}
 
 function AccessibilityGate() {
   const location = useLocation()

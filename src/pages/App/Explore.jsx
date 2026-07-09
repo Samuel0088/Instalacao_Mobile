@@ -99,7 +99,7 @@ export default function Explore() {
   };
 
   return (
-    <div className="explore-container">
+    <div className="explore-container" data-system-bar-color="#07140d">
       <ParticleBackground />
 
       

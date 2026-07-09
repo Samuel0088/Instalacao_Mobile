@@ -45,7 +45,7 @@ export default function Planos() {
   }
 
   return (
-    <div className="plans-page">
+    <div className="plans-page" data-system-bar-color="#07140d">
       <div className="plans-bg-pattern"></div>
       
       <header className="plans-hero">
@@ -89,7 +89,7 @@ export default function Planos() {
         </div>
       </header>
 
-      <main className="plans-list">
+      <main className="plans-list" data-system-bar-color="#f7f5f0">
         {plans.map((plan) => (
           <div
             key={plan.id}

@@ -12,6 +12,7 @@ html, body {
   overflow-x: hidden;
   overflow-y: auto;
   background: #3d8057;
+  transition: background-color 180ms ease;
 }
 
 #root {

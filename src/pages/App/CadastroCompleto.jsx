@@ -720,7 +720,7 @@ export default function CadastroCompleto({ setAppLoading }) {
   }
 
   return (
-    <div className="cadastro-page">
+    <div className="cadastro-page" data-system-bar-color="#091c13">
 
       <div className="cadastro-hero">
         <div className="login-hero__overlay" />
@@ -746,7 +746,7 @@ export default function CadastroCompleto({ setAppLoading }) {
         </div>
       </div>
 
-      <main className="cadastro-card">
+      <main className="cadastro-card" data-system-bar-color="#f8fcf6">
         <div className="cadastro-header">
 
           <div className="etapa-indicador">

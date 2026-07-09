@@ -93,7 +93,7 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div className="forgot-page">
+    <div className="forgot-page" data-system-bar-color="#091c13">
 
       {/* HERO */}
       <div className="forgot-hero">
@@ -119,7 +119,7 @@ export default function ForgotPassword() {
       </div>
 
       {/* CARD */}
-      <main className="forgot-card">
+      <main className="forgot-card" data-system-bar-color="#f7f5f0">
 
         <div className="forgot-header">
           <h2 className="forgot-header__title">

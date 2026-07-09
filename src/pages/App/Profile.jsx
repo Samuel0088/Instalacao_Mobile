@@ -269,7 +269,7 @@ export default function Profile() {
         <AppHeader title="Perfil" showLogo={true} showNotification={true} />
       */}
 
-      <div className="profile-container-tech">
+      <div className="profile-container-tech" data-system-bar-color="#f7f5f0">
         <ProfileHeader 
           profileIcon={formData.profileIcon}
           userName={userData?.name}

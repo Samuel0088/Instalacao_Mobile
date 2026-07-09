@@ -20,7 +20,7 @@ export default function Intro() {
 
   return (
 
-    <main className="intro">
+    <main className="intro" data-system-bar-color="#07110b">
 
       {/* BACKGROUND */}
       <div className="intro-bg">
