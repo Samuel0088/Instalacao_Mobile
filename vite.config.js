@@ -18,8 +18,8 @@ export default defineConfig({
   short_name: 'Zenith',
   start_url: '/',
   display: 'standalone',
-  theme_color: '#0f5a38',
-  background_color: '#0f5a38',
+  theme_color: '#3d8057',
+  background_color: '#f7f5f0',
    icons: [
   {
     src: "/assets/icons/Logo.png",

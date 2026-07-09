@@ -11,12 +11,12 @@ html, body {
   width: 100%;
   overflow-x: hidden;
   overflow-y: auto;
-  background: #0f5a38;
+  background: #3d8057;
 }
 
 #root {
   min-height: 100vh;
   min-height: 100dvh;
   width: 100%;
-  background: #0f5a38;
+  background: #f7f5f0;
 }
