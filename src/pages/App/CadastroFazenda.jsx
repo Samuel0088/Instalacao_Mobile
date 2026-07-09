@@ -171,9 +171,11 @@ export default function CadastrarFazenda({ setAppLoading }) {
             <label>Área Total (hectares)</label>
             <input
               type="number"
+              inputMode="decimal"
               name="area_total"
               value={formData.area_total}
               onChange={handleChange}
+              placeholder="Digite a área em hectares"
               required
             />
           </div>

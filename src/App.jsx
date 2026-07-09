@@ -131,7 +131,6 @@ function App() {
       e.preventDefault()
       console.log('📲 Evento beforeinstallprompt capturado')
       setDeferredPrompt(e)
-      setShowInstallPrompt(true)
     }
 
     

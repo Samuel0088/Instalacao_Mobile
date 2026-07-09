@@ -70,12 +70,23 @@
 
 .input-group input,
 .input-group select {
-  padding: 10px;
+  height: 46px;
+  padding: 0 14px;
   border-radius: 10px;
   border: 1px solid rgba(0,255,140,0.2);
   background: rgba(0,0,0,0.3);
   color: white;
   outline: none;
+  font-size: 15px;
+  line-height: 46px;
+}
+
+.input-group input::placeholder {
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.input-group select {
+  appearance: auto;
 }
 
 .input-group input:focus,

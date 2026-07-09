@@ -11,7 +11,7 @@ const API_URL = "https://tccamsamericana-api-doencas-soja.hf.space/predict"
 
 export default function DiagnosticoTab() {
   const videoRef = useRef(null)
-  const fileInputRef = useRef(null)git 
+  const fileInputRef = useRef(null)
   const location = useLocation() // ← Adicionar esta linha
 
   const [step, setStep] = useState("start")

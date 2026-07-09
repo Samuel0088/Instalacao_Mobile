@@ -5,11 +5,11 @@
 :root {
   --surface-page: #091c13;
 
-  --surface-card: rgba(248, 252, 246, 0.98);
+  --surface-card: #f8fcf6;
 
-  --surface-input: rgba(232, 244, 232, 0.55);
+  --surface-input: #fbfefb;
 
-  --surface-input-focus: rgba(255, 255, 255, 0.90);
+  --surface-input-focus: #ffffff;
 
   --text-on-dark: #ffffff;
 
@@ -19,9 +19,9 @@
 
   --text-secondary: #4e6a55;
 
-  --text-placeholder: #8fa890;
+  --text-placeholder: #8aa493;
 
-  --input-border: rgba(180, 210, 180, 0.50);
+  --input-border: rgba(70, 137, 91, 0.24);
 
   --input-border-focus: #2a7a42;
 
@@ -231,11 +231,11 @@ body {
   background: rgba(180,210,180,.50);
 }
 
-.input-group {
+.cadastro-card .input-group {
   margin-bottom: 18px;
 }
 
-.input-group label {
+.cadastro-card .input-group label {
   display: block;
   margin-bottom: 8px;
 
@@ -250,27 +250,50 @@ body {
   letter-spacing: .06em;
 }
 
-.input-group input,
-.input-group select {
+.cadastro-card .input-group input:not([type="checkbox"]),
+.cadastro-card .input-group select {
   width: 100%;
+  height: 46px;
 
-  background: var(--surface-input);
+  background: var(--surface-card);
 
-  border: 1.5px solid var(--input-border);
+  border: 1.5px solid rgba(70, 137, 91, 0.28);
 
   border-radius: 14px;
 
-  padding: 13px 16px;
+  padding: 0 16px;
 
   font-size: 15px;
+  line-height: 46px;
 
-  color: #111f14;
+  color: #18321f;
+
+  color-scheme: light;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 8px 18px rgba(20, 66, 35, 0.035);
 
   transition: .25s;
 }
 
-.input-group input:focus,
-.input-group select:focus {
+.cadastro-card .input-group input:not([type="checkbox"])::placeholder {
+  color: var(--text-placeholder);
+  opacity: 1;
+}
+
+.cadastro-card .input-group select {
+  appearance: auto;
+  cursor: pointer;
+}
+
+.cadastro-card .input-group select:invalid,
+.cadastro-card .input-group select option[value=""] {
+  color: var(--text-placeholder);
+}
+
+.cadastro-card .input-group input:not([type="checkbox"]):focus,
+.cadastro-card .input-group select:focus {
   outline: none;
 
   background: var(--surface-input-focus);
@@ -278,7 +301,24 @@ body {
   border-color: var(--input-border-focus);
 
   box-shadow:
-    0 0 0 4px var(--input-glow-focus);
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    0 0 0 4px var(--input-glow-focus),
+    0 12px 28px rgba(20, 66, 35, 0.1);
+}
+
+.cadastro-card .input-group input:not([type="checkbox"]):hover,
+.cadastro-card .input-group select:hover {
+  border-color: rgba(42, 122, 66, 0.44);
+}
+
+.cadastro-card .input-group input:not([type="checkbox"]):-webkit-autofill,
+.cadastro-card .input-group input:not([type="checkbox"]):-webkit-autofill:hover,
+.cadastro-card .input-group input:not([type="checkbox"]):-webkit-autofill:focus {
+  -webkit-text-fill-color: #18321f;
+  box-shadow:
+    0 0 0 1000px var(--surface-card) inset,
+    0 8px 22px rgba(20, 66, 35, 0.06);
+  transition: background-color 9999s ease-in-out 0s;
 }
 
 .input-row {
