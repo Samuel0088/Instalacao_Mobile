@@ -766,11 +766,7 @@ body {
 .card-header h3 {
   font-size: 20px;
   font-weight: 700;
-<<<<<<< HEAD
-  color: var(--g4);
-=======
   color: var(--g1);
->>>>>>> 78207e0fe292f7fc1b8ca037e740ca9b01104c8e
 }
 
 .card-header h3.personal-info-title {
@@ -796,13 +792,8 @@ body {
 .farm-edit-card .tech-input,
 .farm-edit-card .tech-select,
 .farm-edit-card .tech-select option {
-<<<<<<< HEAD
-  color: var(--g4) !important;
-  -webkit-text-fill-color: var(--g4) !important;
-=======
   color: var(--g1) !important;
   -webkit-text-fill-color: var(--g1) !important;
->>>>>>> 78207e0fe292f7fc1b8ca037e740ca9b01104c8e
 }
 
 .farm-edit-card .tech-input::placeholder,

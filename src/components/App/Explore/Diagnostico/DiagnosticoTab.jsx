@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react"
-import { useLocation } from "react-router-dom" // ← Adicionar esta importação
+import { useLocation } from "react-router-dom"
 import CameraView from "./CameraView"
 import ImagePreview from "./ImagePreview"
 import AnalysisLoader from "./AnalysisLoader"
@@ -11,17 +11,9 @@ const API_URL = "https://tccamsamericana-api-doencas-soja.hf.space/predict"
 
 export default function DiagnosticoTab() {
   const videoRef = useRef(null)
-<<<<<<< HEAD
   const fileInputRef = useRef(null)
-=======
-<<<<<<< HEAD
-  const fileInputRef = useRef(null)
-=======
-  const fileInputRef = useRef(null)git 
->>>>>>> 78207e0fe292f7fc1b8ca037e740ca9b01104c8e
->>>>>>> 12035fe25d570bbcade04ed695ead5324687499e
-  const location = useLocation() // ← Adicionar esta linha
-
+  const location = useLocation()
+  
   const [step, setStep] = useState("start")
   const [image, setImage] = useState(null)
   const [result, setResult] = useState(null)
