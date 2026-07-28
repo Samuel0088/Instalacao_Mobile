@@ -86,7 +86,7 @@ function RouteChangeLoader() {
 }
 
 function App() {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [deferredPrompt, setDeferredPrompt] = useState(null)
   const [showInstallPrompt, setShowInstallPrompt] = useState(false)
   const [showInstallSuccess, setShowInstallSuccess] = useState(false)

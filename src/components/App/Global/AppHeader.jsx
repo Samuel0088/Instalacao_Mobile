@@ -23,7 +23,7 @@ export default function AppHeader({
 
   return (
     <header
-      data-system-bar-color="#07140d"
+      data-system-bar-color="#163020"
       className={`app-header ${
         !showHomeContent ? "compact" : ""
       }`}
