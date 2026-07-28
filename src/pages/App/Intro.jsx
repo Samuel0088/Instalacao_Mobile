@@ -1,4 +1,7 @@
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { onAuthStateChanged } from "firebase/auth"
+import { auth } from "../../services/firebase"
 
 import {
   ShieldCheck,
@@ -17,6 +20,22 @@ const Logo = "/assets/image/Logo-redonda.png"
 export default function Intro() {
 
   const navigate = useNavigate()
+  const [checkingAuth, setCheckingAuth] = useState(true)
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigate("/home", { replace: true })
+        return
+      }
+
+      setCheckingAuth(false)
+    })
+
+    return unsubscribe
+  }, [navigate])
+
+  if (checkingAuth) return null
 
   return (
 
