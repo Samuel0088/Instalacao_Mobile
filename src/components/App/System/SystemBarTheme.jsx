@@ -8,10 +8,10 @@ const ROUTE_COLORS = {
   "/login": "#091c13",
   "/register": "#f8fcf6",
   "/cadastrar-fazenda": "#091c13",
-  "/home": "#07140d",
+  "/home": "#163020",
   "/profile": "#f7f5f0",
   "/forgot-password": "#f7f5f0",
-  "/explore": "#07140d",
+  "/explore": "#3f8a5d",
   "/plans": "#07140d",
 }
 

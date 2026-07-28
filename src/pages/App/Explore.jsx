@@ -99,13 +99,13 @@ export default function Explore() {
   };
 
   return (
-    <div className="explore-container" data-system-bar-color="#07140d">
+    <div className="explore-container" data-system-bar-color="#3f8a5d">
       <ParticleBackground />
 
       
 
       {/* ================= TABS UI ================= */}
-      <div className="explore-tabs-header">
+      <div className="explore-tabs-header" data-system-bar-color="#3f8a5d">
         <div className="explore-tabs-modern">
           {tabs.map((tab) => (
             <button

@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#3d8057">
-    <meta name="msapplication-navbutton-color" content="#3d8057" />
+    <meta name="theme-color" content="#0f5a38">
+    <meta name="msapplication-navbutton-color" content="#0f5a38" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Zenith" />
@@ -14,9 +14,34 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Jersey+15&display=swap" rel="stylesheet">
     <title>Zenith</title>
+    <style>
+      html,
+      body,
+      #root {
+        min-height: 100%;
+        margin: 0;
+        background: linear-gradient(180deg, #0f5a38 0%, #0b4b2f 100%);
+      }
+
+      .boot-splash {
+        min-height: 100vh;
+        min-height: 100dvh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #14d98b;
+        font-family: Inter, "Segoe UI", system-ui, sans-serif;
+        font-size: clamp(2.2rem, 9vw, 4.2rem);
+        font-weight: 900;
+        line-height: 1;
+        text-shadow: 0 16px 40px rgba(20, 217, 139, 0.18);
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="boot-splash">Zenith</div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
