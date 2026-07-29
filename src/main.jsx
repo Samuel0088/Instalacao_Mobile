@@ -18,6 +18,14 @@ if ("serviceWorker" in navigator) {
       .then((registration) => {
         console.log("Service Worker registrado")
 
+        if (registration.waiting && navigator.serviceWorker.controller) {
+          window.dispatchEvent(
+            new CustomEvent("app-update-available", {
+              detail: { registration, worker: registration.waiting }
+            })
+          )
+        }
+
         registration.addEventListener("updatefound", () => {
           const newWorker = registration.installing
           if (!newWorker) return

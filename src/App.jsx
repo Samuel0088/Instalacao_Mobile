@@ -159,6 +159,14 @@ function App() {
   }, [])
 
   useEffect(() => {
+    const showWaitingUpdate = (registration) => {
+      const worker = registration?.waiting
+      if (!worker || !navigator.serviceWorker.controller) return
+
+      setWaitingServiceWorker(worker)
+      setShowUpdatePrompt(true)
+    }
+
     const handleUpdateAvailable = (event) => {
       const worker = event.detail?.worker || event.detail?.registration?.waiting
       if (!worker) return
@@ -167,6 +175,7 @@ function App() {
       setShowUpdatePrompt(true)
     }
 
+    navigator.serviceWorker?.getRegistration?.().then(showWaitingUpdate)
     window.addEventListener("app-update-available", handleUpdateAvailable)
 
     return () => {
