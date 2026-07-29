@@ -25,6 +25,8 @@ import SystemBarTheme from "./components/App/System/SystemBarTheme"
 // Estilos
 import "./App.css"
 
+const UPDATE_PROMPT_PENDING_KEY = "zenithUpdatePromptPending"
+
 function AccessibilityGate() {
   const location = useLocation()
   const hiddenRoutes = ["/", "/login", "/register", "/cadastrar-fazenda"]
@@ -159,20 +161,35 @@ function App() {
   }, [])
 
   useEffect(() => {
-    const showWaitingUpdate = (registration) => {
-      const worker = registration?.waiting
-      if (!worker || !navigator.serviceWorker.controller) return
+    const markUpdatePending = () => {
+      localStorage.setItem(UPDATE_PROMPT_PENDING_KEY, "true")
+    }
 
+    const showUpdate = (worker = null) => {
       setWaitingServiceWorker(worker)
       setShowUpdatePrompt(true)
+    }
+
+    const showWaitingUpdate = (registration) => {
+      const worker = registration?.waiting
+
+      if (worker && navigator.serviceWorker.controller) {
+        markUpdatePending()
+        showUpdate(worker)
+        return
+      }
+
+      if (localStorage.getItem(UPDATE_PROMPT_PENDING_KEY) === "true") {
+        showUpdate()
+      }
     }
 
     const handleUpdateAvailable = (event) => {
       const worker = event.detail?.worker || event.detail?.registration?.waiting
       if (!worker) return
 
-      setWaitingServiceWorker(worker)
-      setShowUpdatePrompt(true)
+      markUpdatePending()
+      showUpdate(worker)
     }
 
     navigator.serviceWorker?.getRegistration?.().then(showWaitingUpdate)
@@ -205,10 +222,16 @@ const handleInstall = async () => {
 }
 
 const handleAppUpdate = () => {
-  if (!waitingServiceWorker) return
+  localStorage.removeItem(UPDATE_PROMPT_PENDING_KEY)
 
-  waitingServiceWorker.postMessage({ type: "SKIP_WAITING" })
   setShowUpdatePrompt(false)
+
+  if (waitingServiceWorker) {
+    waitingServiceWorker.postMessage({ type: "SKIP_WAITING" })
+    return
+  }
+
+  window.location.reload()
 }
 
 const finishInitialSplash = () => {
