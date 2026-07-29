@@ -3,12 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
     <meta name="theme-color" content="#0f5a38">
     <meta name="msapplication-navbutton-color" content="#0f5a38" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Zenith" />
-    <link rel="manifest" href="/manifest.json" />
     <link rel="icon" type="image/png" href="/assets/icons/Logo.png" />
     <link rel="apple-touch-icon" href="/assets/icons/Logo.png" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -20,7 +20,12 @@
       #root {
         min-height: 100%;
         margin: 0;
+        background-color: #0f5a38;
         background: linear-gradient(180deg, #0f5a38 0%, #0b4b2f 100%);
+      }
+
+      body {
+        overflow-x: hidden;
       }
 
       .boot-splash {
