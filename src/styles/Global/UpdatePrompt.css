@@ -1,0 +1,99 @@
+.update-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.update-box {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  padding: 26px 22px;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #0f2318, #163020);
+  color: #fff;
+  text-align: center;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.update-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #aaa;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.update-close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.update-icon {
+  margin-bottom: 10px;
+  color: #56a870;
+  font-size: 34px;
+}
+
+.update-box h2 {
+  margin-bottom: 6px;
+  font-size: 20px;
+}
+
+.update-subtitle {
+  margin-bottom: 20px;
+  font-size: 13px;
+  line-height: 1.45;
+  opacity: 0.72;
+}
+
+.update-main-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding: 13px;
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #56a870, #3d8057);
+  color: #061008;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.update-main-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(86, 168, 112, 0.4);
+}
+
+.update-later-btn {
+  border: 0;
+  background: transparent;
+  color: #aaa;
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.update-later-btn:hover {
+  color: #fff;
+}

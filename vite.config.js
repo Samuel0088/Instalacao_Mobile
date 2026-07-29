@@ -6,11 +6,12 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
+      injectRegister: false,
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,svg,woff2}'],
-        skipWaiting: true,
-        clientsClaim: true,
+        skipWaiting: false,
+        clientsClaim: false,
         cleanupOutdatedCaches: true,
       },
      manifest: {
@@ -18,8 +19,8 @@ export default defineConfig({
   short_name: 'Zenith',
   start_url: '/',
   display: 'standalone',
-  theme_color: '#3d8057',
-  background_color: '#f7f5f0',
+  theme_color: '#0f5a38',
+  background_color: '#0f5a38',
    icons: [
   {
     src: "/assets/icons/Logo.png",

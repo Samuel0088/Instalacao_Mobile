@@ -64,6 +64,7 @@ export default function Explore() {
 
   useEffect(() => {
     localStorage.setItem("activeExploreTab", activeTab);
+    window.dispatchEvent(new Event("system-bar-color-change"));
   }, [activeTab]);
 
   // ================= RENDER =================

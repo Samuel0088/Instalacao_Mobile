@@ -17,6 +17,7 @@ import Planos from "./pages/App/Planos"
 import SplashScreen from "./components/App/Global/SplashScreen"
 import InstallPrompt from "./components/App/Global/InstallPrompt"
 import InstallSuccess from "./components/App/Global/InstallSuccess"
+import UpdatePrompt from "./components/App/Global/UpdatePrompt"
 import AccessibilityTextControls from "./components/App/Global/AccessibilityTextControls"
 import ProfileLoadingScreen from "./components/App/Profile/ProfileLoadScreen"
 import SystemBarTheme from "./components/App/System/SystemBarTheme"
@@ -90,6 +91,8 @@ function App() {
   const [deferredPrompt, setDeferredPrompt] = useState(null)
   const [showInstallPrompt, setShowInstallPrompt] = useState(false)
   const [showInstallSuccess, setShowInstallSuccess] = useState(false)
+  const [showUpdatePrompt, setShowUpdatePrompt] = useState(false)
+  const [waitingServiceWorker, setWaitingServiceWorker] = useState(null)
   const [isInstalled, setIsInstalled] = useState(false)
   const [isIOS, setIsIOS] = useState(false)
   const [isAndroid, setIsAndroid] = useState(false)
@@ -155,6 +158,22 @@ function App() {
     }
   }, [])
 
+  useEffect(() => {
+    const handleUpdateAvailable = (event) => {
+      const worker = event.detail?.worker || event.detail?.registration?.waiting
+      if (!worker) return
+
+      setWaitingServiceWorker(worker)
+      setShowUpdatePrompt(true)
+    }
+
+    window.addEventListener("app-update-available", handleUpdateAvailable)
+
+    return () => {
+      window.removeEventListener("app-update-available", handleUpdateAvailable)
+    }
+  }, [])
+
 
 const handleInstall = async () => {
   if (!deferredPrompt) {
@@ -174,6 +193,13 @@ const handleInstall = async () => {
   }
 
   setDeferredPrompt(null)
+}
+
+const handleAppUpdate = () => {
+  if (!waitingServiceWorker) return
+
+  waitingServiceWorker.postMessage({ type: "SKIP_WAITING" })
+  setShowUpdatePrompt(false)
 }
 
 const finishInitialSplash = () => {
@@ -205,6 +231,13 @@ const finishInitialSplash = () => {
                 onClose={() => setShowInstallSuccess(false)}
                 isIOS={isIOS}
                 isAndroid={isAndroid}
+              />
+            )}
+
+            {showUpdatePrompt && (
+              <UpdatePrompt
+                onUpdate={handleAppUpdate}
+                onClose={() => setShowUpdatePrompt(false)}
               />
             )}
             
