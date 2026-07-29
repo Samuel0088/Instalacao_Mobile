@@ -1,4 +1,4 @@
-const CACHE_NAME = "agrovoo-cache-v2"
+const CACHE_NAME = "agrovoo-cache-v3"
 
 const urlsToCache = [
   "/",
@@ -14,8 +14,6 @@ self.addEventListener("install", (event) => {
       return cache.addAll(urlsToCache)
     })
   )
-
-  self.skipWaiting()
 })
 
 self.addEventListener("activate", (event) => {
@@ -30,6 +28,12 @@ self.addEventListener("activate", (event) => {
   )
 
   self.clients.claim()
+})
+
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "SKIP_WAITING") {
+    self.skipWaiting()
+  }
 })
 
 self.addEventListener("fetch", (event) => {

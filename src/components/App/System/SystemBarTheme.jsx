@@ -104,6 +104,7 @@ export default function SystemBarTheme() {
     window.addEventListener("scroll", requestUpdate, { passive: true })
     window.addEventListener("resize", requestUpdate)
     window.addEventListener("orientationchange", requestUpdate)
+    window.addEventListener("system-bar-color-change", requestUpdate)
 
     const observer = new MutationObserver(requestUpdate)
     observer.observe(document.body, {
@@ -117,6 +118,7 @@ export default function SystemBarTheme() {
       window.removeEventListener("scroll", requestUpdate)
       window.removeEventListener("resize", requestUpdate)
       window.removeEventListener("orientationchange", requestUpdate)
+      window.removeEventListener("system-bar-color-change", requestUpdate)
       observer.disconnect()
 
       if (frameRef.current) {
