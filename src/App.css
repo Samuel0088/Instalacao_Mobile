@@ -22,6 +22,25 @@ html, body {
   background: #f7f5f0;
 }
 
+.system-bar-glass {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: max(env(safe-area-inset-top), 24px);
+  z-index: 40000;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.28),
+      rgba(0, 0, 0, 0.08) 68%,
+      transparent
+    );
+  backdrop-filter: blur(10px) saturate(125%);
+  -webkit-backdrop-filter: blur(10px) saturate(125%);
+}
+
 .app-route-transition {
   min-height: 100vh;
   min-height: 100dvh;
