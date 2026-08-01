@@ -23,9 +23,9 @@
   z-index: 1;
 
   width: 100%;
-  min-height: 290px;
+  min-height: calc(290px + env(safe-area-inset-top, 0px));
 
-  padding: 20px 22px 38px;
+  padding: calc(20px + env(safe-area-inset-top, 0px)) 22px 38px;
 
   background: var(--header-gradient);
 
@@ -439,16 +439,15 @@
 
 .app-header.compact {
   min-height: auto;
-
   padding-bottom: 18px;
 }
 
 /* RESPONSIVO */
 @media (max-width: 550px) {
   .app-header {
-    min-height: 350px;
+    min-height: calc(350px + env(safe-area-inset-top, 0px));
 
-    padding: 18px 18px 100px;
+    padding: calc(18px + env(safe-area-inset-top, 0px)) 18px 100px;
   }
 
   .header-balance {
@@ -463,9 +462,9 @@
 
 @media (max-width: 390px) {
   .app-header {
-    min-height: 330px;
+    min-height: calc(330px + env(safe-area-inset-top, 0px));
 
-    padding: 18px 18px 80px;
+    padding: calc(18px + env(safe-area-inset-top, 0px)) 18px 80px;
   }
 
   .header-balance {
