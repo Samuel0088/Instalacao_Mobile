@@ -1,7 +1,7 @@
 // App.jsx do PWA
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom"
 import { useState, useEffect, useRef } from "react"
-import { AnimatePresence } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
 
 import Intro from "./pages/App/Intro"
 import Login from "./pages/App/Login"
@@ -78,7 +78,7 @@ function RouteChangeLoader() {
     }
 
     setShowRouteLoading(true)
-    const timer = setTimeout(() => setShowRouteLoading(false), 650)
+    const timer = setTimeout(() => setShowRouteLoading(false), 420)
 
     return () => clearTimeout(timer)
   }, [location.pathname])
@@ -86,6 +86,41 @@ function RouteChangeLoader() {
   if (!showRouteLoading) return null
 
   return <ProfileLoadingScreen message="Carregando..." />
+}
+
+const pageTransition = {
+  type: "tween",
+  ease: [0.22, 1, 0.36, 1],
+  duration: 0.32,
+}
+
+function AnimatedRoutes({ setAppLoading }) {
+  const location = useLocation()
+
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.div
+        key={location.pathname}
+        className="app-route-transition"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={pageTransition}
+      >
+        <Routes location={location}>
+          <Route path="/" element={<Intro />} />
+          <Route path="/login" element={<Login setAppLoading={setAppLoading} />} />
+          <Route path="/register" element={<CadastroCompleto setAppLoading={setAppLoading} />} />
+          <Route path="/cadastrar-fazenda" element={<CadastrarFazenda setAppLoading={setAppLoading} />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/explore" element={<Explore />} />
+          <Route path="/plans" element={<Planos />} />
+        </Routes>
+      </motion.div>
+    </AnimatePresence>
+  )
 }
 
 function App() {
@@ -273,17 +308,7 @@ const finishInitialSplash = () => {
               />
             )}
             
-            <Routes key="app">
-              <Route path="/" element={<Intro />} />
-              <Route path="/login" element={<Login setAppLoading={setLoading} />} />
-              <Route path="/register" element={<CadastroCompleto setAppLoading={setLoading} />} />
-              <Route path="/cadastrar-fazenda" element={<CadastrarFazenda setAppLoading={setLoading} />} />
-              <Route path="/home" element={<Home />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/explore" element={<Explore />} />
-              <Route path="/plans" element={<Planos />} />
-            </Routes>
+            <AnimatedRoutes setAppLoading={setLoading} />
             <RouteChangeLoader />
             <AccessibilityGate />
           </>

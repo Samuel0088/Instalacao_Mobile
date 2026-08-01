@@ -26,6 +26,10 @@
   --white: #FFFFFF;
   --earth: #7B6B4A;
   --sun: #F5B342;
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-press: cubic-bezier(0.2, 0, 0, 1);
+  --duration-soft: 300ms;
+  --duration-press: 120ms;
 }
 
 * {
@@ -42,11 +46,119 @@ html, body {
   overflow-y: auto; /* LIBERA SCROLL */
   display: flex;
   flex-direction: column;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
 }
 
 body {
   font-family: 'Inter', 'Segoe UI', sans-serif;
   background: #f8f9fa;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+a,
+[role="button"],
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a,
+[role="button"] {
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
+button:not(:disabled),
+a,
+[role="button"],
+.metric-card,
+.activity-card,
+.explore-card,
+.profile-card,
+.option-card,
+.diagnosis-card,
+.history-card,
+.product-card,
+.diario-card {
+  transition:
+    transform var(--duration-soft) var(--ease-soft),
+    box-shadow var(--duration-soft) var(--ease-soft),
+    background-color var(--duration-soft) var(--ease-soft),
+    border-color var(--duration-soft) var(--ease-soft),
+    color var(--duration-soft) var(--ease-soft),
+    opacity var(--duration-soft) var(--ease-soft);
+}
+
+button:not(:disabled):not(.nav__item-btn):active,
+a:active,
+[role="button"]:active {
+  transform: translateY(1px) scale(0.985);
+  transition-duration: var(--duration-press);
+  transition-timing-function: var(--ease-press);
+}
+
+button:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+  transition:
+    opacity var(--duration-soft) var(--ease-soft),
+    filter var(--duration-soft) var(--ease-soft);
+}
+
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid rgba(86, 168, 112, 0.3);
+  outline-offset: 3px;
+  transition:
+    outline-color var(--duration-soft) var(--ease-soft),
+    box-shadow var(--duration-soft) var(--ease-soft);
+}
+
+@media (hover: hover) {
+  button:not(:disabled):hover,
+  a:hover,
+  [role="button"]:hover {
+    transition-duration: 240ms;
+  }
+
+  .metric-card:not(.disabled):hover,
+  .activity-card:hover,
+  .explore-card:hover,
+  .profile-card:hover,
+  .option-card:hover,
+  .diagnosis-card:hover,
+  .history-card:hover,
+  .product-card:hover,
+  .diario-card:hover {
+    transition-duration: 320ms;
+    transition-timing-function: var(--ease-soft);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html,
+  body {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 html[data-text-size="1"] :where(
