@@ -96,15 +96,14 @@ export default function SystemBarTheme() {
       const luminanceColor = normalizedColor === "transparent"
         ? normalizedPageColor
         : normalizeHex(barColor)
+      const updateKey = `${normalizedColor}:${normalizedPageColor}`
 
-      if (lastColorRef.current === normalizedColor) return
+      if (lastColorRef.current === updateKey) return
 
-      lastColorRef.current = normalizedColor
+      lastColorRef.current = updateKey
       themeColorMeta?.setAttribute("content", normalizedColor)
       navButtonMeta?.setAttribute("content", normalizedColor)
       appleStatusMeta?.setAttribute("content", getAppleStatusBarStyle(luminanceColor))
-      document.documentElement.style.backgroundColor = normalizedPageColor
-      document.body.style.backgroundColor = normalizedPageColor
     }
 
     const updateColor = () => {
@@ -147,5 +146,5 @@ export default function SystemBarTheme() {
     }
   }, [location.pathname])
 
-  return <div className="system-bar-glass" aria-hidden="true" />
+  return null
 }
