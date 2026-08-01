@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import "../../../styles/Global/MenuBar.css"
 
@@ -48,6 +49,9 @@ function buildNotchPath(activeIdx) {
 export default function MenuBar() {
   const navigate  = useNavigate()
   const location  = useLocation()
+  const lastScrollYRef = useRef(0)
+  const tickingRef = useRef(false)
+  const [isVisible, setIsVisible] = useState(true)
   const isActive  = (path) => location.pathname === path
   const activeIdx = items.findIndex(({ path }) => isActive(path))
   const goToInternalPage = (path) => {
@@ -56,8 +60,40 @@ export default function MenuBar() {
     navigate(path)
   }
 
+  useEffect(() => {
+    lastScrollYRef.current = window.scrollY
+
+    const handleScroll = () => {
+      if (tickingRef.current) return
+
+      tickingRef.current = true
+      window.requestAnimationFrame(() => {
+        const currentScrollY = window.scrollY
+        const scrollDelta = currentScrollY - lastScrollYRef.current
+        const isNearTop = currentScrollY < 12
+
+        if (isNearTop) {
+          setIsVisible(true)
+        } else if (scrollDelta > 8) {
+          setIsVisible(false)
+        } else if (scrollDelta < -8) {
+          setIsVisible(true)
+        }
+
+        lastScrollYRef.current = currentScrollY
+        tickingRef.current = false
+      })
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true })
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+    }
+  }, [])
+
   return (
-    <nav className="nav">
+    <nav className={`nav ${isVisible ? "nav--visible" : "nav--hidden"}`}>
       <svg
         className="nav__notch-svg"
         viewBox={`0 0 ${NAV_W} ${NAV_H}`}

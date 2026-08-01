@@ -252,7 +252,7 @@ body {
 /* Container Principal */
 .home-container {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   max-width: 600px;
   margin: 0 auto;
   padding: 0 16px 24px;
@@ -374,6 +374,7 @@ body {
 /* Farm Info Card */
 .farm-info-card {
   position: relative;
+  z-index: 4;
   margin-bottom: 32px;
   margin-top: -50px;
   padding: 20px;
@@ -1968,12 +1969,17 @@ body {
 
 /* Mapeamento - Roxo */
 .activity-icon.mapeamento {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(139, 92, 246, 0.1)) !important;
-  color: #8b5cf6 !important;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.22), rgba(239, 68, 68, 0.1)) !important;
+  color: #ef4444 !important;
+  box-shadow: none;
 }
 
 .activity-icon.mapeamento span {
-  color: #8b5cf6 !important;
+  color: #ef4444 !important;
+}
+
+.activity-icon.mapeamento .activity-drone-icon {
+  filter: brightness(0) saturate(100%) invert(38%) sepia(87%) saturate(1802%) hue-rotate(337deg) brightness(101%) contrast(88%);
 }
 
 .activity-icon.mapeamento .icon-pulse {
@@ -2035,4 +2041,289 @@ body {
 
 .activity-card:hover .icon-pulse {
   opacity: 0.5;
+}
+
+/* ===== Refinamento visual: Home mais limpa e profissional ===== */
+body {
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  background: var(--background);
+}
+
+.background-canvas,
+.mouse-glow {
+  opacity: 0.28;
+}
+
+.home-container {
+  max-width: 680px;
+  padding: 0 18px 28px;
+}
+
+.farm-info-card,
+.metric-card,
+.activity-card,
+.empty-state,
+.explore-card {
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid rgba(45, 97, 64, 0.11);
+  box-shadow: 0 10px 28px rgba(15, 35, 24, 0.08);
+}
+
+.farm-info-card {
+  margin-top: -46px;
+  margin-bottom: 24px;
+  padding: 18px;
+}
+
+.farm-info-card::after,
+.metric-card::before,
+.activity-card::after,
+.explore-card::before,
+.empty-state::before,
+.welcome-section::before {
+  display: none;
+}
+
+.farm-icon,
+.card-icon,
+.activity-icon,
+.explore-icon,
+.empty-icon,
+.btn-icon-wrapper {
+  border-radius: 12px;
+}
+
+.farm-name,
+.section-title,
+.card-label,
+.activity-title,
+.explore-label,
+.empty-state h3 {
+  color: var(--g1);
+  letter-spacing: 0;
+}
+
+.farm-location,
+.card-sublabel,
+.activity-description,
+.explore-sublabel,
+.empty-state p,
+.activity-time {
+  color: #607568;
+}
+
+.farm-stats {
+  border-top-color: rgba(45, 97, 64, 0.1);
+}
+
+.cards-section {
+  margin-bottom: 28px;
+  padding: 0;
+}
+
+.section-header {
+  margin-bottom: 14px;
+}
+
+.section-title {
+  font-size: 17px;
+  font-weight: 750;
+}
+
+.section-title span {
+  color: var(--g5);
+}
+
+.section-badge {
+  padding: 5px 10px;
+  background: rgba(86, 168, 112, 0.1) !important;
+  border-color: rgba(86, 168, 112, 0.18) !important;
+  color: var(--g5) !important;
+  border-radius: 999px;
+}
+
+.live-dot {
+  background: var(--g6) !important;
+}
+
+.cards-grid {
+  gap: 12px;
+}
+
+.metric-card {
+  min-height: 168px;
+  padding: 16px;
+}
+
+.metric-card:not(.disabled):hover,
+.explore-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(15, 35, 24, 0.11);
+}
+
+.metric-card.disabled {
+  opacity: 0.62;
+  filter: grayscale(0.25);
+}
+
+.card-main {
+  margin-bottom: 14px;
+}
+
+.card-value {
+  color: var(--g1);
+  font-size: 32px;
+}
+
+.card-unit,
+.card-placeholder,
+.battery-percent {
+  color: #607568;
+}
+
+.card-badge,
+.metric,
+.activity-time {
+  background: #f4f7f5;
+  border-color: rgba(45, 97, 64, 0.1);
+  color: #506657;
+}
+
+.activity-card {
+  cursor: pointer;
+}
+
+.activity-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(61, 128, 87, 0.26);
+}
+
+.activity-content {
+  min-width: 0;
+}
+
+.activity-header {
+  gap: 10px;
+}
+
+.activity-description {
+  margin-bottom: 10px;
+}
+
+.view-all-btn,
+.flight-action-btn {
+  border-radius: 14px;
+  box-shadow: 0 10px 22px rgba(45, 97, 64, 0.16);
+}
+
+.view-all-btn {
+  min-height: 40px;
+  padding: 8px 13px;
+}
+
+.flight-action-btn {
+  background: var(--g4) !important;
+  padding: 0;
+}
+
+.btn-content {
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.btn-title,
+.btn-subtitle {
+  color: #ffffff;
+}
+
+.btn-icon-wrapper {
+  background: rgba(255, 255, 255, 0.14) !important;
+}
+
+.empty-state {
+  padding: 36px 22px;
+}
+
+.empty-icon {
+  border-radius: 18px;
+  background: #f4f7f5;
+}
+
+.empty-icon-ring,
+.icon-glow,
+.icon-pulse,
+.btn-glow,
+.btn-icon-glow {
+  display: none;
+}
+
+.empty-action-btn {
+  background: var(--g4);
+  color: #fff;
+  border-radius: 999px;
+  box-shadow: 0 10px 22px rgba(45, 97, 64, 0.16);
+}
+
+.explore-section {
+  margin-bottom: 30px;
+}
+
+.explore-grid {
+  gap: 12px;
+}
+
+.explore-card {
+  padding: 18px 12px;
+}
+
+.app-footer {
+  background: #102419;
+}
+
+.btn-drone-icon,
+.metric-drone-icon,
+.activity-drone-icon {
+  filter: brightness(0) invert(1);
+  opacity: 1;
+}
+
+.footer-logo span:last-child {
+  background: none;
+  -webkit-background-clip: initial;
+  -webkit-text-fill-color: currentColor;
+  background-clip: initial;
+  color: var(--text-secondary);
+}
+
+.footer-drone-icon {
+  filter: brightness(0) saturate(100%) invert(68%) sepia(9%) saturate(442%) hue-rotate(176deg) brightness(94%) contrast(86%);
+  opacity: 1;
+}
+
+@media (max-width: 480px) {
+  .home-container {
+    padding-inline: 14px;
+  }
+
+  .metric-card {
+    min-height: 154px;
+    padding: 14px;
+  }
+
+  .card-value {
+    font-size: 27px;
+  }
+
+  .section-header {
+    gap: 12px;
+  }
+
+  .section-title {
+    font-size: 16px;
+  }
+
+  .activity-card {
+    gap: 12px;
+  }
 }

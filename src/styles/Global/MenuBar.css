@@ -8,6 +8,21 @@
   display: flex;
   justify-content: center;
   z-index: 9999;
+  transform: translateY(0);
+  transition: transform 220ms ease, opacity 180ms ease;
+  will-change: transform;
+}
+
+.nav--hidden {
+  transform: translateY(calc(100% + 14px));
+  opacity: 0;
+  pointer-events: none;
+}
+
+.nav--visible {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .nav::before {
