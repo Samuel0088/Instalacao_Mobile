@@ -11,15 +11,16 @@
   --header-gradient:
     linear-gradient(
       135deg,
-      #07140d 0%,
-      #163020 45%,
-      var(--g5) 100%
+      #102419 0%,
+      #1e4229 54%,
+      #3d8057 100%
     );
 }
 
 /* HEADER */
 .app-header {
   position: relative;
+  z-index: 1;
 
   width: 100%;
   min-height: 290px;
@@ -35,20 +36,13 @@
   justify-content: space-between;
 }
 
-/* Glow */
 .app-header::before {
   content: "";
-
   position: absolute;
   inset: 0;
-
   background:
-    radial-gradient(
-      circle at center,
-      rgba(86, 168, 112, 0.22),
-      transparent 60%
-    );
-
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), transparent 42%),
+    radial-gradient(circle at 18% 18%, rgba(142, 207, 160, 0.18), transparent 38%);
   pointer-events: none;
 }
 
@@ -80,8 +74,12 @@
   flex: 0 0 auto;
 }
 
-/* BOTÃO NOTIFICAÇÃO */
+.notification-wrapper {
+  position: relative;
+}
+
 .notification-btn {
+  position: relative;
   width: 40px;
   min-width: 40px;
   max-width: 40px;
@@ -96,7 +94,8 @@
 
   border-radius: 50%;
 
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.14);
 
   display: flex;
   align-items: center;
@@ -105,7 +104,7 @@
 
   cursor: pointer;
 
-  transition: 0.2s ease;
+  transition: background 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
 }
 
 .notification-btn span {
@@ -114,8 +113,183 @@
   line-height: 1;
 }
 
-.notification-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
+.notification-btn:hover,
+.notification-btn.active {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.28);
+  transform: translateY(-1px);
+}
+
+.notification-dot {
+  position: absolute;
+  top: 9px;
+  right: 10px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid #1e4229;
+  border-radius: 50%;
+  background: #f5b342;
+}
+
+.notification-panel {
+  position: fixed;
+  top: var(--notification-panel-top, 76px);
+  left: var(--notification-panel-left, 12px);
+  z-index: 30000;
+  width: var(--notification-panel-width, min(318px, calc(100vw - 24px)));
+  max-height: min(460px, calc(100dvh - 96px));
+  overflow: auto;
+  padding: 14px;
+  border: 1px solid rgba(45, 97, 64, 0.16);
+  border-radius: 18px;
+  background: #ffffff;
+  color: var(--g1);
+  box-shadow: 0 22px 54px rgba(15, 35, 24, 0.26);
+  isolation: isolate;
+}
+
+.notification-panel::before {
+  content: "";
+  position: absolute;
+  top: -7px;
+  left: var(--notification-panel-arrow-left, auto);
+  width: 14px;
+  height: 14px;
+  background: #ffffff;
+  border-left: 1px solid rgba(45, 97, 64, 0.16);
+  border-top: 1px solid rgba(45, 97, 64, 0.16);
+  transform: rotate(45deg);
+}
+
+.notification-panel-header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 2px 2px 12px;
+  border-bottom: 1px solid rgba(45, 97, 64, 0.1);
+}
+
+.notification-panel-header strong {
+  display: block;
+  color: var(--g1);
+  font-size: 0.96rem;
+  font-weight: 800;
+}
+
+.notification-panel-header span {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.notification-close {
+  width: 34px;
+  min-width: 34px;
+  max-width: 34px;
+  height: 34px;
+  min-height: 34px;
+  max-height: 34px;
+  aspect-ratio: 1;
+  flex: 0 0 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(45, 97, 64, 0.08);
+  color: var(--g3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.notification-close span {
+  font-size: 18px;
+}
+
+.notification-list {
+  display: grid;
+  gap: 10px;
+  padding: 12px 0;
+}
+
+.notification-item {
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid rgba(45, 97, 64, 0.1);
+  border-radius: 14px;
+  background: #fbfcfb;
+}
+
+.notification-item-content {
+  min-width: 0;
+}
+
+.notification-item-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: rgba(86, 168, 112, 0.12);
+  color: var(--g5);
+  display: grid;
+  place-items: center;
+}
+
+.notification-item-icon span {
+  color: inherit;
+  font-size: 21px;
+}
+
+.notification-item-content strong {
+  display: block;
+  color: var(--g1);
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.notification-item-content p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.notification-item-content button,
+.notification-enable {
+  margin-top: 9px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--g4);
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.notification-item-content button {
+  padding: 7px 11px;
+}
+
+.notification-enable {
+  width: 100%;
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.notification-enable span {
+  color: #fff;
+  font-size: 19px;
 }
 
 .profile-avatar-btn {
@@ -127,29 +301,30 @@
   max-height: 42px;
   aspect-ratio: 1;
   padding: 0;
-  border: 2px solid rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.28);
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  overflow: hidden;
+  background: rgba(255, 255, 255, 0.14);
+  overflow: visible;
   display: flex;
   align-items: center;
   justify-content: center;
   flex: 0 0 42px;
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.16);
+  box-shadow: none;
 }
 
 .profile-avatar-btn span {
   display: block;
   color: #fff;
-  font-size: 23px;
+  font-size: 24px;
   line-height: 1;
   transform: translateY(1px);
 }
 
 .profile-avatar-btn:hover {
   transform: translateY(-1px);
-  border-color: rgba(255, 255, 255, 0.86);
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.34);
 }
 
 /* BOTÃO PLANOS */
@@ -205,7 +380,7 @@
 
   color: var(--text-secondary);
 
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 600;
 }
 
@@ -220,14 +395,14 @@
 .header-balance {
   margin: 0;
 
-  font-size: 3rem;
+  font-size: 2.75rem;
   line-height: 1;
 
   font-weight: 700;
 
   color: var(--text-primary);
 
-  letter-spacing: -0.03em;
+  letter-spacing: 0;
 }
 
 /* SETA */
@@ -283,6 +458,7 @@
   .header-label {
     font-size: 1rem;
   }
+
 }
 
 @media (max-width: 390px) {
