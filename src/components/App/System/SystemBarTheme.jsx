@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react"
 import { useLocation } from "react-router-dom"
 
 const DEFAULT_COLOR = "#3d8057"
+const TRANSLUCENT_BAR_COLOR = "transparent"
 
 const ROUTE_COLORS = {
   "/": "#07110b",
@@ -21,6 +22,20 @@ function normalizeHex(color) {
   const trimmed = color.trim()
 
   if (/^#[0-9a-fA-F]{6}$/.test(trimmed)) return trimmed.toLowerCase()
+
+  return DEFAULT_COLOR
+}
+
+function getCssColor(color) {
+  if (!color || typeof color !== "string") return DEFAULT_COLOR
+
+  const trimmed = color.trim()
+
+  if (/^#[0-9a-fA-F]{6}$/.test(trimmed)) return trimmed.toLowerCase()
+  if (trimmed === "transparent") return trimmed
+  if (/^rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+(?:\s*,\s*(?:0|1|0?\.\d+))?\s*\)$/.test(trimmed)) {
+    return trimmed
+  }
 
   return DEFAULT_COLOR
 }
@@ -75,22 +90,27 @@ export default function SystemBarTheme() {
     const appleStatusMeta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')
     const fallbackColor = ROUTE_COLORS[location.pathname] || DEFAULT_COLOR
 
-    const applyColor = (color) => {
-      const normalizedColor = normalizeHex(color)
+    const applyColor = (barColor, pageColor) => {
+      const normalizedColor = getCssColor(barColor)
+      const normalizedPageColor = normalizeHex(pageColor)
+      const luminanceColor = normalizedColor === "transparent"
+        ? normalizedPageColor
+        : normalizeHex(barColor)
 
       if (lastColorRef.current === normalizedColor) return
 
       lastColorRef.current = normalizedColor
       themeColorMeta?.setAttribute("content", normalizedColor)
       navButtonMeta?.setAttribute("content", normalizedColor)
-      appleStatusMeta?.setAttribute("content", getAppleStatusBarStyle(normalizedColor))
-      document.documentElement.style.backgroundColor = normalizedColor
-      document.body.style.backgroundColor = normalizedColor
+      appleStatusMeta?.setAttribute("content", getAppleStatusBarStyle(luminanceColor))
+      document.documentElement.style.backgroundColor = normalizedPageColor
+      document.body.style.backgroundColor = normalizedPageColor
     }
 
     const updateColor = () => {
       frameRef.current = null
-      applyColor(getActiveMarkedColor(fallbackColor))
+      const activeColor = getActiveMarkedColor(fallbackColor)
+      applyColor(TRANSLUCENT_BAR_COLOR, activeColor)
     }
 
     const requestUpdate = () => {
@@ -127,5 +147,5 @@ export default function SystemBarTheme() {
     }
   }, [location.pathname])
 
-  return null
+  return <div className="system-bar-glass" aria-hidden="true" />
 }

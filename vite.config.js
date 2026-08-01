@@ -19,7 +19,7 @@ export default defineConfig({
   short_name: 'Zenith',
   start_url: '/',
   display: 'standalone',
-  theme_color: '#0f5a38',
+  theme_color: 'transparent',
   background_color: '#0f5a38',
    icons: [
   {
