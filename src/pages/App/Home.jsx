@@ -90,6 +90,22 @@ export default function Home() {
           <FlightActionButton onNavigate={() => navigate("/novo-voo")} />
         )}
 
+        {userData?.role !== "employee" && (
+          <section className="admin-team-section">
+            <button
+              className="admin-team-card"
+              onClick={() => goToInternalPage("/admin/team")}
+            >
+              <span className="material-symbols-outlined">groups</span>
+              <div>
+                <strong>Dashboard da Equipe</strong>
+                <p>Monitore funcionários, tarefas, horários e produtividade.</p>
+              </div>
+              <span className="material-symbols-outlined">arrow_forward</span>
+            </button>
+          </section>
+        )}
+
         <section className="activities-section">
           <div className="section-header">
             <h2 className="section-title">

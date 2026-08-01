@@ -1,12 +1,20 @@
-import { useRef, useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
+import { auth } from "../../services/firebase"
+import { getRoleHomePath, getUserAccessProfile } from "../../services/accessControl"
 import {
-  getCurrentUser,
-  signInWithEmail,
-  signInWithOAuth,
-} from "../../services/supabase"
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
+  GoogleAuthProvider,
+  OAuthProvider,
+} from "firebase/auth"
 import "../../styles/App/Login.css"
 
+/* ─────────────────────────────────────────
+   UTILS
+───────────────────────────────────────── */
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 function isValidEmail(value) {
@@ -14,26 +22,40 @@ function isValidEmail(value) {
 }
 
 function devLog(...args) {
-  if (import.meta.env.DEV) console.log(...args)
+  if (process.env.NODE_ENV === "development") console.log(...args)
 }
 
-function getAuthErrorMessage(error) {
-  const message = error?.message?.toLowerCase() || ""
-
-  if (message.includes("invalid login credentials")) {
-    return "Email ou senha incorretos. Verifique e tente novamente."
-  }
-
-  if (message.includes("invalid email")) {
-    return "Email invalido. Digite um email valido."
-  }
-
-  if (message.includes("rate limit")) {
-    return "Muitas tentativas. Aguarde um momento antes de tentar novamente."
-  }
-
-  return "Erro ao fazer login. Tente novamente mais tarde."
+/* ─────────────────────────────────────────
+   FIREBASE ERROR MESSAGES
+───────────────────────────────────────── */
+const FIREBASE_ERROR_MESSAGES = {
+  "auth/invalid-credential":
+    "Email ou senha incorretos. Verifique e tente novamente. 🔒",
+  "auth/user-not-found":
+    "Usuário não encontrado! Você ainda não plantou sua conta. 🌱",
+  "auth/wrong-password":
+    "Senha incorreta! Verifique e tente novamente. 🔒",
+  "auth/invalid-email":
+    "Email inválido! Digite um email válido. 📧",
+  "auth/too-many-requests":
+    "Muitas tentativas! Aguarde um momento antes de tentar novamente. ⏳",
+  "auth/network-request-failed":
+    "Erro de conexão! Verifique sua internet. 🌐",
+  "auth/popup-blocked":
+    "O navegador bloqueou a janela. Vamos abrir o login em tela cheia.",
+  "auth/popup-closed-by-user":
+    "Login cancelado antes de concluir.",
+  "auth/unauthorized-domain":
+    "Este domínio não está autorizado no Firebase Authentication.",
+  "auth/operation-not-allowed":
+    "Este provedor precisa ser ativado no Firebase Authentication.",
 }
+
+const FIREBASE_ERROR_DEFAULT = "Erro ao fazer login. Tente novamente mais tarde."
+
+/* ─────────────────────────────────────────
+   SUB-COMPONENTS
+───────────────────────────────────────── */
 
 function FormInput({
   id, label, type, placeholder,
@@ -102,6 +124,10 @@ function AlertMessage({ type, text }) {
   )
 }
 
+/* ─────────────────────────────────────────
+   ICON COMPONENTS
+───────────────────────────────────────── */
+
 const GoogleIcon = () => (
   <svg width="20" height="20" viewBox="0 0 48 48" fill="none" aria-hidden="true">
     <path d="M44.5 20H24v8.5h11.8C34.7 33.9 29.9 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.1 29.6 2 24 2 11.8 2 2 11.8 2 24s9.8 22 22 22c11 0 21-8 21-22 0-1.3-.2-2.7-.5-4z" fill="#FFC107"/>
@@ -112,7 +138,13 @@ const GoogleIcon = () => (
 )
 
 const MicrosoftIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    aria-hidden="true"
+  >
     <rect x="1" y="1" width="10" height="10" fill="#F25022" />
     <rect x="13" y="1" width="10" height="10" fill="#7FBA00" />
     <rect x="1" y="13" width="10" height="10" fill="#00A4EF" />
@@ -134,34 +166,40 @@ const EyeClosed = () => (
   </svg>
 )
 
+/* ─────────────────────────────────────────
+   MAIN LOGIN COMPONENT
+───────────────────────────────────────── */
 export default function Login({ setAppLoading }) {
   const navigate = useNavigate()
 
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [loading, setLoading] = useState(false)
-  const loginInFlightRef = useRef(false)
-  const [rememberMe, setRememberMe] = useState(false)
+  const [email, setEmail]               = useState("")
+  const [password, setPassword]         = useState("")
+  const [loading, setLoading]           = useState(false)
+  const [rememberMe, setRememberMe]     = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const [alert, setAlert] = useState({ type: "", text: "" })
+  const [alert, setAlert]               = useState({ type: "", text: "" })
 
-  const goHomeWithGreenLoading = useCallback(() => {
+  const goHomeWithGreenLoading = useCallback((path = "/home") => {
     sessionStorage.removeItem("zenithShowWhiteLoaderOnce")
     sessionStorage.setItem("zenithBlockWhiteLoaderUntil", String(Date.now() + 5000))
     setAppLoading?.(true)
-    navigate("/home", { replace: true })
+    navigate(path, { replace: true })
   }, [navigate, setAppLoading])
 
-  useEffect(() => {
-    let active = true
+  const goToRoleHome = useCallback(async (firebaseUser) => {
+    const profile = await getUserAccessProfile(firebaseUser.uid)
+    goHomeWithGreenLoading(getRoleHomePath(profile?.role))
+  }, [goHomeWithGreenLoading])
 
-    getCurrentUser().then((user) => {
-      if (!active) return
-      if (user) {
-        devLog("Usuario ja esta logado:", user.email)
-        goHomeWithGreenLoading()
-      }
-    })
+  /* ── useEffect: verificar sessão + email salvo ── */
+  useEffect(() => {
+    const user = auth.currentUser
+
+    if (user) {
+      devLog("Usuário já está logado:", user.email)
+      goToRoleHome(user)
+      return
+    }
 
     const remembered = localStorage.getItem("rememberedEmail")
     if (remembered) {
@@ -169,73 +207,121 @@ export default function Login({ setAppLoading }) {
       setRememberMe(true)
     }
 
-    return () => {
-      active = false
-    }
-  }, [goHomeWithGreenLoading])
+  }, [goToRoleHome])
 
-  const showAlertMsg = useCallback((type, text) => setAlert({ type, text }), [])
+  /* ── Helpers de alerta ── */
+  const showAlertMsg  = useCallback((type, text) => setAlert({ type, text }), [])
   const clearAlertMsg = useCallback(() => setAlert({ type: "", text: "" }), [])
 
-  const handleLogin = useCallback(async () => {
-    if (loading || loginInFlightRef.current) return
+  useEffect(() => {
+    async function finishRedirectLogin() {
+      try {
+        const result = await getRedirectResult(auth)
 
+        if (result?.user) {
+          showAlertMsg("success", "Login realizado com sucesso! 🚀")
+          await goToRoleHome(result.user)
+        }
+      } catch (error) {
+        console.error(error)
+        const message = FIREBASE_ERROR_MESSAGES[error.code] ?? FIREBASE_ERROR_DEFAULT
+        showAlertMsg("error", message)
+      }
+    }
+
+    finishRedirectLogin()
+  }, [goToRoleHome, showAlertMsg])
+
+  /* ── Handlers ── */
+  const handleEmailChange     = useCallback((e) => setEmail(e.target.value), [])
+  const handlePasswordChange  = useCallback((e) => setPassword(e.target.value), [])
+  const handleRememberMeChange = useCallback((e) => setRememberMe(e.target.checked), [])
+  const handleTogglePassword  = useCallback(() => setShowPassword((v) => !v), [])
+
+  const handleLogin = useCallback(async () => {
     if (!email || !password) {
-      showAlertMsg("error", "Preencha todos os campos para entrar na fazenda.")
+      showAlertMsg("error", "Preencha todos os campos para entrar na fazenda! 🌾")
       return
     }
 
     if (!isValidEmail(email)) {
-      showAlertMsg("error", "Email invalido. Digite um email no formato correto.")
+      showAlertMsg("error", "Email inválido! Digite um email no formato correto. 📧")
       return
     }
 
-    loginInFlightRef.current = true
     setLoading(true)
     clearAlertMsg()
 
     try {
-      await signInWithEmail(email, password)
+      const credential = await signInWithEmailAndPassword(auth, email, password)
 
       rememberMe
         ? localStorage.setItem("rememberedEmail", email)
         : localStorage.removeItem("rememberedEmail")
 
-      showAlertMsg("success", "Bem-vindo de volta, produtor!")
-      goHomeWithGreenLoading()
+      showAlertMsg("success", "Bem-vindo de volta, produtor! 🚁")
+      await goToRoleHome(credential.user)
     } catch (error) {
-      console.error("Erro ao fazer login com email e senha:", error)
-      showAlertMsg("error", getAuthErrorMessage(error))
+      const message = FIREBASE_ERROR_MESSAGES[error.code] ?? FIREBASE_ERROR_DEFAULT
+      showAlertMsg("error", message)
     } finally {
-      loginInFlightRef.current = false
       setLoading(false)
     }
-  }, [email, password, rememberMe, loading, goHomeWithGreenLoading, showAlertMsg, clearAlertMsg])
+  }, [email, password, rememberMe, goToRoleHome, showAlertMsg, clearAlertMsg])
 
   const handleKeyDown = useCallback(
     (e) => { if (e.key === "Enter") handleLogin() },
     [handleLogin]
   )
 
-  const signInWithProvider = async (provider) => {
-    if (loading || loginInFlightRef.current) return
+  const googleProvider = new GoogleAuthProvider()
+  googleProvider.setCustomParameters({ prompt: "select_account" })
 
-    loginInFlightRef.current = true
+  const outlookProvider = new OAuthProvider("microsoft.com")
+  outlookProvider.addScope("email")
+  outlookProvider.addScope("profile")
+  outlookProvider.setCustomParameters({
+    prompt: "select_account",
+    tenant: "common"
+  })
+
+  const signInWithProvider = async (provider, successMessage) => {
     setLoading(true)
     clearAlertMsg()
 
     try {
-      await signInWithOAuth(provider)
+      const credential = await signInWithPopup(auth, provider)
+      showAlertMsg("success", successMessage)
+      await goToRoleHome(credential.user)
     } catch (error) {
       console.error(error)
-      showAlertMsg("error", getAuthErrorMessage(error))
-      loginInFlightRef.current = false
+
+      if (error.code === "auth/popup-blocked") {
+        showAlertMsg("error", FIREBASE_ERROR_MESSAGES[error.code])
+        await signInWithRedirect(auth, provider)
+        return
+      }
+
+      const message = FIREBASE_ERROR_MESSAGES[error.code] ?? FIREBASE_ERROR_DEFAULT
+      showAlertMsg("error", message)
+    } finally {
       setLoading(false)
     }
   }
 
+  const handleGoogleLogin = async () => {
+    await signInWithProvider(googleProvider, "Login com Google realizado com sucesso! 🚀")
+}
+
+const handleOutlookLogin = async () => {
+    await signInWithProvider(outlookProvider, "Login com Outlook realizado com sucesso! 📧")
+}
+
+  /* ── RENDER ── */
   return (
     <div className="login-page" data-system-bar-color="#091c13">
+
+      {/* ── HERO MOBILE ── */}
       <div className="login-hero" role="banner">
         <div className="login-hero__overlay" aria-hidden="true" />
 
@@ -248,14 +334,16 @@ export default function Login({ setAppLoading }) {
         </div>
       </div>
 
+      {/* ── CARD — FORMULÁRIO ── */}
       <main className="login-card">
+
         <FormInput
           id="login-email"
           label="Email"
           type="email"
           placeholder="seuemail@gmail.com"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={handleEmailChange}
           onKeyDown={handleKeyDown}
           disabled={loading}
           autoComplete="email"
@@ -267,7 +355,7 @@ export default function Login({ setAppLoading }) {
           type={showPassword ? "text" : "password"}
           placeholder="Sua senha"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={handlePasswordChange}
           onKeyDown={handleKeyDown}
           disabled={loading}
           autoComplete="current-password"
@@ -275,13 +363,14 @@ export default function Login({ setAppLoading }) {
           <button
             className="login__eye-btn"
             type="button"
-            onClick={() => setShowPassword((value) => !value)}
+            onClick={handleTogglePassword}
             aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
           >
             {showPassword ? <EyeOpen /> : <EyeClosed />}
           </button>
         </FormInput>
 
+        {/* Remember + Forgot */}
         <div className="login-extras">
           <label className="login-remember" htmlFor="login-remember-checkbox">
             <input
@@ -289,7 +378,7 @@ export default function Login({ setAppLoading }) {
               type="checkbox"
               className="login-remember__input"
               checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
+              onChange={handleRememberMeChange}
             />
             <span className="login-remember__box" aria-hidden="true" />
             <span className="login-remember__text">Lembrar de mim</span>
@@ -310,12 +399,14 @@ export default function Login({ setAppLoading }) {
           Entrar na conta
         </PrimaryButton>
 
+        {/* Divider */}
         <div className="login-divider" aria-hidden="true">
           <span className="login-divider__line" />
           <span className="login-divider__text">Ou</span>
           <span className="login-divider__line" />
         </div>
 
+        {/* Register */}
         <p className="login-register">
           Primeira vez aqui?{" "}
           <a href="/register" className="login-register__link">
@@ -323,20 +414,23 @@ export default function Login({ setAppLoading }) {
           </a>
         </p>
 
+        {/* Social */}
         <div className="login-social">
           <SocialButton
             icon={<GoogleIcon />}
             label="Entre com Google"
-            onClick={() => signInWithProvider("google")}
+            onClick={handleGoogleLogin}
           />
           <SocialButton
             icon={<MicrosoftIcon />}
             label="Entre com Outlook"
-            onClick={() => signInWithProvider("azure")}
+            onClick={handleOutlookLogin}
           />
         </div>
+
       </main>
 
+      {/* Círculos decorativos */}
       <div className="login-deco-circle login-deco-circle--br" aria-hidden="true" />
       <div className="login-deco-circle login-deco-circle--bl" aria-hidden="true" />
     </div>

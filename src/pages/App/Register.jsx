@@ -1,5 +1,8 @@
-import { useRef, useState } from "react"
-import { signUpAndCreateProfile } from "../../services/supabase"
+import { useState } from "react"
+import { auth, db } from "../../services/firebase"
+import { createUserWithEmailAndPassword } from "firebase/auth"
+import { doc, setDoc } from "firebase/firestore"
+import { ACCOUNT_ROLES } from "../../services/accessControl"
 import "../../styles/App/Register.css"
 
 export default function Register() {
@@ -10,49 +13,55 @@ export default function Register() {
     document: "",
     hectares: "",
     email: "",
-    password: "",
+    password: ""
   })
   const [loading, setLoading] = useState(false)
-  const registeringRef = useRef(false)
   const [alertMessage, setAlertMessage] = useState({ type: "", text: "" })
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
+    setForm({...form, [e.target.name]: e.target.value})
     setAlertMessage({ type: "", text: "" })
   }
 
   const validateForm = () => {
     if (!form.name || !form.age || !form.type || !form.document || !form.hectares || !form.email || !form.password) {
-      setAlertMessage({ type: "error", text: "Preencha todos os campos." })
+      setAlertMessage({ type: "error", text: "Preencha todos os campos, como uma boa colheita!" })
       return false
     }
     if (form.password.length < 6) {
-      setAlertMessage({ type: "error", text: "A senha deve ter pelo menos 6 caracteres." })
+      setAlertMessage({ type: "error", text: "A senha deve ter pelo menos 6 caracteres (como uma cerca bem feita!)" })
       return false
     }
     return true
   }
 
   const handleRegister = async () => {
-    if (loading || registeringRef.current) return
     if (!validateForm()) return
 
-    registeringRef.current = true
     setLoading(true)
     try {
-      await signUpAndCreateProfile({
+      const userCred = await createUserWithEmailAndPassword(
+        auth,
+        form.email,
+        form.password
+      )
+
+      await setDoc(doc(db, "users", userCred.user.uid), {
+        name: form.name,
+        age: parseInt(form.age),
+        type: form.type,
+        document: form.document,
+        hectares: parseFloat(form.hectares),
         email: form.email,
-        password: form.password,
-        profile: {
-          name: form.name,
-          age: parseInt(form.age),
-          type: form.type,
-          document: form.document,
-        },
+        role: ACCOUNT_ROLES.ADMIN,
+        position: "Administrador",
+        status: "offline",
+        createdAt: new Date().toISOString(),
+        profileIcon: "👨‍🌾"
       })
 
-      setAlertMessage({ type: "success", text: "Conta criada com sucesso! Bem-vindo ao campo!" })
-
+      setAlertMessage({ type: "success", text: "Conta criada com sucesso! Bem-vindo ao campo! 🌾" })
+      
       setForm({
         name: "",
         age: "",
@@ -60,38 +69,50 @@ export default function Register() {
         document: "",
         hectares: "",
         email: "",
-        password: "",
+        password: ""
       })
 
       setTimeout(() => {
         window.location.href = "/login"
       }, 2000)
-    } catch (error) {
-      console.error("Erro ao criar conta:", error)
-      const errorMessage = error.message?.includes("already registered")
-        ? "Este email ja esta em uso."
-        : "Erro ao criar a conta. Tente novamente."
 
+    } catch (error) {
+      let errorMessage = "Erro na plantação. Tente novamente! 🌧️"
+      
+      if (error.code === 'auth/email-already-in-use') {
+        errorMessage = "Este email já está sendo cultivado por outra pessoa!"
+      } else if (error.code === 'auth/invalid-email') {
+        errorMessage = "Email inválido! Parece uma semente estragada."
+      } else if (error.code === 'auth/weak-password') {
+        errorMessage = "Senha muito fraca! Plante uma mais forte."
+      }
+      
       setAlertMessage({ type: "error", text: errorMessage })
     } finally {
-      registeringRef.current = false
       setLoading(false)
     }
   }
 
   return (
     <div className="register-container">
+      {/* Background Layers */}
       <div className="register-background-layer register-background-layer-1"></div>
       <div className="register-background-layer register-background-layer-2"></div>
       <div className="register-background-overlay"></div>
-
+      
+      {/* Gradient Spheres */}
       <div className="register-gradient-sphere register-gradient-sphere-1"></div>
       <div className="register-gradient-sphere register-gradient-sphere-2"></div>
+
+      {/* Grid Pattern */}
       <div className="register-grid-pattern"></div>
 
+      {/* Card Principal */}
       <div className="register-card">
         <div className="register-card-glow"></div>
         <div className="register-card-pattern"></div>
+
+    
 
         <div className="register-form">
           <div className="input-group-register">
@@ -119,7 +140,11 @@ export default function Register() {
 
           <div className="input-group-register">
             <label>Tipo de Propriedade</label>
-            <select name="type" value={form.type} onChange={handleChange}>
+            <select
+              name="type"
+              value={form.type}
+              onChange={handleChange}
+            >
               <option value="">Selecione o tipo</option>
               <option value="CPF">Agricultor Familiar (CPF)</option>
               <option value="PJ">Produtor Rural (CNPJ)</option>
@@ -140,7 +165,7 @@ export default function Register() {
           )}
 
           <div className="input-group-register">
-            <label>Hectares (Area total)</label>
+            <label>Hectares (Área total)</label>
             <input
               type="number"
               name="hectares"
@@ -169,7 +194,7 @@ export default function Register() {
               type="password"
               name="password"
               value={form.password}
-              placeholder="Minimo 6 caracteres"
+              placeholder="Mínimo 6 caracteres"
               onChange={handleChange}
             />
           </div>
@@ -180,16 +205,15 @@ export default function Register() {
             </div>
           )}
 
-          <button
-            type="button"
-            className="register-button"
+          <button 
+            className="register-button" 
             onClick={handleRegister}
             disabled={loading}
           >
             {loading ? (
               <>
                 <span className="loading-spinner-register"></span>
-                Criando sua conta...
+                Plantando sua conta...
               </>
             ) : (
               "Criar conta"
@@ -197,9 +221,10 @@ export default function Register() {
           </button>
 
           <div className="login-link">
-            <span>Ja tem uma conta?</span>
-            <a href="/login">Fazer Login</a>
+            <span>Já tem uma conta?</span>
+            <a href="/login">Fazer Login 🌿</a>
           </div>
+          
         </div>
       </div>
     </div>
