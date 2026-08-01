@@ -17,9 +17,11 @@ export default defineConfig({
      manifest: {
   name: 'Zenith',
   short_name: 'Zenith',
+  id: '/',
   start_url: '/',
+  scope: '/',
   display: 'standalone',
-  theme_color: 'transparent',
+  theme_color: '#163020',
   background_color: '#0f5a38',
    icons: [
   {

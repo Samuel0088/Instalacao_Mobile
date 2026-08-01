@@ -2,6 +2,10 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom"
 import { useState, useEffect, useRef } from "react"
 import { AnimatePresence, motion } from "framer-motion"
+import { onAuthStateChanged } from "firebase/auth"
+import { Navigate } from "react-router-dom"
+import { auth } from "./services/firebase"
+import { ACCOUNT_ROLES, getRoleHomePath, getUserAccessProfile } from "./services/accessControl"
 
 import Intro from "./pages/App/Intro"
 import Login from "./pages/App/Login"
@@ -12,6 +16,8 @@ import Profile from "./pages/App/Profile"
 import ForgotPassword from "./pages/App/ForgotPassword"
 import Explore from "./pages/App/Explore"
 import Planos from "./pages/App/Planos"
+import EmployeeWork from "./pages/App/EmployeeWork"
+import AdminTeamDashboard from "./pages/App/AdminTeamDashboard"
 
 // Componentes
 import SplashScreen from "./components/App/Global/SplashScreen"
@@ -88,6 +94,39 @@ function RouteChangeLoader() {
   return <ProfileLoadingScreen message="Carregando..." />
 }
 
+function ProtectedRoute({ allowedRoles, children }) {
+  const [state, setState] = useState({
+    loading: true,
+    user: null,
+    profile: null,
+  })
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (!currentUser) {
+        setState({ loading: false, user: null, profile: null })
+        return
+      }
+
+      const profile = await getUserAccessProfile(currentUser.uid)
+      setState({ loading: false, user: currentUser, profile })
+    })
+
+    return () => unsubscribe()
+  }, [])
+
+  if (state.loading) return <ProfileLoadingScreen message="Carregando acesso..." />
+  if (!state.user) return <Navigate to="/login" replace />
+
+  const role = state.profile?.role || ACCOUNT_ROLES.ADMIN
+
+  if (allowedRoles && !allowedRoles.includes(role)) {
+    return <Navigate to={getRoleHomePath(role)} replace />
+  }
+
+  return children
+}
+
 const pageTransition = {
   type: "tween",
   ease: [0.22, 1, 0.36, 1],
@@ -112,11 +151,13 @@ function AnimatedRoutes({ setAppLoading }) {
           <Route path="/login" element={<Login setAppLoading={setAppLoading} />} />
           <Route path="/register" element={<CadastroCompleto setAppLoading={setAppLoading} />} />
           <Route path="/cadastrar-fazenda" element={<CadastrarFazenda setAppLoading={setAppLoading} />} />
-          <Route path="/home" element={<Home />} />
+          <Route path="/home" element={<ProtectedRoute allowedRoles={[ACCOUNT_ROLES.ADMIN]}><Home /></ProtectedRoute>} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/explore" element={<Explore />} />
-          <Route path="/plans" element={<Planos />} />
+          <Route path="/explore" element={<ProtectedRoute allowedRoles={[ACCOUNT_ROLES.ADMIN]}><Explore /></ProtectedRoute>} />
+          <Route path="/plans" element={<ProtectedRoute allowedRoles={[ACCOUNT_ROLES.ADMIN]}><Planos /></ProtectedRoute>} />
+          <Route path="/employee" element={<ProtectedRoute allowedRoles={[ACCOUNT_ROLES.EMPLOYEE, ACCOUNT_ROLES.COLLABORATOR]}><EmployeeWork /></ProtectedRoute>} />
+          <Route path="/admin/team" element={<ProtectedRoute allowedRoles={[ACCOUNT_ROLES.ADMIN]}><AdminTeamDashboard /></ProtectedRoute>} />
         </Routes>
       </motion.div>
     </AnimatePresence>

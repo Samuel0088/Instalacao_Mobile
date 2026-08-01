@@ -2,6 +2,7 @@ import { useState } from "react"
 import { auth, db } from "../../services/firebase"
 import { createUserWithEmailAndPassword } from "firebase/auth"
 import { doc, setDoc } from "firebase/firestore"
+import { ACCOUNT_ROLES } from "../../services/accessControl"
 import "../../styles/App/Register.css"
 
 export default function Register() {
@@ -52,6 +53,9 @@ export default function Register() {
         document: form.document,
         hectares: parseFloat(form.hectares),
         email: form.email,
+        role: ACCOUNT_ROLES.ADMIN,
+        position: "Administrador",
+        status: "offline",
         createdAt: new Date().toISOString(),
         profileIcon: "👨‍🌾"
       })

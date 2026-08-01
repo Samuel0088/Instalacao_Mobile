@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
+import { onAuthStateChanged } from "firebase/auth"
+import { auth } from "../../../services/firebase"
+import { ACCOUNT_ROLES, getUserAccessProfile, isOperationalRole } from "../../../services/accessControl"
 import "../../../styles/Global/MenuBar.css"
 
 const NAV_W    = 400  // nav width
@@ -8,16 +11,23 @@ const NOTCH_R  = 28
 const NOTCH_SW = 25  // distancia do arco até o centro do botão
 const BTR      = 3   // border radius do nav
 
-// Centro X de cada um dos 3 itens
-const ITEM_CENTERS = [NAV_W / 6, NAV_W / 2, (NAV_W * 5) / 6]
-
-const items = [
+const adminItems = [
   { path: "/home",    icon: "home"      },
+  { path: "/admin/team", icon: "groups" },
   { path: "/explore", icon: "grid_view" },
   { path: "/profile", icon: "person"    },
 ]
 
-function buildNotchPath(activeIdx) {
+const employeeItems = [
+  { path: "/employee", icon: "assignment" },
+  { path: "/profile", icon: "person" },
+]
+
+function getItemCenters(count) {
+  return Array.from({ length: count }, (_, index) => ((index * 2) + 1) * NAV_W / (count * 2))
+}
+
+function buildNotchPath(activeIdx, itemCount) {
   if (activeIdx < 0) {
     return [
       `M ${BTR},0`,
@@ -29,7 +39,7 @@ function buildNotchPath(activeIdx) {
     ].join(" ")
   }
 
-  const cx = ITEM_CENTERS[activeIdx]
+  const cx = getItemCenters(itemCount)[activeIdx]
   const x0 = cx - NOTCH_R - NOTCH_SW
   const x3 = cx + NOTCH_R + NOTCH_SW
 
@@ -52,6 +62,8 @@ export default function MenuBar() {
   const lastScrollYRef = useRef(0)
   const tickingRef = useRef(false)
   const [isVisible, setIsVisible] = useState(true)
+  const [role, setRole] = useState(ACCOUNT_ROLES.ADMIN)
+  const items = isOperationalRole(role) ? employeeItems : adminItems
   const isActive  = (path) => location.pathname === path
   const activeIdx = items.findIndex(({ path }) => isActive(path))
   const goToInternalPage = (path) => {
@@ -92,6 +104,16 @@ export default function MenuBar() {
     }
   }, [])
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (!currentUser) return
+      const profile = await getUserAccessProfile(currentUser.uid)
+      setRole(profile?.role || ACCOUNT_ROLES.ADMIN)
+    })
+
+    return () => unsubscribe()
+  }, [])
+
   return (
     <nav className={`nav ${isVisible ? "nav--visible" : "nav--hidden"}`}>
       <svg
@@ -101,7 +123,7 @@ export default function MenuBar() {
         xmlns="http://www.w3.org/2000/svg"
         aria-hidden="true"
       >
-        <path d={buildNotchPath(activeIdx)} fill="#3d8057" />
+        <path d={buildNotchPath(activeIdx, items.length)} fill="#3d8057" />
       </svg>
 
       <ul className="nav__items">

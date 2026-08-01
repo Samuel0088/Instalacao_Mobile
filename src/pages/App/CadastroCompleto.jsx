@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom"
 import { auth, db } from "../../services/firebase"
 import { createUserWithEmailAndPassword } from "firebase/auth"
 import { doc, setDoc, addDoc, collection } from "firebase/firestore"
+import { ACCOUNT_ROLES, getRoleHomePath, isOperationalRole } from "../../services/accessControl"
 import "../../styles/App/CadastroCompleto.css"
 
 const PROBLEMAS_LAVOURA = [
@@ -47,6 +48,7 @@ export default function CadastroCompleto({ setAppLoading }) {
     document: "",
     email: "",
     password: "",
+    role: ACCOUNT_ROLES.ADMIN,
   })
 
   const [farmData, setFarmData] = useState({
@@ -126,7 +128,7 @@ export default function CadastroCompleto({ setAppLoading }) {
     setUserData({
       ...userData,
       [name]: formattedValue,
-      ...(name === "type" ? { document: "" } : {}),
+        ...(name === "type" ? { document: "" } : {}),
     })
 
     setAlertMessage({
@@ -435,6 +437,10 @@ export default function CadastroCompleto({ setAppLoading }) {
         document: userData.document,
         email: userData.email,
         hectares: 0,
+        role: userData.role,
+        position: isOperationalRole(userData.role) ? "Operacional de campo" : "Administrador",
+        status: "offline",
+        teamId: userCred.user.uid,
         createdAt: new Date().toISOString(),
       })
 
@@ -446,6 +452,14 @@ export default function CadastroCompleto({ setAppLoading }) {
       })
 
       setTimeout(() => {
+        if (isOperationalRole(userData.role)) {
+          sessionStorage.removeItem("zenithShowWhiteLoaderOnce")
+          sessionStorage.setItem("zenithBlockWhiteLoaderUntil", String(Date.now() + 5000))
+          setAppLoading?.(true)
+          navigate(getRoleHomePath(userData.role), { replace: true })
+          return
+        }
+
         setEtapa(2)
 
         setAlertMessage({
@@ -797,6 +811,20 @@ export default function CadastroCompleto({ setAppLoading }) {
               />
             </div>
 
+            <div className="input-group">
+              <label>Tipo de conta</label>
+
+              <select
+                name="role"
+                value={userData.role}
+                onChange={handleUserChange}
+              >
+                <option value={ACCOUNT_ROLES.ADMIN}>Administrador / Chefe</option>
+                <option value={ACCOUNT_ROLES.EMPLOYEE}>Funcionário</option>
+                <option value={ACCOUNT_ROLES.COLLABORATOR}>Colaborador</option>
+              </select>
+            </div>
+
             <div className="input-row">
 
               <div className="input-group">
@@ -905,7 +933,9 @@ export default function CadastroCompleto({ setAppLoading }) {
             >
               {loading
                 ? "Criando conta..."
-                : "Próximo →"}
+                : isOperationalRole(userData.role)
+                  ? "Criar conta operacional"
+                  : "Próximo →"}
             </button>
 
             <button

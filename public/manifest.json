@@ -2,11 +2,12 @@
   "name": "Zenith",
   "short_name": "Zenith",
   "description": "Plataforma inteligente para agricultura com drones",
+  "id": "/",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#0f5a38",
-  "theme_color": "transparent",
+  "theme_color": "#163020",
   "orientation": "portrait",
   "icons": [
     {

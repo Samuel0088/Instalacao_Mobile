@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import { auth } from "../../services/firebase"
+import { getRoleHomePath, getUserAccessProfile } from "../../services/accessControl"
 import {
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -178,12 +179,17 @@ export default function Login({ setAppLoading }) {
   const [showPassword, setShowPassword] = useState(false)
   const [alert, setAlert]               = useState({ type: "", text: "" })
 
-  const goHomeWithGreenLoading = useCallback(() => {
+  const goHomeWithGreenLoading = useCallback((path = "/home") => {
     sessionStorage.removeItem("zenithShowWhiteLoaderOnce")
     sessionStorage.setItem("zenithBlockWhiteLoaderUntil", String(Date.now() + 5000))
     setAppLoading?.(true)
-    navigate("/home", { replace: true })
+    navigate(path, { replace: true })
   }, [navigate, setAppLoading])
+
+  const goToRoleHome = useCallback(async (firebaseUser) => {
+    const profile = await getUserAccessProfile(firebaseUser.uid)
+    goHomeWithGreenLoading(getRoleHomePath(profile?.role))
+  }, [goHomeWithGreenLoading])
 
   /* ── useEffect: verificar sessão + email salvo ── */
   useEffect(() => {
@@ -191,7 +197,7 @@ export default function Login({ setAppLoading }) {
 
     if (user) {
       devLog("Usuário já está logado:", user.email)
-      goHomeWithGreenLoading()
+      goToRoleHome(user)
       return
     }
 
@@ -201,7 +207,7 @@ export default function Login({ setAppLoading }) {
       setRememberMe(true)
     }
 
-  }, [goHomeWithGreenLoading])
+  }, [goToRoleHome])
 
   /* ── Helpers de alerta ── */
   const showAlertMsg  = useCallback((type, text) => setAlert({ type, text }), [])
@@ -214,7 +220,7 @@ export default function Login({ setAppLoading }) {
 
         if (result?.user) {
           showAlertMsg("success", "Login realizado com sucesso! 🚀")
-          goHomeWithGreenLoading()
+          await goToRoleHome(result.user)
         }
       } catch (error) {
         console.error(error)
@@ -224,7 +230,7 @@ export default function Login({ setAppLoading }) {
     }
 
     finishRedirectLogin()
-  }, [goHomeWithGreenLoading, showAlertMsg])
+  }, [goToRoleHome, showAlertMsg])
 
   /* ── Handlers ── */
   const handleEmailChange     = useCallback((e) => setEmail(e.target.value), [])
@@ -247,21 +253,21 @@ export default function Login({ setAppLoading }) {
     clearAlertMsg()
 
     try {
-      await signInWithEmailAndPassword(auth, email, password)
+      const credential = await signInWithEmailAndPassword(auth, email, password)
 
       rememberMe
         ? localStorage.setItem("rememberedEmail", email)
         : localStorage.removeItem("rememberedEmail")
 
       showAlertMsg("success", "Bem-vindo de volta, produtor! 🚁")
-      goHomeWithGreenLoading()
+      await goToRoleHome(credential.user)
     } catch (error) {
       const message = FIREBASE_ERROR_MESSAGES[error.code] ?? FIREBASE_ERROR_DEFAULT
       showAlertMsg("error", message)
     } finally {
       setLoading(false)
     }
-  }, [email, password, rememberMe, goHomeWithGreenLoading, showAlertMsg, clearAlertMsg])
+  }, [email, password, rememberMe, goToRoleHome, showAlertMsg, clearAlertMsg])
 
   const handleKeyDown = useCallback(
     (e) => { if (e.key === "Enter") handleLogin() },
@@ -284,9 +290,9 @@ export default function Login({ setAppLoading }) {
     clearAlertMsg()
 
     try {
-      await signInWithPopup(auth, provider)
+      const credential = await signInWithPopup(auth, provider)
       showAlertMsg("success", successMessage)
-      goHomeWithGreenLoading()
+      await goToRoleHome(credential.user)
     } catch (error) {
       console.error(error)
 

@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react"
 import { useLocation } from "react-router-dom"
 
 const DEFAULT_COLOR = "#3d8057"
-const TRANSLUCENT_BAR_COLOR = "transparent"
 
 const ROUTE_COLORS = {
   "/": "#07110b",
@@ -109,7 +108,7 @@ export default function SystemBarTheme() {
     const updateColor = () => {
       frameRef.current = null
       const activeColor = getActiveMarkedColor(fallbackColor)
-      applyColor(TRANSLUCENT_BAR_COLOR, activeColor)
+      applyColor(activeColor, activeColor)
     }
 
     const requestUpdate = () => {
