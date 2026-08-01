@@ -194,6 +194,65 @@
   margin-top: 10px;
 }
 
+.employee-farm-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(45, 97, 64, 0.1);
+}
+
+.employee-farm-icon {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: rgba(86, 168, 112, 0.13);
+  color: var(--g5);
+}
+
+.employee-farm-icon span {
+  color: inherit;
+}
+
+.employee-farm-header strong {
+  display: block;
+  color: var(--g1);
+  font-size: 1.08rem;
+}
+
+.employee-farm-header p,
+.team-empty-text {
+  margin: 4px 0 0;
+  color: #617366;
+}
+
+.employee-farm-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.employee-farm-grid span {
+  padding: 12px;
+  border-radius: 14px;
+  background: #f4f7f5;
+  color: #617366;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.employee-farm-grid strong {
+  display: block;
+  margin-top: 5px;
+  color: var(--g4);
+  font-size: 0.98rem;
+  text-transform: none;
+}
+
 .team-filters {
   grid-template-columns: 1.2fr 1fr 1fr 1fr;
 }
@@ -414,7 +473,8 @@
 
   .task-card,
   .assign-task,
-  .new-employee-form {
+  .new-employee-form,
+  .employee-farm-grid {
     grid-template-columns: 1fr;
   }
 }

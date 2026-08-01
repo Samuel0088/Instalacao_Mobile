@@ -1,7 +1,14 @@
 // components/Profile/PersonalInfoView.jsx
 export default function PersonalInfoView({ userData, user, formatDocument }) {
+  const roleLabels = {
+    admin: "Administrador / Chefe",
+    employee: "Funcionário",
+    collaborator: "Colaborador",
+  }
+
   const infoItems = [
     { icon: "badge", label: "Nome", value: userData?.name },
+    { icon: "manage_accounts", label: "Tipo de conta", value: roleLabels[userData?.role] || "Administrador / Chefe", badge: true },
     { icon: "cake", label: "Idade", value: userData?.age ? `${userData.age} anos` : null },
     { icon: "call", label: "Telefone", value: userData?.phone },
     { icon: "mail", label: "Email", value: user?.email, badge: true },

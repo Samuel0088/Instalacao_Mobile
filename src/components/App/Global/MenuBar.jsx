@@ -19,7 +19,7 @@ const adminItems = [
 ]
 
 const employeeItems = [
-  { path: "/employee", icon: "assignment" },
+  { path: "/funcionarios", icon: "assignment" },
   { path: "/profile", icon: "person" },
 ]
 
@@ -105,13 +105,20 @@ export default function MenuBar() {
   }, [])
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    const loadRole = async (currentUser = auth.currentUser) => {
       if (!currentUser) return
       const profile = await getUserAccessProfile(currentUser.uid)
       setRole(profile?.role || ACCOUNT_ROLES.ADMIN)
-    })
+    }
 
-    return () => unsubscribe()
+    const handleRoleUpdated = () => loadRole()
+    const unsubscribe = onAuthStateChanged(auth, loadRole)
+    window.addEventListener("zenith-user-role-updated", handleRoleUpdated)
+
+    return () => {
+      unsubscribe()
+      window.removeEventListener("zenith-user-role-updated", handleRoleUpdated)
+    }
   }, [])
 
   return (

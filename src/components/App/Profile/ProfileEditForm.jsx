@@ -1,4 +1,6 @@
 // components/Profile/ProfileEditForm.jsx
+import { ACCOUNT_ROLES } from "../../../services/accessControl"
+
 const profileIcons = ["👨‍🌾", "🚜", "🌱", "🌽", "🌻", "🐄", "🐓", "🍎", "🌾", "🧑‍🌾", "🌿", "🍊", "🐝", "🚛", "🏡"]
 
 export default function ProfileEditForm({ formData, onChange, onIconSelect }) {
@@ -39,7 +41,7 @@ export default function ProfileEditForm({ formData, onChange, onIconSelect }) {
         {/* Form Fields */}
         <div className="form-fields">
           <div className="input-group">
-            <span className="material-symbols-outlined">badge</span>
+            <span className="material-symbols-outlined">manage_accounts</span>
             <input
               className="tech-input"
               name="name"
@@ -79,6 +81,21 @@ export default function ProfileEditForm({ formData, onChange, onIconSelect }) {
 
           <div className="input-group">
             <span className="material-symbols-outlined">badge</span>
+            <select
+              className="tech-select"
+              name="role"
+              value={formData.role || ACCOUNT_ROLES.ADMIN}
+              onChange={onChange}
+            >
+              <option value={ACCOUNT_ROLES.ADMIN}>Administrador / Chefe</option>
+              <option value={ACCOUNT_ROLES.EMPLOYEE}>Funcionário</option>
+              <option value={ACCOUNT_ROLES.COLLABORATOR}>Colaborador</option>
+            </select>
+            <div className="input-glow"></div>
+          </div>
+
+          <div className="input-group">
+            <span className="material-symbols-outlined">assignment_ind</span>
             <select
               className="tech-select"
               name="type"

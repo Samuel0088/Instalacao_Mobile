@@ -19,6 +19,7 @@ import FarmInfoView from "../../components/App/Profile/FarmInfoView"
 import ProfileEditForm from "../../components/App/Profile/ProfileEditForm"
 import MenuBar from "../../components/App/Global/MenuBar"
 import AppHeader from "../../components/App/Global/AppHeader"
+import { ACCOUNT_ROLES } from "../../services/accessControl"
 
 // CSS
 import "../../styles/App/Profile.css"
@@ -40,6 +41,7 @@ export default function Profile() {
     document: "",
     hectares: "",
     email: "",
+    role: ACCOUNT_ROLES.ADMIN,
     profileIcon: "👨‍🌾",
     phone: "",
     city: "",
@@ -76,6 +78,7 @@ export default function Profile() {
           document: data.document || "",
           hectares: data.hectares || "",
           email: data.email || "",
+          role: data.role || ACCOUNT_ROLES.ADMIN,
           profileIcon: data.profileIcon || "👨‍🌾",
           phone: data.phone || "",
           city: data.city || "",
@@ -145,6 +148,7 @@ export default function Profile() {
         age: parseInt(formData.age) || null,
         type: formData.type,
         document: formData.document,
+        role: formData.role || ACCOUNT_ROLES.ADMIN,
         hectares: parseFloat(formData.hectares) || null,
         profileIcon: formData.profileIcon,
         phone: formData.phone,
@@ -156,6 +160,7 @@ export default function Profile() {
       showAlert("success", "Perfil atualizado com sucesso! 🌱")
       setEditing(false)
       await loadUserData(user.uid)
+      window.dispatchEvent(new Event("zenith-user-role-updated"))
     } catch (error) {
       console.error("Erro ao atualizar:", error)
       showAlert("error", "Erro ao atualizar perfil")
@@ -298,6 +303,7 @@ export default function Profile() {
               document: userData?.document || "",
               hectares: userData?.hectares || "",
               email: user?.email || "",
+              role: userData?.role || ACCOUNT_ROLES.ADMIN,
               profileIcon: userData?.profileIcon || "👨‍🌾",
               phone: userData?.phone || "",
               city: userData?.city || "",

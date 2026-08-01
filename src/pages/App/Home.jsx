@@ -17,6 +17,7 @@ import ExploreModules from "../../components/App/Home/ExploreModules"
 import AppFooter from "../../components/App/Global/AppFooter"
 import MenuBar from "../../components/App/Global/MenuBar"
 import AppHeader from "../../components/App/Global/AppHeader"  
+import { isOperationalRole } from "../../services/accessControl"
 
 import "../../styles/App/Home.css"
 
@@ -99,7 +100,7 @@ export default function Home() {
           <FlightActionButton onNavigate={() => navigate("/novo-voo")} />
         )}
 
-        {userData?.role !== "employee" && (
+        {!isOperationalRole(userData?.role) && (
           <section className="admin-team-section">
             <button
               className="admin-team-card"
