@@ -156,7 +156,8 @@ function AnimatedRoutes({ setAppLoading }) {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/explore" element={<ProtectedRoute allowedRoles={[ACCOUNT_ROLES.ADMIN]}><Explore /></ProtectedRoute>} />
           <Route path="/plans" element={<ProtectedRoute allowedRoles={[ACCOUNT_ROLES.ADMIN]}><Planos /></ProtectedRoute>} />
-          <Route path="/employee" element={<ProtectedRoute allowedRoles={[ACCOUNT_ROLES.EMPLOYEE, ACCOUNT_ROLES.COLLABORATOR]}><EmployeeWork /></ProtectedRoute>} />
+          <Route path="/funcionarios" element={<ProtectedRoute allowedRoles={[ACCOUNT_ROLES.EMPLOYEE, ACCOUNT_ROLES.COLLABORATOR]}><EmployeeWork /></ProtectedRoute>} />
+          <Route path="/employee" element={<Navigate to="/funcionarios" replace />} />
           <Route path="/admin/team" element={<ProtectedRoute allowedRoles={[ACCOUNT_ROLES.ADMIN]}><AdminTeamDashboard /></ProtectedRoute>} />
         </Routes>
       </motion.div>

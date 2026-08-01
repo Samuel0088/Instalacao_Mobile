@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import { addDoc, collection, getDocs } from "firebase/firestore"
-import { db } from "../../services/firebase"
+import { auth, db } from "../../services/firebase"
 import MenuBar from "../../components/App/Global/MenuBar"
 import { ACCOUNT_ROLES } from "../../services/accessControl"
 import "../../styles/App/TeamAccess.css"
@@ -173,6 +173,8 @@ export default function AdminTeamDashboard() {
       position: newEmployee.position.trim() || (newEmployee.role === ACCOUNT_ROLES.COLLABORATOR ? "Colaborador" : "Funcionário de campo"),
       sector: newEmployee.sector.trim() || "Campo",
       role: newEmployee.role,
+      ownerId: auth.currentUser?.uid || "",
+      teamId: auth.currentUser?.uid || "",
       status: "offline",
       entry: "--:--",
       exit: "--:--",

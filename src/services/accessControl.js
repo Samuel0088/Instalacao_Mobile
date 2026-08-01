@@ -20,7 +20,7 @@ export function isOperationalRole(role) {
 
 export function getRoleHomePath(role) {
   return isOperationalRole(role)
-    ? "/employee"
+    ? "/funcionarios"
     : "/home"
 }
 

@@ -17,6 +17,7 @@ export default function EmployeeWork() {
   const navigate = useNavigate()
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
+  const [farmData, setFarmData] = useState(null)
   const [tasks, setTasks] = useState(fallbackTasks)
   const [workStatus, setWorkStatus] = useState("trabalhando")
   const [note, setNote] = useState("")
@@ -31,10 +32,38 @@ export default function EmployeeWork() {
 
       setUser(currentUser)
       const userSnap = await getDoc(doc(db, "users", currentUser.uid))
+      let userProfile = null
+
       if (userSnap.exists()) {
         const data = userSnap.data()
-        setProfile({ id: userSnap.id, ...data })
+        userProfile = { id: userSnap.id, ...data }
+        setProfile(userProfile)
         setWorkStatus(data.status === "offline" ? "trabalhando" : data.status || "trabalhando")
+      }
+
+      const farmsRef = collection(db, "farms")
+      let farmSnap = null
+
+      if (userProfile?.farmId) {
+        const farmDoc = await getDoc(doc(db, "farms", userProfile.farmId))
+        if (farmDoc.exists()) {
+          setFarmData({ id: farmDoc.id, ...farmDoc.data() })
+        }
+      } else {
+        const ownerId = userProfile?.ownerId || userProfile?.teamId
+
+        if (ownerId) {
+          farmSnap = await getDocs(query(farmsRef, where("ownerId", "==", ownerId)))
+        }
+
+        if (!farmSnap || farmSnap.empty) {
+          farmSnap = await getDocs(farmsRef)
+        }
+
+        if (!farmSnap.empty) {
+          const farmDoc = farmSnap.docs[0]
+          setFarmData({ id: farmDoc.id, ...farmDoc.data() })
+        }
       }
 
       const taskQuery = query(collection(db, "tasks"), where("employeeId", "==", currentUser.uid))
@@ -116,9 +145,9 @@ export default function EmployeeWork() {
     <main className="team-page employee-page" data-system-bar-color="#f7f5f0">
       <section className="team-hero">
         <div>
-          <span className="team-kicker">Area do {roleLabel}</span>
-          <h1>Olá, {profile?.name?.split(" ")[0] || "Funcionário"}</h1>
-          <p>Acompanhe suas tarefas, horários, observações e desempenho individual.</p>
+          <span className="team-kicker">Area exclusiva do {roleLabel}</span>
+          <h1>Funcionários</h1>
+          <p>Olá, {profile?.name?.split(" ")[0] || "Funcionário"}. Acompanhe suas tarefas, horários, observações e desempenho individual.</p>
         </div>
 
         <div className="employee-clock-card">
@@ -146,6 +175,36 @@ export default function EmployeeWork() {
         <article><span>Em andamento</span><strong>{stats.active}</strong></article>
         <article><span>Concluídas</span><strong>{stats.done}</strong></article>
         <article><span>Produtividade</span><strong>{stats.productivity}%</strong></article>
+      </section>
+
+      <section className="team-panel employee-farm-panel">
+        <div className="team-section-header">
+          <h2>Dados da fazenda</h2>
+          <span>Consulta operacional</span>
+        </div>
+
+        {farmData ? (
+          <>
+            <div className="employee-farm-header">
+              <div className="employee-farm-icon">
+                <span className="material-symbols-outlined">agriculture</span>
+              </div>
+              <div>
+                <strong>{farmData.name || "Fazenda"}</strong>
+                <p>{farmData.municipio || "Cidade não informada"}{farmData.uf ? `, ${farmData.uf}` : ""}</p>
+              </div>
+            </div>
+
+            <div className="employee-farm-grid">
+              <span>Área total <strong>{farmData.area_total || "0"} ha</strong></span>
+              <span>Plantação <strong>{farmData.plantacao || "Não informada"}</strong></span>
+              <span>Telefone <strong>{farmData.telefone || "Não informado"}</strong></span>
+              <span>CEP <strong>{farmData.cep || "Não informado"}</strong></span>
+            </div>
+          </>
+        ) : (
+          <p className="team-empty-text">Nenhuma fazenda vinculada ao seu perfil.</p>
+        )}
       </section>
 
       <section className="team-panel">
