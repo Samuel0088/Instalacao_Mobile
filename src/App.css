@@ -21,3 +21,9 @@ html, body {
   width: 100%;
   background: #f7f5f0;
 }
+
+.app-route-transition {
+  min-height: 100vh;
+  min-height: 100dvh;
+  will-change: opacity;
+}
