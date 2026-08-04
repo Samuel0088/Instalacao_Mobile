@@ -1,12 +1,19 @@
 import { createClient } from "@supabase/supabase-js"
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const supabaseAnonKey =
+  import.meta.env.VITE_SUPABASE_ANON_KEY ||
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
 const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey)
 
 if (!isSupabaseConfigured) {
+  const missingVars = [
+    !supabaseUrl && "VITE_SUPABASE_URL",
+    !supabaseAnonKey && "VITE_SUPABASE_ANON_KEY ou VITE_SUPABASE_PUBLISHABLE_KEY",
+  ].filter(Boolean)
+
   console.warn(
-    "Supabase nao configurado. Preencha VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY no .env"
+    `Supabase nao configurado. Variaveis ausentes: ${missingVars.join(", ")}`
   )
 }
 
@@ -157,6 +164,16 @@ export async function getCurrentUser() {
   if (!isSupabaseConfigured) return null
 
   try {
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
+    if (sessionError) {
+      logSupabaseError("auth.getSession", sessionError)
+      return null
+    }
+
+    if (!sessionData.session) {
+      return null
+    }
+
     const { data, error } = await supabase.auth.getUser()
     if (error) {
       logSupabaseError("auth.getUser", error)
