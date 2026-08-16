@@ -9,6 +9,7 @@ export default function AppHeader({
   userName,
   hasFarm,
   farmName,
+  cityName,
   onRegister,
   showNotification = true,
   showHomeContent = false,
@@ -206,17 +207,27 @@ export default function AppHeader({
       {notificationPanel}
 
       <header
-        data-system-bar-color="#163020"
+        data-system-bar-color={showHomeContent ? "#fff7e8" : "#163020"}
         className={`app-header ${
           !showHomeContent ? "compact" : ""
-        }`}
+        } ${showHomeContent ? "home-app-header" : ""}`}
       >
 
       {/* TOPO */}
       <div className="header-top">
-        <button className="header-brand" onClick={() => goToInternalPage("/home")}>
-          Zenith
-        </button>
+        {showHomeContent ? (
+          <button className="home-user-heading" onClick={() => goToInternalPage("/home")}>
+            <span>Olá, <strong>{userName || "Agricultor"}</strong></span>
+            <small>
+              <span className="material-symbols-outlined">location_on</span>
+              {cityName || farmName || "Cadastre sua fazenda"}
+            </small>
+          </button>
+        ) : (
+          <button className="header-brand" onClick={() => goToInternalPage("/home")}>
+            Zenith
+          </button>
+        )}
 
         <div className="header-actions">
           {showNotification && (
@@ -237,58 +248,18 @@ export default function AppHeader({
             </div>
           )}
 
-          <button
-            className="profile-avatar-btn"
-            onClick={() => goToInternalPage("/profile")}
-            aria-label="Abrir perfil"
-          >
-            <span className="material-symbols-outlined">account_circle</span>
-          </button>
+          {!showHomeContent && (
+            <button
+              className="profile-avatar-btn"
+              onClick={() => goToInternalPage("/profile")}
+              aria-label="Abrir perfil"
+            >
+              <span className="material-symbols-outlined">account_circle</span>
+            </button>
+          )}
         </div>
 
       </div>
-
-      {/* MOSTRAR SOMENTE NA HOME */}
-      {showHomeContent && (
-        <div className="header-content">
-
-          {/* TÍTULO */}
-          <h2 className="header-label">
-            Agricultura de Precisão
-          </h2>
-
-          {/* NOME */}
-          <div className="balance-row">
-
-            <h1 className="header-balance">
-              Olá, {userName || "Agricultor"}
-            </h1>
-
-            <span className="material-symbols-outlined arrow-icon">
-              chevron_right
-            </span>
-
-          </div>
-
-          {/* STATUS */}
-          <button
-            className="coverage-btn"
-            onClick={!hasFarm ? onRegister : undefined}
-          >
-
-            {hasFarm
-              ? `Sistema online • ${farmName}`
-              : "Comece cadastrando sua fazenda"
-            }
-
-            <span className="material-symbols-outlined small-arrow">
-              chevron_right
-            </span>
-
-          </button>
-
-        </div>
-      )}
 
       </header>
     </>

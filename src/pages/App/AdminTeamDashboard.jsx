@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { useLocation } from "react-router-dom"
 import { addDoc, collection, getDocs } from "firebase/firestore"
 import { auth, db } from "../../services/firebase"
 import MenuBar from "../../components/App/Global/MenuBar"
@@ -74,6 +75,9 @@ const statusLabels = {
 }
 
 export default function AdminTeamDashboard() {
+  const location = useLocation()
+  const assignTaskRef = useRef(null)
+  const taskInputRef = useRef(null)
   const [employees, setEmployees] = useState(demoEmployees)
   const [selectedId, setSelectedId] = useState(demoEmployees[0].id)
   const [filters, setFilters] = useState({ employee: "", sector: "todos", status: "todos", date: "" })
@@ -137,6 +141,13 @@ export default function AdminTeamDashboard() {
   }), [employees, filters])
 
   const selected = employees.find((employee) => employee.id === selectedId) || filteredEmployees[0] || employees[0]
+
+  useEffect(() => {
+    if (location.hash !== "#nova-tarefa" || !assignTaskRef.current) return
+
+    assignTaskRef.current.scrollIntoView({ behavior: "smooth", block: "center" })
+    window.setTimeout(() => taskInputRef.current?.focus(), 360)
+  }, [location.hash, selected?.id])
 
   const totals = useMemo(() => ({
     employees: employees.length,
@@ -352,8 +363,9 @@ export default function AdminTeamDashboard() {
 
             <p className="last-activity"><strong>Última atividade:</strong> {selected.lastActivity}</p>
 
-            <div className="assign-task">
+            <div className="assign-task" id="nova-tarefa" ref={assignTaskRef}>
               <input
+                ref={taskInputRef}
                 value={taskTitle}
                 onChange={(event) => setTaskTitle(event.target.value)}
                 placeholder="Nova tarefa para este funcionário"

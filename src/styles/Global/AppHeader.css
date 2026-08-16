@@ -476,3 +476,232 @@
     font-size: 12px;
   }
 }
+
+/* Home no estilo mobile agrícola */
+.app-header.home-app-header {
+  position: relative;
+  min-height: auto;
+  padding: calc(22px + env(safe-area-inset-top, 0px)) 24px 14px;
+  background: #f7f5f0 !important;
+  background-image: none !important;
+  color: var(--g1);
+  overflow: visible;
+  box-shadow: none !important;
+  border-bottom: 0 !important;
+  filter: none !important;
+  z-index: 1;
+}
+
+.app-header.home-app-header::before {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+.app-header.home-app-header::after {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  filter: none !important;
+}
+
+.home-app-header .header-top {
+  position: relative;
+  z-index: 3;
+  max-width: 680px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.home-user-heading {
+  border: 0;
+  background: transparent;
+  color: var(--g1);
+  display: grid;
+  gap: 5px;
+  padding: 0;
+  text-align: left;
+}
+
+.home-user-heading span:first-child {
+  font-size: 1.32rem;
+  font-weight: 850;
+  line-height: 1.05;
+}
+
+.home-user-heading small {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #68786b;
+  font-size: 0.78rem;
+  font-weight: 650;
+  line-height: 1;
+}
+
+.home-user-heading .material-symbols-outlined {
+  color: var(--g5);
+  font-size: 15px;
+}
+
+.home-app-header .header-actions {
+  gap: 0;
+}
+
+.home-app-header .notification-btn {
+  background: rgba(45, 97, 64, 0.09);
+  border-color: rgba(45, 97, 64, 0.12);
+}
+
+.home-app-header .notification-btn span {
+  color: var(--g1);
+}
+
+.home-app-header .notification-btn:hover,
+.home-app-header .notification-btn.active {
+  background: rgba(45, 97, 64, 0.14);
+  border-color: rgba(45, 97, 64, 0.2);
+}
+
+.home-app-header .notification-dot {
+  border-color: #f7f5f0;
+  background: var(--g6);
+}
+
+@media (max-width: 550px) {
+  .app-header.home-app-header {
+    min-height: auto;
+    padding: calc(18px + env(safe-area-inset-top, 0px)) 22px 14px;
+  }
+}
+
+/* Home refinada no visual creme do mockup */
+.app-header.home-app-header {
+  display: contents;
+  max-width: none;
+  margin: 0 auto;
+  margin-bottom: 0;
+  padding: calc(22px + env(safe-area-inset-top, 0px)) 24px 12px;
+  background: transparent !important;
+  background-image: none !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  border-bottom: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transform: none !important;
+  isolation: auto;
+  contain: none;
+}
+
+.app-header.home-app-header,
+.app-header.home-app-header .header-top {
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  border-bottom: 0 !important;
+  box-shadow: none !important;
+  filter: none !important;
+  outline: 0 !important;
+}
+
+.app-header.home-app-header .header-top {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  padding: calc(22px + env(safe-area-inset-top, 0px)) 24px 12px;
+  box-sizing: border-box;
+}
+
+.home-app-header .header-top {
+  max-width: none;
+}
+
+.home-user-heading span:first-child {
+  color: #22261d;
+  font-size: 1.36rem;
+  font-weight: 500;
+}
+
+.home-user-heading span:first-child strong,
+.home-user-heading span:first-child b {
+  font-weight: 850;
+}
+
+.home-user-heading small {
+  color: #716b5d;
+}
+
+.home-app-header .notification-btn {
+  width: 44px;
+  min-width: 44px;
+  max-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  max-height: 44px;
+  flex-basis: 44px;
+  background: rgba(255, 255, 255, 0.64);
+  border-color: rgba(86, 168, 112, 0.12);
+  box-shadow: 0 8px 18px rgba(45, 97, 64, 0.08);
+}
+
+.home-app-header .notification-dot {
+  border-color: #fffefa;
+  background: var(--g5);
+}
+
+@media (min-width: 700px) {
+  .app-header.home-app-header {
+    margin-top: 0;
+    margin-bottom: 0;
+    border-radius: 36px 36px 0 0;
+    box-shadow: none !important;
+  }
+}
+
+@media (max-width: 550px) {
+  .app-header.home-app-header {
+    max-width: none;
+  }
+
+  .app-header.home-app-header .header-top {
+    padding: calc(28px + env(safe-area-inset-top, 0px)) 24px 12px;
+  }
+}
+
+/* REMOVE DEFINITIVAMENTE A LINHA VERDE DO HEADER */
+
+.home-app-header,
+.app-header,
+header {
+  border-bottom: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* Remove linhas/gradientes criados por pseudo-elementos */
+.home-app-header::before,
+.home-app-header::after,
+.app-header::before,
+.app-header::after,
+header::before,
+header::after {
+  content: none !important;
+  display: none !important;
+
+  height: 0 !important;
+
+  background: none !important;
+  background-image: none !important;
+
+  border: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+}

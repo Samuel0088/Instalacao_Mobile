@@ -5,56 +5,18 @@ import { auth } from "../../../services/firebase"
 import { ACCOUNT_ROLES, getUserAccessProfile, isOperationalRole } from "../../../services/accessControl"
 import "../../../styles/Global/MenuBar.css"
 
-const NAV_W    = 400  // nav width
-const NAV_H    = 30
-const NOTCH_R  = 28
-const NOTCH_SW = 25  // distancia do arco até o centro do botão
-const BTR      = 3   // border radius do nav
-
 const adminItems = [
-  { path: "/home",    icon: "home"      },
-  { path: "/admin/team", icon: "groups" },
-  { path: "/explore", icon: "grid_view" },
-  { path: "/profile", icon: "person"    },
+  { path: "/home", icon: "home", label: "Home" },
+  { path: "/admin/team", icon: "groups", label: "Equipe" },
+  { path: "/admin/team", hash: "#nova-tarefa", icon: "add", label: "Nova tarefa", isPrimary: true },
+  { path: "/explore", icon: "grid_view", label: "Explorar" },
+  { path: "/profile", icon: "person", label: "Perfil" },
 ]
 
 const employeeItems = [
-  { path: "/funcionarios", icon: "assignment" },
-  { path: "/profile", icon: "person" },
+  { path: "/funcionarios", icon: "assignment", label: "Tarefas" },
+  { path: "/profile", icon: "person", label: "Perfil" },
 ]
-
-function getItemCenters(count) {
-  return Array.from({ length: count }, (_, index) => ((index * 2) + 1) * NAV_W / (count * 2))
-}
-
-function buildNotchPath(activeIdx, itemCount) {
-  if (activeIdx < 0) {
-    return [
-      `M ${BTR},0`,
-      `Q 0,0 0,${BTR}`,
-      `L 0,${NAV_H} L ${NAV_W},${NAV_H}`,
-      `L ${NAV_W},${BTR}`,
-      `Q ${NAV_W},0 ${NAV_W - BTR},0`,
-      "Z",
-    ].join(" ")
-  }
-
-  const cx = getItemCenters(itemCount)[activeIdx]
-  const x0 = cx - NOTCH_R - NOTCH_SW
-  const x3 = cx + NOTCH_R + NOTCH_SW
-
-  return [
-    `M ${BTR},0`,
-    `Q 0,0 0,${BTR}`,
-    `L 0,${NAV_H} L ${NAV_W},${NAV_H}`,
-    `L ${NAV_W},${BTR}`,
-    `Q ${NAV_W},0 ${NAV_W - BTR},0`,
-    `L ${x3},0`,
-    `C ${x3 - NOTCH_SW * 0.3},0 ${cx + NOTCH_R},${NOTCH_R} ${cx},${NOTCH_R}`,
-    `C ${cx - NOTCH_R},${NOTCH_R} ${x0 + NOTCH_SW * 0.3},0 ${x0},0`,
-    "Z",
-  ].join(" ")
-}
 
 export default function MenuBar() {
   const navigate  = useNavigate()
@@ -64,12 +26,14 @@ export default function MenuBar() {
   const [isVisible, setIsVisible] = useState(true)
   const [role, setRole] = useState(ACCOUNT_ROLES.ADMIN)
   const items = isOperationalRole(role) ? employeeItems : adminItems
-  const isActive  = (path) => location.pathname === path
-  const activeIdx = items.findIndex(({ path }) => isActive(path))
-  const goToInternalPage = (path) => {
-    if (location.pathname === path) return
+  const isActive = ({ path, hash, isPrimary }) => {
+    if (isPrimary) return location.pathname === path && location.hash === hash
+    return location.pathname === path && !location.hash
+  }
+  const goToInternalPage = ({ path, hash }) => {
+    if (location.pathname === path && location.hash === (hash || "")) return
     sessionStorage.setItem("zenithShowWhiteLoaderOnce", "true")
-    navigate(path)
+    navigate(`${path}${hash || ""}`)
   }
 
   useEffect(() => {
@@ -123,30 +87,23 @@ export default function MenuBar() {
 
   return (
     <nav className={`nav ${isVisible ? "nav--visible" : "nav--hidden"}`}>
-      <svg
-        className="nav__notch-svg"
-        viewBox={`0 0 ${NAV_W} ${NAV_H}`}
-        preserveAspectRatio="none"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true"
-      >
-        <path d={buildNotchPath(activeIdx, items.length)} fill="#3d8057" />
-      </svg>
-
-      <ul className="nav__items">
-        {items.map(({ path, icon }) => {
-          const active = isActive(path)
+      <ul className="nav__items" style={{ "--nav-item-count": items.length }}>
+        {items.map((item) => {
+          const { path, hash, icon, label, isPrimary } = item
+          const active = isActive(item)
           return (
             <li
-              key={path}
-              className={`nav__item${active ? " nav__item--active" : ""}`}
+              key={`${path}${hash || ""}`}
+              className={`nav__item${active ? " nav__item--active" : ""}${isPrimary ? " nav__item--primary" : ""}`}
             >
               <button
-                className={`nav__item-btn${active ? " nav__item-btn--active" : ""}`}
-                onClick={() => goToInternalPage(path)}
+                className={`nav__item-btn${active ? " nav__item-btn--active" : ""}${isPrimary ? " nav__item-btn--primary" : ""}`}
+                onClick={() => goToInternalPage(item)}
                 aria-current={active ? "page" : undefined}
+                aria-label={label}
               >
                 <span className="material-symbols-outlined">{icon}</span>
+                {!isPrimary && <span className="nav__label">{label}</span>}
               </button>
             </li>
           )

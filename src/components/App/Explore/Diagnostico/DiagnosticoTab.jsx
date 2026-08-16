@@ -56,7 +56,7 @@ export default function DiagnosticoTab() {
   // ==============================
   // SALVAR HISTÓRICO
   // ==============================
-  const saveToHistory = (data) => {
+  const saveToHistory = (data, submittedAt) => {
     // Extrair o nome da doença e confiança
     let diseaseName = "Desconhecido"
     let confidence = 0
@@ -143,7 +143,8 @@ export default function DiagnosticoTab() {
       id: Date.now(),
       disease: diseaseName,
       confidence: confidence,
-      date: new Date().toLocaleString("pt-BR")
+      date: new Date().toLocaleString("pt-BR"),
+      submittedAt
     }
     
     console.log("Item salvo no histórico:", newItem)
@@ -241,6 +242,8 @@ export default function DiagnosticoTab() {
   // ANALISAR IMAGEM
   // ==============================
   const analyzeImage = async () => {
+    const submittedAt = new Date().toISOString()
+    localStorage.setItem("lastAiImageSubmission", submittedAt)
     setStep("analysis")
 
     try {
@@ -288,7 +291,7 @@ export default function DiagnosticoTab() {
       console.log("=======================")
       
       setResult(data)
-      saveToHistory(data)
+      saveToHistory(data, submittedAt)
       
       setStep("result")
     } catch (err) {
@@ -305,7 +308,7 @@ export default function DiagnosticoTab() {
       }
 
       setResult(errorResult)
-      saveToHistory(errorResult)
+      saveToHistory(errorResult, submittedAt)
 
       setStep("result")
     }
