@@ -3157,7 +3157,7 @@ body:has(.home-shell) .accessibility-toggle .material-symbols-outlined {
 }
 
 body:has(.home-shell) .nav {
-  width: min(calc(100vw - 40px), 390px);
+  width: min(calc(100vw - 36px), 394px);
 }
 
 .admin-team-card,
@@ -3191,16 +3191,16 @@ body:has(.home-shell) .nav {
 
   .home-container {
     max-width: none;
-    padding: 0 20px calc(156px + env(safe-area-inset-bottom, 0px));
+    padding: 0 18px calc(156px + env(safe-area-inset-bottom, 0px));
     overflow: visible;
   }
 
   .home-shell .home-app-header .header-top {
-    padding-inline: 20px;
+    padding-inline: 18px;
   }
 
   body:has(.home-shell) .accessibility-widget {
-    right: 20px;
+    right: 18px;
   }
 
   .weather-hero-top {
@@ -3214,6 +3214,24 @@ body:has(.home-shell) .nav {
 
   .field-image-wrap {
     height: 210px;
+  }
+}
+
+@media (max-width: 380px) {
+  .home-container {
+    padding-inline: 12px;
+  }
+
+  .home-shell .home-app-header .header-top {
+    padding-inline: 12px;
+  }
+
+  body:has(.home-shell) .accessibility-widget {
+    right: 12px;
+  }
+
+  body:has(.home-shell) .nav {
+    width: calc(100vw - 24px);
   }
 }
 
