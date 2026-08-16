@@ -15,7 +15,10 @@ export async function getWeatherByCity(city, state) {
 
     return {
       temperature: Math.round(data.main.temp),
-      humidity: data.main.humidity
+      humidity: data.main.humidity,
+      conditionCode: data.weather?.[0]?.id,
+      conditionIcon: data.weather?.[0]?.icon,
+      conditionDescription: data.weather?.[0]?.description || "Clima atual"
     }
 
   } catch (error) {

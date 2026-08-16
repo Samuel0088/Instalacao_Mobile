@@ -391,6 +391,15 @@
   grid-template-columns: 1fr auto;
   gap: 8px;
   margin-top: 14px;
+  margin-inline: -8px;
+  padding: 8px;
+  border-radius: 18px;
+  background: transparent;
+  scroll-margin-block: 130px;
+}
+
+.assign-task:focus-within {
+  background: rgba(86, 168, 112, 0.1);
 }
 
 .assign-task button,
