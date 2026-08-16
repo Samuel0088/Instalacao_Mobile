@@ -2781,11 +2781,12 @@ body {
       rgba(245, 251, 237, 0) 78%
     ),
     #f5fbed;
+  background-attachment: fixed;
   isolation: isolate;
 }
 
-.home-shell > .header-top::before,
-.home-shell > .header-top::after {
+.home-shell .home-app-header .header-top::before,
+.home-shell .home-app-header .header-top::after {
   content: none !important;
   display: none !important;
   background: none !important;
@@ -2852,11 +2853,28 @@ body {
   isolation: auto;
 }
 
-.home-shell > .header-top {
+.home-shell .home-app-header .header-top {
   z-index: auto !important;
-  overflow: clip;
+  width: 100%;
+  max-width: 430px;
+  margin-inline: auto;
+  padding-inline: 18px;
+  overflow: visible;
   isolation: auto;
-  contain: paint;
+  contain: none;
+}
+
+html:has(.home-shell),
+body:has(.home-shell) {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html:has(.home-shell)::-webkit-scrollbar,
+body:has(.home-shell)::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 .weather-hero-top {
@@ -2999,7 +3017,7 @@ body {
 
 body:has(.home-shell) .accessibility-widget {
   top: 86px;
-  right: max(24px, calc((100vw - 430px) / 2 + 24px));
+  right: max(18px, calc((100vw - 430px) / 2 + 18px));
 }
 
 body:has(.home-shell) .accessibility-toggle {
@@ -3173,8 +3191,16 @@ body:has(.home-shell) .nav {
 
   .home-container {
     max-width: none;
-    padding-inline: 20px;
+    padding: 0 20px calc(156px + env(safe-area-inset-bottom, 0px));
     overflow: visible;
+  }
+
+  .home-shell .home-app-header .header-top {
+    padding-inline: 20px;
+  }
+
+  body:has(.home-shell) .accessibility-widget {
+    right: 20px;
   }
 
   .weather-hero-top {
@@ -3191,11 +3217,25 @@ body:has(.home-shell) .nav {
   }
 }
 
+@media (min-width: 481px) {
+  .home-shell {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .home-container {
+    width: 100%;
+    max-width: 430px;
+    margin-inline: auto;
+  }
+}
+
 @media (min-width: 700px) {
   .home-shell {
-    margin-top: 22px;
-    margin-bottom: 22px;
-    border-radius: 36px;
+    margin: 0;
+    border-radius: 0;
     overflow: visible;
   }
 
