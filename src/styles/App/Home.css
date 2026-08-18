@@ -36,11 +36,12 @@
   box-sizing: border-box;
 }
 
-body {
+body:has(.home-shell) {
   font-family: 'Space Grotesk', sans-serif;
   color: var(--text-primary);
   min-height: 100vh;
-  background: linear-gradient(135deg, var(--background-darker) 0%, var(--background-dark) 100%);
+  background: var(--app-page-bg);
+  background-attachment: fixed;
   position: relative;
   overflow-x: hidden;
 }
@@ -2090,10 +2091,10 @@ body {
 }
 
 /* ===== Refinamento visual: Home mais limpa e profissional ===== */
-body {
+body:has(.home-shell) {
   font-family: 'Inter', 'Segoe UI', sans-serif;
-  background: #f7f5f0 !important;
-  background-image: none !important;
+  background: var(--app-page-bg) !important;
+  background-attachment: fixed;
 }
 
 .background-canvas,
@@ -2749,16 +2750,15 @@ body {
 }
 
 /* ===== Ajuste final inspirado no mockup enviado ===== */
-body {
-  background:
-    radial-gradient(circle at 15% 0%, rgba(194, 232, 204, 0.82), transparent 32%),
-    radial-gradient(circle at 50% 72%, rgba(194, 232, 204, 0.34), transparent 34%),
-    linear-gradient(180deg, #f2f4ef 0%, #edf1eb 100%) !important;
+body:has(.home-shell) {
+  background: var(--app-page-bg) !important;
+  background-attachment: fixed;
 }
 
 #root,
 .app-route-transition:has(.home-container) {
-  background: #f1f6ef !important;
+  background: var(--app-page-bg) !important;
+  background-attachment: fixed;
 }
 
 .home-shell {
@@ -2768,19 +2768,7 @@ body {
   min-height: 100dvh;
   margin: 0 auto;
   overflow: visible;
-  background:
-    radial-gradient(
-      ellipse 150% 42% at -12% 0%,
-      rgba(205, 236, 196, 0.92) 0%,
-      rgba(229, 245, 218, 0.62) 48%,
-      rgba(245, 251, 237, 0) 82%
-    ),
-    radial-gradient(
-      ellipse 125% 48% at 82% 100%,
-      rgba(218, 240, 211, 0.42) 0%,
-      rgba(245, 251, 237, 0) 78%
-    ),
-    #f5fbed;
+  background: var(--app-page-bg);
   background-attachment: fixed;
   isolation: isolate;
 }
@@ -2810,7 +2798,7 @@ body {
 .home-container {
   max-width: none;
   min-height: 100dvh;
-  padding: 0 18px 108px;
+  padding: 0 12px 108px;
   margin-top: 0;
   background: transparent !important;
   background-image: none !important;
@@ -2858,7 +2846,7 @@ body {
   width: 100%;
   max-width: 430px;
   margin-inline: auto;
-  padding-inline: 18px;
+  padding-inline: 12px;
   overflow: visible;
   isolation: auto;
   contain: none;
@@ -3017,7 +3005,7 @@ body:has(.home-shell)::-webkit-scrollbar {
 
 body:has(.home-shell) .accessibility-widget {
   top: 86px;
-  right: max(24px, calc((100vw - 430px) / 2 + 24px));
+  right: max(18px, calc((100vw - 430px) / 2 + 18px));
 }
 
 body:has(.home-shell) .accessibility-toggle {
@@ -3157,7 +3145,7 @@ body:has(.home-shell) .accessibility-toggle .material-symbols-outlined {
 }
 
 body:has(.home-shell) .nav {
-  width: min(calc(100vw - 36px), 394px);
+  width: min(calc(100vw - 24px), 406px);
 }
 
 .admin-team-card,
@@ -3191,16 +3179,16 @@ body:has(.home-shell) .nav {
 
   .home-container {
     max-width: none;
-    padding: 0 18px calc(156px + env(safe-area-inset-bottom, 0px));
+    padding: 0 12px calc(156px + env(safe-area-inset-bottom, 0px));
     overflow: visible;
   }
 
   .home-shell .home-app-header .header-top {
-    padding-inline: 18px;
+    padding-inline: 12px;
   }
 
   body:has(.home-shell) .accessibility-widget {
-    right: 18px;
+    right: 12px;
   }
 
   .weather-hero-top {
@@ -3219,19 +3207,19 @@ body:has(.home-shell) .nav {
 
 @media (max-width: 380px) {
   .home-container {
-    padding-inline: 12px;
+    padding-inline: 10px;
   }
 
   .home-shell .home-app-header .header-top {
-    padding-inline: 12px;
+    padding-inline: 10px;
   }
 
   body:has(.home-shell) .accessibility-widget {
-    right: 12px;
+    right: 10px;
   }
 
   body:has(.home-shell) .nav {
-    width: calc(100vw - 24px);
+    width: calc(100vw - 20px);
   }
 }
 

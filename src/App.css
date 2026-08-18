@@ -11,9 +11,8 @@ html, body {
   width: 100%;
   overflow-x: hidden;
   overflow-y: auto;
-  background:
-    radial-gradient(circle at 82% 18%, rgba(86, 168, 112, 0.38), transparent 34%),
-    linear-gradient(135deg, #102419 0%, #1e4229 54%, #3d8057 100%);
+  background: var(--app-page-bg-lower);
+  background-attachment: fixed;
   transition: background-color 180ms ease;
 }
 
@@ -21,11 +20,14 @@ html, body {
   min-height: 100vh;
   min-height: 100dvh;
   width: 100%;
-  background: #f7f5f0;
+  background: var(--app-page-bg-lower);
+  background-attachment: fixed;
 }
 
 .app-route-transition {
   min-height: 100vh;
   min-height: 100dvh;
+  background: var(--app-page-bg-lower);
+  background-attachment: fixed;
   will-change: opacity;
 }

@@ -3,7 +3,7 @@
   left: 50%;
   right: auto;
   bottom: max(16px, env(safe-area-inset-bottom));
-  width: min(calc(100vw - 34px), 334px);
+  width: min(calc(100vw - 24px), 406px);
   min-height: 62px;
   display: flex;
   align-items: center;
@@ -279,7 +279,7 @@
 
 /* Barra inferior no estilo pill do mockup */
 .nav {
-  width: min(calc(100vw - 36px), 394px);
+  width: min(calc(100vw - 24px), 406px);
   min-height: 58px;
   border-radius: 999px;
   background: rgba(232, 247, 229, 0.16);
@@ -348,6 +348,6 @@
 
 @media (max-width: 380px) {
   .nav {
-    width: calc(100vw - 24px);
+    width: calc(100vw - 20px);
   }
 }

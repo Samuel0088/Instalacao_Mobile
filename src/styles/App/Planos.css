@@ -11,7 +11,8 @@
 .plans-page {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e8edf2 100%);
+  background: var(--app-page-bg-lower);
+  background-attachment: fixed;
   position: relative;
   overflow-x: hidden;
 }

@@ -26,6 +26,37 @@
   --white: #FFFFFF;
   --earth: #7B6B4A;
   --sun: #F5B342;
+  --app-page-bg:
+    radial-gradient(
+      ellipse 150% 42% at -12% 0%,
+      rgba(205, 236, 196, 0.92) 0%,
+      rgba(229, 245, 218, 0.62) 48%,
+      rgba(245, 251, 237, 0) 82%
+    ),
+    radial-gradient(
+      ellipse 125% 48% at 82% 100%,
+      rgba(218, 240, 211, 0.42) 0%,
+      rgba(245, 251, 237, 0) 78%
+    ),
+    #f5fbed;
+  --app-page-bg-lower:
+    radial-gradient(
+      ellipse 140% 46% at 50% 82%,
+      rgba(205, 236, 196, 0.72) 0%,
+      rgba(229, 245, 218, 0.48) 46%,
+      rgba(245, 251, 237, 0) 84%
+    ),
+    radial-gradient(
+      ellipse 116% 44% at 88% 100%,
+      rgba(218, 240, 211, 0.46) 0%,
+      rgba(245, 251, 237, 0) 78%
+    ),
+    radial-gradient(
+      ellipse 100% 34% at -10% 100%,
+      rgba(205, 236, 196, 0.5) 0%,
+      rgba(245, 251, 237, 0) 76%
+    ),
+    #f5fbed;
   --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-press: cubic-bezier(0.2, 0, 0, 1);
   --duration-soft: 300ms;
@@ -58,10 +89,17 @@ html {
 
 body {
   font-family: 'Inter', 'Segoe UI', sans-serif;
-  background: #f8f9fa;
+  background: var(--app-page-bg-lower);
+  background-attachment: fixed;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -webkit-touch-callout: none;
+}
+
+#root,
+.app-route-transition {
+  background: var(--app-page-bg-lower);
+  background-attachment: fixed;
 }
 
 button,

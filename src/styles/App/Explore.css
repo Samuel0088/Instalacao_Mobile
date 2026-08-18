@@ -36,7 +36,8 @@
 
 body {
   font-family: 'Space Grotesk', sans-serif;
-  background: linear-gradient(135deg, var(--background-darker) 0%, var(--background-dark) 100%);
+  background: var(--app-page-bg-lower);
+  background-attachment: fixed;
   overflow-x: hidden;
 }
 
@@ -71,6 +72,8 @@ body {
   min-height: 100vh;
   color: var(--text-primary);
   padding-bottom: 80px;
+  background: var(--app-page-bg-lower);
+  background-attachment: fixed;
 }
 
 /* ===== HEADER ===== */
@@ -202,7 +205,8 @@ body {
   margin-top: -18px;
   padding: 34px 20px 24px;
   min-height: 60vh;
-  background: #f7f5f0;
+  background: var(--app-page-bg-lower);
+  background-attachment: fixed;
   border-radius: 28px 28px 0 0;
   box-shadow: 0 -10px 28px rgba(15, 35, 24, 0.08);
 }
