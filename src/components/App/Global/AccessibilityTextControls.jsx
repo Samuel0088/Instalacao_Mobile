@@ -6,6 +6,8 @@ const LEVELS = [
   { label: "Extra", value: 1.42 },
 ]
 
+const BASE_FONT_SIZE = 17
+
 export default function AccessibilityTextControls() {
   const controlRef = useRef(null)
 
@@ -18,7 +20,7 @@ export default function AccessibilityTextControls() {
 
   useEffect(() => {
     const level = LEVELS[levelIndex]
-    document.documentElement.style.fontSize = `${16 * level.value}px`
+    document.documentElement.style.fontSize = `${BASE_FONT_SIZE * level.value}px`
     document.documentElement.dataset.textSize = String(levelIndex)
     localStorage.setItem("accessibilityTextLevel", String(levelIndex))
   }, [levelIndex])

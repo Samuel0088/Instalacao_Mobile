@@ -279,7 +279,7 @@
 
 /* Barra inferior no estilo pill do mockup */
 .nav {
-  width: min(calc(100vw - 48px), 320px);
+  width: min(calc(100vw - 36px), 394px);
   min-height: 58px;
   border-radius: 999px;
   background: rgba(232, 247, 229, 0.16);
@@ -344,4 +344,10 @@
 
 .nav__label {
   display: none;
+}
+
+@media (max-width: 380px) {
+  .nav {
+    width: calc(100vw - 24px);
+  }
 }

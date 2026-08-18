@@ -3017,7 +3017,7 @@ body:has(.home-shell)::-webkit-scrollbar {
 
 body:has(.home-shell) .accessibility-widget {
   top: 86px;
-  right: max(18px, calc((100vw - 430px) / 2 + 18px));
+  right: max(24px, calc((100vw - 430px) / 2 + 24px));
 }
 
 body:has(.home-shell) .accessibility-toggle {
@@ -3261,5 +3261,20 @@ body:has(.home-shell) .nav {
     margin-top: 0;
     margin-bottom: 0;
     border-radius: 0;
+  }
+}
+
+.home-container {
+  padding-bottom: 0;
+}
+
+.home-container .app-footer {
+  position: relative;
+  padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (max-width: 480px) {
+  .home-container {
+    padding-bottom: 0;
   }
 }
