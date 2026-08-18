@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react"
 import "../../../../styles/App/Explore.css"
+import "../../../../styles/App/ImagePreview.css"
 
 export default function CameraView({ videoRef, onCapture, onCancel }) {
   const captureRef = useRef(null)

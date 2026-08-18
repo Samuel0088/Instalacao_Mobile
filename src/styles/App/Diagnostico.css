@@ -805,10 +805,13 @@
 /* Usar --border e --border-strong nos cards e separadores */
 .option-card {
   position: relative;
-  background: var(--background);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--border-strong);
+  background: rgba(247, 245, 240, 0.58);
+  box-shadow:
+    0 14px 34px rgba(15, 35, 24, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(18px) saturate(145%);
+  -webkit-backdrop-filter: blur(18px) saturate(145%);
+  border: 1px solid rgba(45, 97, 64, 0.18);
   border-radius: 24px;
   padding: 28px 20px;
   text-align: center;
@@ -1132,10 +1135,13 @@
 
 /* Tips Card */
 .tips-card {
-  background: var(--background);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--border);
+  background: rgba(247, 245, 240, 0.58);
+  box-shadow:
+    0 14px 34px rgba(15, 35, 24, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(18px) saturate(145%);
+  -webkit-backdrop-filter: blur(18px) saturate(145%);
+  border: 1px solid rgba(45, 97, 64, 0.16);
   border-radius: 20px;
   padding: 20px;
   transition: all 0.3s;
@@ -1174,6 +1180,10 @@
   color: var(--text-secondary);
   line-height: 1.5;
   margin: 0;
+}
+
+.tips-card[role="status"] {
+  margin-bottom: 22px;
 }
 
 /* Hidden input */

@@ -1,73 +1,75 @@
-import { useState, useEffect } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { formatDiagnosisName } from "./diagnosisLabels"
 import "../../../../styles/App/AllHistory.css"
 
 export default function AllHistory({ onBack }) {
   const navigate = useNavigate()
   const [history, setHistory] = useState([])
-  const [filteredHistory, setFilteredHistory] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
-  const [filterType, setFilterType] = useState("all") // all, high, medium, low
-  const [sortBy, setSortBy] = useState("date") // date, confidence, name
+  const [filterType, setFilterType] = useState("all")
+  const [sortBy, setSortBy] = useState("date")
 
-  // Carregar histórico do localStorage
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "auto" })
-
-    const saved = localStorage.getItem("diagnosticHistory")
-    if (saved) {
-      const parsedHistory = JSON.parse(saved)
-      setHistory(parsedHistory)
-      setFilteredHistory(parsedHistory)
+    try {
+      const saved = localStorage.getItem("diagnosticHistory")
+      if (saved) setHistory(JSON.parse(saved))
+    } catch {
+      setHistory([])
     }
   }, [])
 
-  // Filtrar e ordenar histórico
-  useEffect(() => {
-    let filtered = [...history]
+  const getDisplayName = (item) => formatDiagnosisName(item?.disease || item?.resultado || "Diagnóstico")
+  const getConfidence = (item) => Math.max(0, Math.min(100, Math.round(Number(item?.confidence) || 0)))
 
-    // Filtrar por busca
-    if (searchTerm) {
-      filtered = filtered.filter(item =>
-        item.disease.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    }
+  const getConfidenceClass = (confidence) => {
+    if (confidence >= 80) return "high"
+    if (confidence >= 50) return "medium"
+    return "low"
+  }
 
-    // Filtrar por confiança
-    if (filterType === "high") {
-      filtered = filtered.filter(item => item.confidence >= 80)
-    } else if (filterType === "medium") {
-      filtered = filtered.filter(item => item.confidence >= 50 && item.confidence < 80)
-    } else if (filterType === "low") {
-      filtered = filtered.filter(item => item.confidence < 50)
-    }
+  const getConfidenceText = (confidence) => {
+    if (confidence >= 80) return "Alta confiança"
+    if (confidence >= 50) return "Média confiança"
+    return "Baixa confiança"
+  }
 
-    // Ordenar
-    if (sortBy === "date") {
-      filtered.sort((a, b) => b.id - a.id)
-    } else if (sortBy === "confidence") {
-      filtered.sort((a, b) => b.confidence - a.confidence)
-    } else if (sortBy === "name") {
-      filtered.sort((a, b) => a.disease.localeCompare(b.disease))
-    }
+  const filteredHistory = useMemo(() => {
+    const search = searchTerm.trim().toLowerCase()
 
-    setFilteredHistory(filtered)
-  }, [searchTerm, filterType, sortBy, history])
+    return [...history]
+      .filter((item) => {
+        const confidence = getConfidence(item)
+        return (
+          (!search || getDisplayName(item).toLowerCase().includes(search)) &&
+          (filterType === "all" ||
+            (filterType === "high" && confidence >= 80) ||
+            (filterType === "medium" && confidence >= 50 && confidence < 80) ||
+            (filterType === "low" && confidence < 50))
+        )
+      })
+      .sort((a, b) => {
+        if (sortBy === "confidence") return getConfidence(b) - getConfidence(a)
+        if (sortBy === "name") return getDisplayName(a).localeCompare(getDisplayName(b))
+        return Number(b.id || 0) - Number(a.id || 0)
+      })
+  }, [filterType, history, searchTerm, sortBy])
 
-  // Função para deletar um diagnóstico
+  const saveHistory = (updatedHistory) => {
+    setHistory(updatedHistory)
+    localStorage.setItem("diagnosticHistory", JSON.stringify(updatedHistory))
+  }
+
   const deleteDiagnostic = (id) => {
     if (window.confirm("Tem certeza que deseja excluir este diagnóstico?")) {
-      const updatedHistory = history.filter(item => item.id !== id)
-      setHistory(updatedHistory)
-      localStorage.setItem("diagnosticHistory", JSON.stringify(updatedHistory))
+      saveHistory(history.filter((item) => item.id !== id))
     }
   }
 
-  // Função para limpar todo o histórico
   const clearAllHistory = () => {
     if (window.confirm("Tem certeza que deseja excluir TODO o histórico? Esta ação não pode ser desfeita.")) {
-      setHistory([])
-      localStorage.setItem("diagnosticHistory", JSON.stringify([]))
+      saveHistory([])
     }
   }
 
@@ -180,44 +182,49 @@ export default function AllHistory({ onBack }) {
     return new Blob([pdf], { type: "application/pdf" })
   }
 
-  // Função para exportar histórico em PDF legível
-  const exportHistory = () => {
-    const totalDiagnostics = history.length
-    const averageConfidence = history.length > 0
-      ? Math.round(history.reduce((acc, item) => acc + item.confidence, 0) / history.length)
-      : 0
-    const mostCommonDisease = history.length > 0
-      ? Object.entries(history.reduce((acc, item) => {
-          acc[item.disease] = (acc[item.disease] || 0) + 1
-          return acc
-        }, {})).sort((a, b) => b[1] - a[1])[0]?.[0] || "Nenhum"
-      : "Nenhum"
+  const totalDiagnostics = history.length
+  const averageConfidence = history.length > 0
+    ? Math.round(history.reduce((acc, item) => acc + getConfidence(item), 0) / history.length)
+    : 0
+  const mostCommonDisease = history.length > 0
+    ? Object.entries(history.reduce((acc, item) => {
+        const name = getDisplayName(item)
+        acc[name] = (acc[name] || 0) + 1
+        return acc
+      }, {})).sort((a, b) => b[1] - a[1])[0]?.[0] || "Nenhum"
+    : "Nenhum"
 
+  const exportHistory = () => {
     const lines = [
       { text: "Historico de Diagnosticos", size: 20, bold: true, after: 24 },
       { text: `Gerado em: ${new Date().toLocaleString("pt-BR")}`, size: 10, after: 22 },
       { text: "Resumo", size: 14, bold: true, after: 18 },
       { text: `Total de diagnosticos: ${totalDiagnostics}`, after: 16 },
       { text: `Confianca media: ${averageConfidence}%`, after: 16 },
-      { text: `Doenca mais comum: ${mostCommonDisease}`, after: 24 },
-      { text: "Como interpretar", size: 14, bold: true, after: 18 },
-      { text: "Alta confianca: resultado com 80% ou mais de certeza.", after: 16 },
-      { text: "Media confianca: resultado entre 50% e 79%. Vale conferir com outra foto.", after: 16 },
-      { text: "Baixa confianca: resultado abaixo de 50%. Tire uma nova foto com melhor iluminacao.", after: 24 },
+      { text: `Diagnostico mais comum: ${mostCommonDisease}`, after: 24 },
       { text: "Diagnosticos", size: 14, bold: true, after: 18 },
     ]
 
     history.forEach((item, index) => {
+      const confidence = getConfidence(item)
       lines.push(
-        { text: `${index + 1}. ${item.disease}`, bold: true, after: 16 },
-        { text: `Data: ${item.date}`, indent: 16, after: 16 },
-        { text: `Confianca: ${item.confidence}% (${getConfidenceText(item.confidence)})`, indent: 16, after: 16 },
-        { text: "Observacao: use este resultado como apoio e acompanhe a planta nos proximos dias.", indent: 16, after: 22 }
+        { text: `${index + 1}. ${getDisplayName(item)}`, bold: true, after: 16 },
+        { text: `Data: ${item.date || "-"}`, indent: 16, after: 16 },
+        { text: `Confianca: ${confidence}% (${getConfidenceText(confidence)})`, indent: 16, after: 16 }
       )
+
+      if (item.type === "batch") {
+        lines.push({
+          text: `Lote: ${item.imageCount || 0} fotos, ${item.reliableCount || 0} confiaveis, ${item.conditionCount || 0} condicoes`,
+          indent: 16,
+          after: 16,
+        })
+      }
+
+      lines.push({ text: "Observacao: use este resultado como apoio e acompanhe a planta nos proximos dias.", indent: 16, after: 22 })
     })
 
-    const pdfBlob = buildPdf(lines)
-    const url = URL.createObjectURL(pdfBlob)
+    const url = URL.createObjectURL(buildPdf(lines))
     const linkElement = document.createElement("a")
     linkElement.href = url
     linkElement.download = `diagnosticos_${new Date().toISOString().slice(0, 10)}.pdf`
@@ -225,47 +232,20 @@ export default function AllHistory({ onBack }) {
     URL.revokeObjectURL(url)
   }
 
-  // Estatísticas
-  const totalDiagnostics = history.length
-  const averageConfidence = history.length > 0 
-    ? Math.round(history.reduce((acc, item) => acc + item.confidence, 0) / history.length)
-    : 0
-  const mostCommonDisease = history.length > 0
-    ? Object.entries(history.reduce((acc, item) => {
-        acc[item.disease] = (acc[item.disease] || 0) + 1
-        return acc
-      }, {})).sort((a, b) => b[1] - a[1])[0]?.[0] || "Nenhum"
-    : "Nenhum"
-
-  // Função para obter classe de severidade
-  const getConfidenceClass = (confidence) => {
-    if (confidence >= 80) return "high"
-    if (confidence >= 50) return "medium"
-    return "low"
-  }
-
-  // Função para obter texto de severidade
-  const getConfidenceText = (confidence) => {
-    if (confidence >= 80) return "Alta confiança"
-    if (confidence >= 50) return "Média confiança"
-    return "Baixa confiança"
-  }
-
   return (
     <div className="all-history-container">
-      {/* Header */}
       <div className="history-header">
-        <button className="back-button" onClick={onBack || (() => navigate(-1))}>
+        <button className="back-button" onClick={onBack || (() => navigate(-1))} aria-label="Voltar">
           <span className="material-symbols-outlined">arrow_back</span>
         </button>
         <h1>Histórico de Diagnósticos</h1>
         <div className="header-actions">
           {history.length > 0 && (
             <>
-              <button className="export-button" onClick={exportHistory}>
+              <button className="export-button" onClick={exportHistory} aria-label="Exportar relatório">
                 <span className="material-symbols-outlined">download</span>
               </button>
-              <button className="clear-button" onClick={clearAllHistory}>
+              <button className="clear-button" onClick={clearAllHistory} aria-label="Limpar histórico">
                 <span className="material-symbols-outlined">delete_sweep</span>
               </button>
             </>
@@ -273,7 +253,6 @@ export default function AllHistory({ onBack }) {
         </div>
       </div>
 
-      {/* Estatísticas */}
       {history.length > 0 && (
         <div className="stats-cards">
           <div className="stat-card">
@@ -294,13 +273,12 @@ export default function AllHistory({ onBack }) {
             <span className="material-symbols-outlined">eco</span>
             <div className="stat-info">
               <strong>{mostCommonDisease}</strong>
-              <p>Doença mais comum</p>
+              <p>Mais comum</p>
             </div>
           </div>
         </div>
       )}
 
-      {/* Filtros e Busca */}
       {history.length > 0 && (
         <div className="filters-section">
           <div className="search-box">
@@ -309,62 +287,26 @@ export default function AllHistory({ onBack }) {
               type="text"
               placeholder="Buscar por doença..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(event) => setSearchTerm(event.target.value)}
             />
           </div>
 
           <div className="filter-buttons">
-            <button
-              className={`filter-btn ${filterType === "all" ? "active" : ""}`}
-              onClick={() => setFilterType("all")}
-            >
-              Todos
-            </button>
-            <button
-              className={`filter-btn high ${filterType === "high" ? "active" : ""}`}
-              onClick={() => setFilterType("high")}
-            >
-              Alta confiança
-            </button>
-            <button
-              className={`filter-btn medium ${filterType === "medium" ? "active" : ""}`}
-              onClick={() => setFilterType("medium")}
-            >
-              Média confiança
-            </button>
-            <button
-              className={`filter-btn low ${filterType === "low" ? "active" : ""}`}
-              onClick={() => setFilterType("low")}
-            >
-              Baixa confiança
-            </button>
+            <button className={`filter-btn ${filterType === "all" ? "active" : ""}`} onClick={() => setFilterType("all")}>Todos</button>
+            <button className={`filter-btn high ${filterType === "high" ? "active" : ""}`} onClick={() => setFilterType("high")}>Alta confiança</button>
+            <button className={`filter-btn medium ${filterType === "medium" ? "active" : ""}`} onClick={() => setFilterType("medium")}>Média confiança</button>
+            <button className={`filter-btn low ${filterType === "low" ? "active" : ""}`} onClick={() => setFilterType("low")}>Baixa confiança</button>
           </div>
 
           <div className="sort-buttons">
             <span>Ordenar por:</span>
-            <button
-              className={`sort-btn ${sortBy === "date" ? "active" : ""}`}
-              onClick={() => setSortBy("date")}
-            >
-              Data
-            </button>
-            <button
-              className={`sort-btn ${sortBy === "confidence" ? "active" : ""}`}
-              onClick={() => setSortBy("confidence")}
-            >
-              Confiança
-            </button>
-            <button
-              className={`sort-btn ${sortBy === "name" ? "active" : ""}`}
-              onClick={() => setSortBy("name")}
-            >
-              Nome
-            </button>
+            <button className={`sort-btn ${sortBy === "date" ? "active" : ""}`} onClick={() => setSortBy("date")}>Data</button>
+            <button className={`sort-btn ${sortBy === "confidence" ? "active" : ""}`} onClick={() => setSortBy("confidence")}>Confiança</button>
+            <button className={`sort-btn ${sortBy === "name" ? "active" : ""}`} onClick={() => setSortBy("name")}>Nome</button>
           </div>
         </div>
       )}
 
-      {/* Lista de Diagnósticos */}
       <div className="history-list">
         {filteredHistory.length === 0 ? (
           <div className="empty-state">
@@ -383,45 +325,49 @@ export default function AllHistory({ onBack }) {
             </button>
           </div>
         ) : (
-          filteredHistory.map((item) => (
-            <div key={item.id} className={`history-card ${getConfidenceClass(item.confidence)}`}>
-              <div className="history-card-content">
-                <div className="history-card-icon">
-                  <span className="material-symbols-outlined">eco</span>
-                </div>
-                <div className="history-card-info">
-                  <h3>{item.disease}</h3>
-                  <div className="history-card-meta">
-                    <span className="date">
-                      <span className="material-symbols-outlined">schedule</span>
-                      {item.date}
-                    </span>
-                    <span className={`confidence-badge ${getConfidenceClass(item.confidence)}`}>
-                      {getConfidenceText(item.confidence)}
-                    </span>
+          filteredHistory.map((item) => {
+            const confidence = getConfidence(item)
+            return (
+              <div key={item.id} className={`history-card ${getConfidenceClass(confidence)}`}>
+                <div className="history-card-content">
+                  <div className="history-card-icon">
+                    <span className="material-symbols-outlined">{item.type === "batch" ? "flight" : "eco"}</span>
                   </div>
-                  <div className="confidence-bar-container">
-                    <div className="confidence-bar-label">
-                      <span>Confiança</span>
-                      <span>{item.confidence}%</span>
+                  <div className="history-card-info">
+                    <h3>{getDisplayName(item)}</h3>
+                    {item.type === "batch" && (
+                      <div className="batch-history-meta">
+                        <span><strong>{item.imageCount || 0}</strong> fotos</span>
+                        <span><strong>{item.reliableCount || 0}</strong> confiáveis</span>
+                        <span><strong>{item.conditionCount || 0}</strong> condições</span>
+                      </div>
+                    )}
+                    <div className="history-card-meta">
+                      <span className="date">
+                        <span className="material-symbols-outlined">schedule</span>
+                        {item.date}
+                      </span>
+                      <span className={`confidence-badge ${getConfidenceClass(confidence)}`}>
+                        {getConfidenceText(confidence)}
+                      </span>
                     </div>
-                    <div className="confidence-bar">
-                      <div
-                        className="confidence-fill"
-                        style={{ width: `${item.confidence}%` }}
-                      ></div>
+                    <div className="confidence-bar-container">
+                      <div className="confidence-bar-label">
+                        <span>{item.type === "batch" ? "Confiança média" : "Confiança"}</span>
+                        <span>{confidence}%</span>
+                      </div>
+                      <div className="confidence-bar">
+                        <div className="confidence-fill" style={{ width: `${confidence}%` }}></div>
+                      </div>
                     </div>
                   </div>
+                  <button className="delete-item-btn" onClick={() => deleteDiagnostic(item.id)} aria-label="Excluir diagnóstico">
+                    <span className="material-symbols-outlined">delete</span>
+                  </button>
                 </div>
-                <button
-                  className="delete-item-btn"
-                  onClick={() => deleteDiagnostic(item.id)}
-                >
-                  <span className="material-symbols-outlined">delete</span>
-                </button>
               </div>
-            </div>
-          ))
+            )
+          })
         )}
       </div>
     </div>
