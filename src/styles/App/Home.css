@@ -4115,13 +4115,40 @@ body:has(.home-shell),
 
 /* Aproveita melhor a largura em celulares */
 @media (max-width: 550px) {
+  .home-shell {
+    --home-side-gutter: 8px;
+  }
+
   .home-shell .home-container {
-    padding-inline: 12px;
+    padding-inline: var(--home-side-gutter);
+  }
+
+  .home-shell .weather-hero-top {
+    position: relative;
+  }
+
+  .home-shell .weather-illustration {
+    position: absolute;
+    top: -9px;
+    right: calc(0px - var(--home-side-gutter) - 8px);
+    width: clamp(205px, 56vw, 242px);
+    height: auto;
+    aspect-ratio: 4 / 3;
+    margin-inline: 0;
   }
 }
 
 @media (max-width: 390px) {
+  .home-shell {
+    --home-side-gutter: 6px;
+  }
+
   .home-shell .home-container {
-    padding-inline: 10px;
+    padding-inline: var(--home-side-gutter);
+  }
+
+  .home-shell .weather-illustration {
+    right: calc(0px - var(--home-side-gutter) - 8px);
+    width: clamp(198px, 56vw, 218px);
   }
 }
