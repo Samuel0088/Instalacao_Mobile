@@ -175,6 +175,7 @@ function App() {
   const [isInstalled, setIsInstalled] = useState(false)
   const [isIOS, setIsIOS] = useState(false)
   const [isAndroid, setIsAndroid] = useState(false)
+  const [isChromeAndroid, setIsChromeAndroid] = useState(false)
 
   
   
@@ -183,6 +184,11 @@ function App() {
     const userAgent = navigator.userAgent
     setIsIOS(/iPhone|iPad|iPod/i.test(userAgent))
     setIsAndroid(/Android/i.test(userAgent))
+    setIsChromeAndroid(
+      /Android/i.test(userAgent) &&
+      /Chrome\//i.test(userAgent) &&
+      !/; wv\)|EdgA|OPR|SamsungBrowser/i.test(userAgent)
+    )
 
     // Verificar se já está instalado (modo standalone)
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
@@ -209,14 +215,12 @@ function App() {
       }, 1000)
     }
 
-    // Capturar evento de instalação
-    const handleBeforeInstallPrompt = (e) => {
-      e.preventDefault()
-      console.log('📲 Evento beforeinstallprompt capturado')
-      setDeferredPrompt(e)
+    const syncInstallPrompt = (event) => {
+      const prompt = event?.detail?.prompt || window.__zenithDeferredInstallPrompt
+      if (prompt) setDeferredPrompt(prompt)
     }
 
-    
+    syncInstallPrompt()
 
     // Quando o app for instalado
     const handleAppInstalled = (e) => {
@@ -225,19 +229,29 @@ function App() {
       setShowInstallPrompt(false)
       setShowInstallSuccess(true)
       setDeferredPrompt(null)
+      window.__zenithDeferredInstallPrompt = null
       
     }
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+    window.addEventListener('zenith-install-prompt-ready', syncInstallPrompt)
     window.addEventListener('appinstalled', handleAppInstalled)
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+      window.removeEventListener('zenith-install-prompt-ready', syncInstallPrompt)
       window.removeEventListener('appinstalled', handleAppInstalled)
     }
   }, [])
 
   useEffect(() => {
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+      window.navigator.standalone === true
+
+    if (!isStandalone) {
+      localStorage.removeItem(UPDATE_PROMPT_PENDING_KEY)
+      setShowUpdatePrompt(false)
+      return undefined
+    }
+
     const markUpdatePending = () => {
       localStorage.setItem(UPDATE_PROMPT_PENDING_KEY, "true")
     }
@@ -279,15 +293,17 @@ function App() {
 
 
 const handleInstall = async () => {
-  if (!deferredPrompt) {
+  const installPrompt = deferredPrompt || window.__zenithDeferredInstallPrompt
+
+  if (!installPrompt) {
     console.log('❌ Prompt não disponível')
     return
   }
 
   setShowInstallPrompt(false)
-  await deferredPrompt.prompt()
+  await installPrompt.prompt()
 
-  const choiceResult = await deferredPrompt.userChoice
+  const choiceResult = await installPrompt.userChoice
 
   if (choiceResult.outcome === 'accepted') {
     console.log('✅ Usuário aceitou instalar')
@@ -296,6 +312,7 @@ const handleInstall = async () => {
   }
 
   setDeferredPrompt(null)
+  window.__zenithDeferredInstallPrompt = null
 }
 
 const handleInstallRequest = () => {
@@ -335,7 +352,8 @@ const finishInitialSplash = () => {
                 onClose={() => setShowInstallPrompt(false)}
                 isIOS={isIOS}
                 isAndroid={isAndroid}
-                hasPrompt={!!deferredPrompt}
+                isChromeAndroid={isChromeAndroid}
+                hasPrompt={!!(deferredPrompt || window.__zenithDeferredInstallPrompt)}
               />
             )}
 
@@ -348,7 +366,7 @@ const finishInitialSplash = () => {
               />
             )}
 
-            {showUpdatePrompt && (
+            {isInstalled && showUpdatePrompt && (
               <UpdatePrompt
                 onUpdate={handleAppUpdate}
                 onClose={() => setShowUpdatePrompt(false)}

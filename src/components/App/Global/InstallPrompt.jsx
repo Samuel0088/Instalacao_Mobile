@@ -3,9 +3,20 @@ import { useState } from "react"
 import { FaDownload, FaTimes, FaAndroid, FaApple } from 'react-icons/fa'
 import '../../../styles/Global/InstallPrompt.css'
 
-const InstallPrompt = ({ onInstall, onClose, isIOS, isAndroid, hasPrompt }) => {
+const InstallPrompt = ({ onInstall, onClose, isIOS, isAndroid, isChromeAndroid, hasPrompt }) => {
   const [showInstructions, setShowInstructions] = useState(false)
   const canInstallDirectly = hasPrompt && !isIOS
+  const shouldOpenChrome = isAndroid && !isChromeAndroid && !hasPrompt
+
+  const handleFallbackInstall = () => {
+    if (shouldOpenChrome) {
+      const currentPath = `${window.location.host}${window.location.pathname}${window.location.search}`
+      window.location.href = `intent://${currentPath}#Intent;scheme=https;package=com.android.chrome;end`
+      return
+    }
+
+    setShowInstructions(true)
+  }
 
   return (
     <motion.div 
@@ -37,9 +48,15 @@ const InstallPrompt = ({ onInstall, onClose, isIOS, isAndroid, hasPrompt }) => {
 
         <button
           className="install-main-btn"
-          onClick={canInstallDirectly ? onInstall : () => setShowInstructions(true)}
+          onClick={canInstallDirectly ? onInstall : handleFallbackInstall}
         >
-          <FaDownload /> {canInstallDirectly ? "Instalar agora" : "Instalar neste celular"}
+          <FaDownload /> {
+            canInstallDirectly
+              ? "Instalar agora"
+              : shouldOpenChrome
+                ? "Abrir no Chrome"
+                : "Ver como instalar"
+          }
         </button>
 
         {!hasPrompt && (
