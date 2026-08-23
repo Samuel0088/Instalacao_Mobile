@@ -9,6 +9,7 @@ function getEnvConfig() {
     projectId: import.meta.env.VITE_WEBODM_PROJECT_ID || "",
     taskId: import.meta.env.VITE_WEBODM_TASK_ID || "",
     detectionsUrl: import.meta.env.VITE_WEBODM_DETECTIONS_URL || "",
+    publicTaskUrl: import.meta.env.VITE_WEBODM_PUBLIC_TASK_URL || "",
   }
 }
 
@@ -17,7 +18,7 @@ export function getStoredWebODMConfig() {
 }
 
 export function hasWebODMConfig(config = getEnvConfig()) {
-  return Boolean(config.baseUrl && config.projectId && config.taskId)
+  return Boolean(config.publicTaskUrl || (config.baseUrl && config.projectId && config.taskId))
 }
 
 export function saveWebODMConfig(config) {
@@ -27,6 +28,7 @@ export function saveWebODMConfig(config) {
     projectId: String(config.projectId || "").trim(),
     taskId: String(config.taskId || "").trim(),
     detectionsUrl: config.detectionsUrl?.trim() || "",
+    publicTaskUrl: config.publicTaskUrl?.trim() || "",
   }
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(nextConfig))
@@ -125,6 +127,37 @@ async function fetchDetections(config) {
 
 export async function loadWebODMAnalysis(configInput) {
   const config = saveWebODMConfig(configInput)
+
+  if (config.publicTaskUrl && (!config.projectId || !config.taskId)) {
+    return {
+      config,
+      projectId: "publico",
+      taskId: extractTaskUuid(config.publicTaskUrl) || "task-publica",
+      task: { status: "link publico" },
+      bounds: null,
+      detections: [],
+      affectedHa: 0,
+      affectedPct: 0,
+      severity: 0,
+      orthophotoTiles: null,
+      dsmTiles: null,
+      dtmTiles: null,
+      orthophoto: "Link publico WebODM carregado",
+      dsm: "Visualizacao 3D disponivel",
+      resolutionCm: "-",
+      indices: {
+        ndvi: "-",
+        vari: "-",
+        drainageRisk: "indisponivel",
+      },
+      route: [],
+      timeline: [],
+      prescription: [],
+      productivityLoss: "-",
+      publicTaskUrl: config.publicTaskUrl,
+    }
+  }
+
   assertConfig(config)
 
   const [task, orthophotoTiles, dsmTiles, dtmTiles, bounds, detections] = await Promise.all([
@@ -171,6 +204,10 @@ export async function loadWebODMAnalysis(configInput) {
     })),
     productivityLoss: "-",
   }
+}
+
+function extractTaskUuid(publicTaskUrl = "") {
+  return publicTaskUrl.match(/\/public\/task\/([^/]+)/)?.[1] || ""
 }
 
 export function getTileUrl(config, projectId, taskId, layer = "orthophoto") {

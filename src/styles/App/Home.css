@@ -4112,3 +4112,16 @@ body:has(.home-shell),
     left: 64%;
   }
 }
+
+/* Aproveita melhor a largura em celulares */
+@media (max-width: 550px) {
+  .home-shell .home-container {
+    padding-inline: 12px;
+  }
+}
+
+@media (max-width: 390px) {
+  .home-shell .home-container {
+    padding-inline: 10px;
+  }
+}

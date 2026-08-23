@@ -832,6 +832,12 @@ function WebODMPanel({
             <span>Status WebODM: {analysis.task?.status || "carregado"}</span>
           </div>
           <div className="webodm-actions">
+            {analysis.publicTaskUrl && (
+              <button type="button" onClick={() => window.open(analysis.publicTaskUrl, "_blank", "noopener,noreferrer")}>
+                <span className="material-symbols-outlined">view_in_ar</span>
+                Abrir 3D
+              </button>
+            )}
             <button type="button" onClick={onFocusRoute}>
               <span className="material-symbols-outlined">route</span>
               Ver rota
