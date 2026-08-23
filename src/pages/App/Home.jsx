@@ -222,6 +222,11 @@ export default function Home() {
     const container = document.querySelector(".home-container")
     if (!container) return undefined
 
+    const shouldReduceEffects = window.matchMedia(
+      "(max-width: 768px), (pointer: coarse), (prefers-reduced-motion: reduce)"
+    ).matches
+    if (shouldReduceEffects) return undefined
+
     const trackedElements = new Set()
     const observedElements = new WeakSet()
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches

@@ -8,6 +8,11 @@ export default function ParticleBackground() {
     const canvas = canvasRef.current
     if (!canvas) return
 
+    const shouldReduceEffects = window.matchMedia(
+      '(max-width: 768px), (pointer: coarse), (prefers-reduced-motion: reduce)'
+    ).matches
+    if (shouldReduceEffects) return
+
     const ctx = canvas.getContext('2d')
     let animationFrameId
     let particles = []
@@ -47,9 +52,14 @@ export default function ParticleBackground() {
 
     const initParticles = () => {
       particles = []
-      for (let i = 0; i < 100; i++) {
+      for (let i = 0; i < 48; i++) {
         particles.push(new Particle())
       }
+    }
+
+    const handleResize = () => {
+      resizeCanvas()
+      initParticles()
     }
 
     const animate = () => {
@@ -84,14 +94,11 @@ export default function ParticleBackground() {
     initParticles()
     animate()
 
-    window.addEventListener('resize', () => {
-      resizeCanvas()
-      initParticles()
-    })
+    window.addEventListener('resize', handleResize, { passive: true })
 
     return () => {
       cancelAnimationFrame(animationFrameId)
-      window.removeEventListener('resize', resizeCanvas)
+      window.removeEventListener('resize', handleResize)
     }
   }, [])
 

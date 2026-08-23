@@ -119,7 +119,8 @@ export default function SystemBarTheme() {
     lastColorRef.current = ""
     requestUpdate()
 
-    window.addEventListener("scroll", requestUpdate, { passive: true })
+    const trackScroll = !window.matchMedia("(max-width: 768px), (pointer: coarse)").matches
+    if (trackScroll) window.addEventListener("scroll", requestUpdate, { passive: true })
     window.addEventListener("resize", requestUpdate)
     window.addEventListener("orientationchange", requestUpdate)
     window.addEventListener("system-bar-color-change", requestUpdate)
@@ -133,7 +134,7 @@ export default function SystemBarTheme() {
     })
 
     return () => {
-      window.removeEventListener("scroll", requestUpdate)
+      if (trackScroll) window.removeEventListener("scroll", requestUpdate)
       window.removeEventListener("resize", requestUpdate)
       window.removeEventListener("orientationchange", requestUpdate)
       window.removeEventListener("system-bar-color-change", requestUpdate)

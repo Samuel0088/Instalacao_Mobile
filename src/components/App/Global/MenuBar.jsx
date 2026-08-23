@@ -38,6 +38,12 @@ export default function MenuBar() {
   }
 
   useEffect(() => {
+    const shouldKeepVisible = window.matchMedia("(max-width: 768px), (pointer: coarse)").matches
+    if (shouldKeepVisible) {
+      setIsVisible(true)
+      return undefined
+    }
+
     lastScrollYRef.current = window.scrollY
 
     const handleScroll = () => {
