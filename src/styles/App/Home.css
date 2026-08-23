@@ -4116,10 +4116,13 @@ body:has(.home-shell),
 /* Aproveita melhor a largura em celulares */
 @media (max-width: 550px) {
   .home-shell {
-    --home-side-gutter: 4px;
+    --home-side-gutter: 14px;
   }
 
   .home-shell .home-container {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
     padding-inline: var(--home-side-gutter);
   }
 

@@ -595,6 +595,6 @@ body:has(.home-shell) .nav {
 
 @media (max-width: 550px) {
   body:has(.home-shell) .nav {
-    width: min(calc(100vw - 8px), 406px);
+    width: min(calc(100vw - 28px), 398px);
   }
 }
