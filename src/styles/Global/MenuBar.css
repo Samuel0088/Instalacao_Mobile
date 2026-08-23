@@ -598,9 +598,3 @@ body:has(.home-shell) .nav {
     width: min(calc(100vw - 16px), 398px);
   }
 }
-
-@media (max-width: 390px) {
-  body:has(.home-shell) .nav {
-    width: calc(100vw - 12px);
-  }
-}

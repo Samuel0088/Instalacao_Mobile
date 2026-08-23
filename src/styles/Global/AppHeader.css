@@ -754,9 +754,3 @@ header::after {
     padding-inline: 8px;
   }
 }
-
-@media (max-width: 390px) {
-  .app-header.home-app-header .header-top {
-    padding-inline: 6px;
-  }
-}
