@@ -6,10 +6,10 @@ import { ACCOUNT_ROLES, getUserAccessProfile, isOperationalRole } from "../../..
 import "../../../styles/Global/MenuBar.css"
 
 const adminItems = [
-  { path: "/home", icon: "home", label: "Home" },
-  { path: "/admin/team", icon: "groups", label: "Equipe" },
+  { path: "/home", icon: "home", label: "Início" },
+  { path: "/explore", icon: "psychiatry", label: "Lavouras" },
   { path: "/admin/team", hash: "#nova-tarefa", icon: "add", label: "Nova tarefa", isPrimary: true },
-  { path: "/explore", icon: "grid_view", label: "Explorar" },
+  { path: "/explore", hash: "#mapa", icon: "grid_view", label: "Mapa" },
   { path: "/profile", icon: "person", label: "Perfil" },
 ]
 
@@ -28,6 +28,7 @@ export default function MenuBar() {
   const items = isOperationalRole(role) ? employeeItems : adminItems
   const isActive = ({ path, hash, isPrimary }) => {
     if (isPrimary) return location.pathname === path && location.hash === hash
+    if (hash) return location.pathname === path && location.hash === hash
     return location.pathname === path && !location.hash
   }
   const goToInternalPage = ({ path, hash }) => {
