@@ -3489,6 +3489,12 @@ body:has(.home-shell),
   background: rgba(255, 255, 255, 0.76);
 }
 
+.activity-card {
+  background: #ffffff;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
 body:has(.home-shell) .nav {
   bottom: max(18px, env(safe-area-inset-bottom));
   width: min(calc(100vw - 48px), 382px);
@@ -4250,4 +4256,34 @@ body:has(.home-shell),
 .install-app-trigger:hover {
   border-color: rgba(45, 97, 64, 0.24);
   background: #ffffff;
+}
+
+/* Primeira tela do PWA: clima em destaque antes dos demais cards. */
+@media (max-width: 550px) {
+  .home-shell--app-opening .home-weather-hero {
+    min-height: calc(100dvh - 126px);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .home-shell--app-opening .weather-hero-top {
+    flex: 1;
+    min-height: min(520px, calc(100dvh - 160px));
+    align-items: center;
+  }
+
+  .home-shell--app-opening .weather-hero-top > :first-child {
+    transform: translateY(0);
+  }
+
+  .home-shell--app-opening .weather-illustration {
+    top: 50%;
+    width: 252px;
+    height: 194px;
+    transform: translateY(-48%) rotate(-2deg);
+  }
+
+  .home-shell--app-opening .weather-stat-grid {
+    display: none;
+  }
 }

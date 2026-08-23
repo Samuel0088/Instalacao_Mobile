@@ -46,15 +46,17 @@ export default function UploadImage({ onSelect, onCamera, disabled }) {
       onDrop={handleDrop}
     >
       <div className={styles.uploadVisual} aria-hidden="true">
-        <span className="material-symbols-outlined">
-          {disabled ? "progress_activity" : "satellite_alt"}
-        </span>
+        {disabled ? (
+          <span className="material-symbols-outlined">progress_activity</span>
+        ) : (
+          <img src="/assets/image/drone-plantio.png" alt="" />
+        )}
       </div>
       <span className={styles.uploadTexto}>
-        {disabled ? "Processando imagem..." : "Enviar imagem da plantação"}
+        {disabled ? "Analisando as fileiras..." : "Enviar imagem das fileiras"}
       </span>
       <span className={styles.uploadDica}>
-        JPG ou PNG · Foto aérea, folha ou talhão
+        JPG ou PNG · Use uma foto aérea com as linhas do plantio visíveis
       </span>
 
       <div className={styles.uploadAcoes}>
@@ -65,7 +67,7 @@ export default function UploadImage({ onSelect, onCamera, disabled }) {
           disabled={disabled}
         >
           <span className="material-symbols-outlined" aria-hidden="true">center_focus_strong</span>
-          Capturar imagem
+          Fotografar plantação
         </button>
         <button
           type="button"
@@ -74,7 +76,7 @@ export default function UploadImage({ onSelect, onCamera, disabled }) {
           disabled={disabled}
         >
           <span className="material-symbols-outlined" aria-hidden="true">photo_library</span>
-          Selecionar da galeria
+          Escolher da galeria
         </button>
       </div>
 

@@ -1,69 +1,21 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useLocation } from "react-router-dom"
-import { addDoc, collection, getDocs } from "firebase/firestore"
+import { addDoc, collection, doc, getDocs, updateDoc } from "firebase/firestore"
 import { auth, db } from "../../services/firebase"
 import MenuBar from "../../components/App/Global/MenuBar"
+import DroneIcon from "../../components/App/Global/DroneIcon"
 import { ACCOUNT_ROLES } from "../../services/accessControl"
 import "../../styles/App/TeamAccess.css"
 
-const demoEmployees = [
-  {
-    id: "demo-1",
-    name: "Ana Paula",
-    position: "Operadora de drone",
-    sector: "Mapeamento",
-    status: "trabalhando",
-    entry: "07:20",
-    exit: "17:10",
-    hours: 8.6,
-    pending: 2,
-    active: 1,
-    done: 9,
-    daily: 91,
-    weekly: 86,
-    monthly: 88,
-    delays: 0,
-    absences: 0,
-    lastActivity: "Atualizou voo do Setor A12 há 18 min",
-  },
-  {
-    id: "demo-2",
-    name: "Carlos Mendes",
-    position: "Auxiliar de campo",
-    sector: "Plantio",
-    status: "pausa",
-    entry: "07:45",
-    exit: "17:30",
-    hours: 7.8,
-    pending: 4,
-    active: 2,
-    done: 5,
-    daily: 72,
-    weekly: 78,
-    monthly: 81,
-    delays: 1,
-    absences: 0,
-    lastActivity: "Registrou observação de umidade há 42 min",
-  },
-  {
-    id: "demo-3",
-    name: "Marina Costa",
-    position: "Técnica agrícola",
-    sector: "Diagnóstico",
-    status: "offline",
-    entry: "08:05",
-    exit: "16:58",
-    hours: 7.2,
-    pending: 1,
-    active: 0,
-    done: 7,
-    daily: 84,
-    weekly: 89,
-    monthly: 87,
-    delays: 2,
-    absences: 1,
-    lastActivity: "Finalizou diagnóstico foliar ontem",
-  },
+const DRONE_MODELS = [
+  "DJI Agras T10",
+  "DJI Agras T20P",
+  "DJI Agras T25",
+  "DJI Agras T30",
+  "DJI Agras T40",
+  "DJI Mavic 3 Multispectral",
+  "DJI Phantom 4 Multispectral",
+  "XAG P100 Pro",
 ]
 
 const statusLabels = {
@@ -74,12 +26,47 @@ const statusLabels = {
   ausente: "Ausente",
 }
 
+function getInitials(name = "") {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase()
+}
+
+function getTaskDate(task) {
+  const rawDate = task.completedAt || task.updatedAt || task.createdAt
+  if (!rawDate) return null
+  const date = rawDate?.toDate ? rawDate.toDate() : new Date(rawDate)
+  return Number.isNaN(date.getTime()) ? null : date
+}
+
+function getCompletionRate(tasks, periodInDays = null) {
+  const cutoff = periodInDays ? Date.now() - periodInDays * 24 * 60 * 60 * 1000 : null
+  const scopedTasks = cutoff
+    ? tasks.filter((task) => {
+        const date = getTaskDate(task)
+        return date && date.getTime() >= cutoff
+      })
+    : tasks
+
+  if (scopedTasks.length === 0) return null
+  const completed = scopedTasks.filter((task) => task.status === "concluida").length
+  return Math.round((completed / scopedTasks.length) * 100)
+}
+
 export default function AdminTeamDashboard() {
   const location = useLocation()
   const assignTaskRef = useRef(null)
   const taskInputRef = useRef(null)
-  const [employees, setEmployees] = useState(demoEmployees)
-  const [selectedId, setSelectedId] = useState(demoEmployees[0].id)
+  const newEmployeeFormRef = useRef(null)
+  const newEmployeeNameRef = useRef(null)
+  const droneSelectRef = useRef(null)
+  const [employees, setEmployees] = useState([])
+  const [selectedId, setSelectedId] = useState("")
+  const [isTeamLoading, setIsTeamLoading] = useState(true)
   const [filters, setFilters] = useState({ employee: "", sector: "todos", status: "todos", date: "" })
   const [taskTitle, setTaskTitle] = useState("")
   const [showNewEmployee, setShowNewEmployee] = useState(false)
@@ -88,43 +75,62 @@ export default function AdminTeamDashboard() {
     email: "",
     position: "",
     sector: "",
+    droneModel: "",
     role: ACCOUNT_ROLES.EMPLOYEE,
   })
 
   useEffect(() => {
     async function loadEmployees() {
       try {
-        const usersSnap = await getDocs(collection(db, "users"))
+        const [usersSnap, tasksSnap] = await Promise.all([
+          getDocs(collection(db, "users")),
+          getDocs(collection(db, "tasks")),
+        ])
+        const ownerId = auth.currentUser?.uid
         const employeeDocs = usersSnap.docs.filter((docSnap) => (
-          docSnap.data().role === ACCOUNT_ROLES.EMPLOYEE ||
-          docSnap.data().role === ACCOUNT_ROLES.COLLABORATOR
+          (docSnap.data().role === ACCOUNT_ROLES.EMPLOYEE ||
+            docSnap.data().role === ACCOUNT_ROLES.COLLABORATOR) &&
+          (docSnap.data().ownerId === ownerId || docSnap.data().teamId === ownerId)
         ))
+        const tasks = tasksSnap.docs.map((taskDoc) => ({ id: taskDoc.id, ...taskDoc.data() }))
 
         if (employeeDocs.length > 0) {
-          setEmployees(employeeDocs.map((docSnap, index) => ({
-            id: docSnap.id,
-            name: docSnap.data().name || "Funcionário",
-            position: docSnap.data().position || "Funcionário de campo",
-            sector: docSnap.data().sector || "Campo",
-            status: docSnap.data().status || "offline",
-            entry: docSnap.data().entry || "07:30",
-            exit: docSnap.data().exit || "17:30",
-            hours: docSnap.data().hours || 0,
-            pending: docSnap.data().pendingTasks || 0,
-            active: docSnap.data().activeTasks || 0,
-            done: docSnap.data().completedTasks || 0,
-            daily: docSnap.data().dailyProductivity || 0,
-            weekly: docSnap.data().weeklyProductivity || 0,
-            monthly: docSnap.data().monthlyProductivity || 0,
-            delays: docSnap.data().delays || 0,
-            absences: docSnap.data().absences || 0,
-            lastActivity: docSnap.data().lastActivity || "Sem atividade registrada",
-            colorIndex: index,
-          })))
+          setEmployees(employeeDocs.map((docSnap) => {
+            const data = docSnap.data()
+            const employeeTasks = tasks.filter((task) => task.employeeId === docSnap.id)
+
+            return {
+              id: docSnap.id,
+              name: data.name || "Funcionário",
+              position: data.position || "Funcionário de campo",
+              sector: data.sector || "Campo",
+              status: data.status || "offline",
+              entry: data.entry || "--:--",
+              exit: data.exit || "--:--",
+              hours: Number(data.hours) || 0,
+              pending: employeeTasks.filter((task) => task.status === "pendente").length,
+              active: employeeTasks.filter((task) => task.status === "andamento").length,
+              done: employeeTasks.filter((task) => task.status === "concluida").length,
+              productivity: getCompletionRate(employeeTasks),
+              daily: getCompletionRate(employeeTasks, 1),
+              weekly: getCompletionRate(employeeTasks, 7),
+              monthly: getCompletionRate(employeeTasks, 30),
+              tasks: employeeTasks,
+              delays: Number(data.delays) || 0,
+              absences: Number(data.absences) || 0,
+              lastActivity: data.lastActivity || "Sem atividade registrada",
+              droneModel: data.droneModel || "",
+            }
+          }))
           setSelectedId(employeeDocs[0].id)
+        } else {
+          setEmployees([])
+          setSelectedId("")
         }
       } catch (error) {
         console.error("Erro ao carregar equipe:", error)
+      } finally {
+        setIsTeamLoading(false)
       }
     }
 
@@ -140,9 +146,26 @@ export default function AdminTeamDashboard() {
     return byEmployee && bySector && byStatus
   }), [employees, filters])
 
-  const selected = employees.find((employee) => employee.id === selectedId) || filteredEmployees[0] || employees[0]
+  const selected = filteredEmployees.find((employee) => employee.id === selectedId) || filteredEmployees[0] || employees[0]
 
   useEffect(() => {
+    if (location.hash === "#novo-funcionario") {
+      setShowNewEmployee(true)
+      window.setTimeout(() => {
+        newEmployeeFormRef.current?.scrollIntoView({ behavior: "smooth", block: "center" })
+        newEmployeeNameRef.current?.focus()
+      }, 120)
+      return
+    }
+
+    if (location.hash === "#configurar-drone") {
+      window.setTimeout(() => {
+        droneSelectRef.current?.scrollIntoView({ behavior: "smooth", block: "center" })
+        droneSelectRef.current?.focus()
+      }, 120)
+      return
+    }
+
     if (location.hash !== "#nova-tarefa" || !assignTaskRef.current) return
 
     assignTaskRef.current.scrollIntoView({ behavior: "smooth", block: "center" })
@@ -153,22 +176,44 @@ export default function AdminTeamDashboard() {
     employees: employees.length,
     working: employees.filter((employee) => employee.status === "trabalhando" || employee.status === "online").length,
     pending: employees.reduce((sum, employee) => sum + employee.pending, 0),
-    productivity: Math.round(employees.reduce((sum, employee) => sum + employee.daily, 0) / Math.max(employees.length, 1)),
+    productivity: (() => {
+      const measured = employees.filter((employee) => employee.productivity !== null)
+      if (measured.length === 0) return null
+      return Math.round(measured.reduce((sum, employee) => sum + employee.productivity, 0) / measured.length)
+    })(),
   }), [employees])
 
   const assignTask = async () => {
     if (!taskTitle.trim() || !selected) return
 
     try {
-      await addDoc(collection(db, "tasks"), {
+      const taskPayload = {
         employeeId: selected.id,
         employeeName: selected.name,
         title: taskTitle.trim(),
         status: "pendente",
         priority: "Media",
         due: filters.date || "Sem prazo",
+        ownerId: auth.currentUser?.uid || "",
         createdAt: new Date().toISOString(),
-      })
+      }
+      const taskRef = await addDoc(collection(db, "tasks"), taskPayload)
+      setEmployees((current) => current.map((employee) => {
+        if (employee.id !== selected.id) return employee
+
+        const employeeTasks = [...(employee.tasks || []), { id: taskRef.id, ...taskPayload }]
+        return {
+          ...employee,
+          tasks: employeeTasks,
+          pending: employeeTasks.filter((task) => task.status === "pendente").length,
+          active: employeeTasks.filter((task) => task.status === "andamento").length,
+          done: employeeTasks.filter((task) => task.status === "concluida").length,
+          productivity: getCompletionRate(employeeTasks),
+          daily: getCompletionRate(employeeTasks, 1),
+          weekly: getCompletionRate(employeeTasks, 7),
+          monthly: getCompletionRate(employeeTasks, 30),
+        }
+      }))
       setTaskTitle("")
     } catch (error) {
       console.error("Erro ao atribuir tarefa:", error)
@@ -183,6 +228,7 @@ export default function AdminTeamDashboard() {
       email: newEmployee.email.trim().toLowerCase(),
       position: newEmployee.position.trim() || (newEmployee.role === ACCOUNT_ROLES.COLLABORATOR ? "Colaborador" : "Funcionário de campo"),
       sector: newEmployee.sector.trim() || "Campo",
+      droneModel: newEmployee.droneModel,
       role: newEmployee.role,
       ownerId: auth.currentUser?.uid || "",
       teamId: auth.currentUser?.uid || "",
@@ -190,12 +236,6 @@ export default function AdminTeamDashboard() {
       entry: "--:--",
       exit: "--:--",
       hours: 0,
-      pendingTasks: 0,
-      activeTasks: 0,
-      completedTasks: 0,
-      dailyProductivity: 0,
-      weeklyProductivity: 0,
-      monthlyProductivity: 0,
       delays: 0,
       absences: 0,
       lastActivity: "Cadastro criado pelo administrador",
@@ -214,9 +254,11 @@ export default function AdminTeamDashboard() {
         pending: 0,
         active: 0,
         done: 0,
-        daily: 0,
-        weekly: 0,
-        monthly: 0,
+        productivity: null,
+        daily: null,
+        weekly: null,
+        monthly: null,
+        tasks: [],
         delays: 0,
         absences: 0,
         lastActivity: employeePayload.lastActivity,
@@ -224,17 +266,38 @@ export default function AdminTeamDashboard() {
 
       setEmployees((current) => [createdEmployee, ...current])
       setSelectedId(docRef.id)
-      setNewEmployee({ name: "", email: "", position: "", sector: "", role: ACCOUNT_ROLES.EMPLOYEE })
+      setNewEmployee({ name: "", email: "", position: "", sector: "", droneModel: "", role: ACCOUNT_ROLES.EMPLOYEE })
       setShowNewEmployee(false)
     } catch (error) {
       console.error("Erro ao cadastrar funcionário:", error)
     }
   }
 
+  const updateDroneModel = async (droneModel) => {
+    if (!selected) return
+    const previousDroneModel = selected.droneModel
+
+    setEmployees((current) => current.map((employee) => (
+      employee.id === selected.id ? { ...employee, droneModel } : employee
+    )))
+
+    try {
+      await updateDoc(doc(db, "users", selected.id), {
+        droneModel,
+        updatedAt: new Date().toISOString(),
+      })
+    } catch (error) {
+      console.error("Erro ao atualizar modelo do drone:", error)
+      setEmployees((current) => current.map((employee) => (
+        employee.id === selected.id ? { ...employee, droneModel: previousDroneModel } : employee
+      )))
+    }
+  }
+
   return (
     <main className="team-page admin-page" data-system-bar-color="#f7f5f0">
       <section className="team-hero admin-hero">
-        <div>
+        <div className="team-hero-copy">
           <span className="team-kicker">Dashboard administrativo</span>
           <h1>Monitoramento da equipe</h1>
           <p>Controle status, tarefas, horários, produtividade e desempenho de cada funcionário.</p>
@@ -242,44 +305,67 @@ export default function AdminTeamDashboard() {
       </section>
 
       <section className="team-metrics">
-        <article><span>Funcionários</span><strong>{totals.employees}</strong></article>
-        <article><span>Em operação</span><strong>{totals.working}</strong></article>
-        <article><span>Tarefas pendentes</span><strong>{totals.pending}</strong></article>
-        <article><span>Produtividade média</span><strong>{totals.productivity}%</strong></article>
+        <article>
+          <span className="material-symbols-outlined" aria-hidden="true">groups</span>
+          <div><small>Funcionários</small><strong>{isTeamLoading ? "--" : totals.employees}</strong><p>Total na equipe</p></div>
+        </article>
+        <article>
+          <span className="material-symbols-outlined" aria-hidden="true">agriculture</span>
+          <div><small>Em operação</small><strong>{isTeamLoading ? "--" : totals.working}</strong><p>No momento</p></div>
+        </article>
+        <article>
+          <span className="material-symbols-outlined" aria-hidden="true">assignment</span>
+          <div><small>Tarefas pendentes</small><strong>{isTeamLoading ? "--" : totals.pending}</strong><p>Aguardando execução</p></div>
+        </article>
+        <article>
+          <span className="material-symbols-outlined" aria-hidden="true">monitoring</span>
+          <div><small>Produtividade média</small><strong>{isTeamLoading || totals.productivity === null ? "--" : `${totals.productivity}%`}</strong><p>Com base nas tarefas</p></div>
+        </article>
       </section>
 
       <section className="team-filters">
-        <input
-          value={filters.employee}
-          onChange={(event) => setFilters((current) => ({ ...current, employee: event.target.value }))}
-          placeholder="Filtrar funcionário"
-        />
-        <select value={filters.sector} onChange={(event) => setFilters((current) => ({ ...current, sector: event.target.value }))}>
-          {sectors.map((sector) => <option key={sector} value={sector}>{sector === "todos" ? "Todos os setores" : sector}</option>)}
-        </select>
-        <select value={filters.status} onChange={(event) => setFilters((current) => ({ ...current, status: event.target.value }))}>
-          <option value="todos">Todos os status</option>
-          {Object.entries(statusLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-        </select>
-        <input
-          type="date"
-          value={filters.date}
-          onChange={(event) => setFilters((current) => ({ ...current, date: event.target.value }))}
-        />
+        <label className="team-filter-field team-filter-search">
+          <span className="material-symbols-outlined" aria-hidden="true">search</span>
+          <input
+            value={filters.employee}
+            onChange={(event) => setFilters((current) => ({ ...current, employee: event.target.value }))}
+            placeholder="Filtrar funcionário"
+          />
+        </label>
+        <label className="team-filter-field">
+          <select value={filters.sector} onChange={(event) => setFilters((current) => ({ ...current, sector: event.target.value }))}>
+            {sectors.map((sector) => <option key={sector} value={sector}>{sector === "todos" ? "Todos os setores" : sector}</option>)}
+          </select>
+        </label>
+        <label className="team-filter-field">
+          <select value={filters.status} onChange={(event) => setFilters((current) => ({ ...current, status: event.target.value }))}>
+            <option value="todos">Todos os status</option>
+            {Object.entries(statusLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+          </select>
+        </label>
+        <label className="team-filter-field">
+          <input
+            type="date"
+            value={filters.date}
+            onChange={(event) => setFilters((current) => ({ ...current, date: event.target.value }))}
+          />
+        </label>
       </section>
 
       <section className="admin-grid">
-        <div className="team-panel">
+        <div className="team-panel team-roster-panel">
           <div className="team-section-header">
             <h2>Equipe</h2>
             <button className="team-link-btn" onClick={() => setShowNewEmployee((value) => !value)}>
+              <span className="material-symbols-outlined" aria-hidden="true">{showNewEmployee ? "close" : "add"}</span>
               {showNewEmployee ? "Fechar" : "Novo funcionário"}
             </button>
           </div>
 
           {showNewEmployee && (
-            <div className="new-employee-form">
+            <div className="new-employee-form" ref={newEmployeeFormRef}>
               <input
+                ref={newEmployeeNameRef}
                 value={newEmployee.name}
                 onChange={(event) => setNewEmployee((current) => ({ ...current, name: event.target.value }))}
                 placeholder="Nome do funcionário"
@@ -301,6 +387,14 @@ export default function AdminTeamDashboard() {
                 placeholder="Setor"
               />
               <select
+                value={newEmployee.droneModel}
+                onChange={(event) => setNewEmployee((current) => ({ ...current, droneModel: event.target.value }))}
+                aria-label="Modelo de drone do funcionário"
+              >
+                <option value="">Selecionar drone</option>
+                {DRONE_MODELS.map((model) => <option key={model} value={model}>{model}</option>)}
+              </select>
+              <select
                 value={newEmployee.role}
                 onChange={(event) => setNewEmployee((current) => ({ ...current, role: event.target.value }))}
               >
@@ -319,49 +413,89 @@ export default function AdminTeamDashboard() {
                 onClick={() => setSelectedId(employee.id)}
               >
                 <span className={`status-dot ${employee.status}`}></span>
-                <strong>{employee.name}</strong>
-                <span className="employee-position">{employee.position}</span>
-                <span className="employee-status">{statusLabels[employee.status] || employee.status}</span>
-                <span className="employee-productivity">{employee.daily}%</span>
+                <span className="employee-list-avatar">{getInitials(employee.name)}</span>
+                <span className="employee-identity">
+                  <strong>{employee.name}</strong>
+                  <small>{employee.position} · {employee.sector}</small>
+                </span>
+                <span className="employee-productivity">
+                  {employee.productivity === null ? "--" : `${employee.productivity}%`}
+                </span>
+                <span className="material-symbols-outlined employee-chevron" aria-hidden="true">chevron_right</span>
               </button>
             ))}
+            {filteredEmployees.length === 0 && (
+              <p className="team-empty-text">
+                {isTeamLoading ? "Carregando equipe..." : "Nenhum funcionário encontrado com esses filtros."}
+              </p>
+            )}
           </div>
         </div>
 
         {selected && (
           <aside className="team-panel employee-detail">
             <div className="detail-header">
-              <div className="employee-avatar">{selected.name.slice(0, 1)}</div>
-              <div>
+              <div className="employee-avatar">{getInitials(selected.name)}</div>
+              <div className="detail-identity">
                 <h2>{selected.name}</h2>
-                <p>{selected.position} • {selected.sector}</p>
+                <p>{selected.position} · {selected.sector}</p>
+                <span className={`detail-status ${selected.status}`}>
+                  <i></i>{statusLabels[selected.status] || selected.status}
+                </span>
               </div>
             </div>
 
             <div className="detail-stats">
-              <span>Entrada <strong>{selected.entry}</strong></span>
-              <span>Saída <strong>{selected.exit}</strong></span>
-              <span>Horas <strong>{selected.hours}h</strong></span>
-              <span>Atrasos <strong>{selected.delays}</strong></span>
-              <span>Faltas <strong>{selected.absences}</strong></span>
-              <span>Status <strong>{statusLabels[selected.status]}</strong></span>
+              <article><span className="material-symbols-outlined">schedule</span><div><small>Entrada</small><strong>{selected.entry}</strong></div></article>
+              <article><span className="material-symbols-outlined">schedule</span><div><small>Saída</small><strong>{selected.exit}</strong></div></article>
+              <article><span className="material-symbols-outlined">avg_time</span><div><small>Horas</small><strong>{selected.hours}h</strong></div></article>
+              <article><span className="material-symbols-outlined">calendar_today</span><div><small>Atrasos</small><strong>{selected.delays}</strong></div></article>
+              <article><span className="material-symbols-outlined">event_busy</span><div><small>Faltas</small><strong>{selected.absences}</strong></div></article>
+              <article><span className="material-symbols-outlined">map</span><div><small>Setor</small><strong>{selected.sector}</strong></div></article>
             </div>
 
-            <div className="productivity-bars">
-              {[
-                ["Diária", selected.daily],
-                ["Semanal", selected.weekly],
-                ["Mensal", selected.monthly],
-              ].map(([label, value]) => (
-                <div key={label}>
-                  <span>{label}</span>
-                  <div><i style={{ width: `${value}%` }}></i></div>
-                  <strong>{value}%</strong>
+            <div className="last-activity">
+              <span className="material-symbols-outlined" aria-hidden="true">deployed_code_history</span>
+              <div><small>Última atividade</small><strong>{selected.lastActivity}</strong></div>
+            </div>
+
+            <div className="detail-performance-grid">
+              <article className="productivity-card">
+                <small>Produtividade pelas tarefas</small>
+                <strong>{selected.productivity === null ? "--" : `${selected.productivity}%`}</strong>
+                <p>{selected.productivity === null ? "Sem tarefas registradas" : "Tarefas concluídas no período"}</p>
+                <div className="productivity-bars">
+                  {[
+                    ["Dia", selected.daily],
+                    ["Semana", selected.weekly],
+                    ["Mês", selected.monthly],
+                  ].map(([label, value]) => (
+                    <div key={label} title={value === null ? `${label}: sem dados` : `${label}: ${value}%`}>
+                      <i style={{ height: value === null ? "0" : `${value}%` }}></i>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </article>
+              <article className="drone-operation-card">
+                <DroneIcon />
+                <div>
+                  <small>Drone utilizado</small>
+                  <select
+                    ref={droneSelectRef}
+                    value={selected.droneModel}
+                    onChange={(event) => updateDroneModel(event.target.value)}
+                    aria-label={`Selecionar drone de ${selected.name}`}
+                  >
+                    <option value="">Selecionar modelo</option>
+                    {selected.droneModel && !DRONE_MODELS.includes(selected.droneModel) && (
+                      <option value={selected.droneModel}>{selected.droneModel}</option>
+                    )}
+                    {DRONE_MODELS.map((model) => <option key={model} value={model}>{model}</option>)}
+                  </select>
+                  <p>{selected.droneModel ? "Modelo salvo" : "Nenhum drone selecionado"}</p>
+                </div>
+              </article>
             </div>
-
-            <p className="last-activity"><strong>Última atividade:</strong> {selected.lastActivity}</p>
 
             <div className="assign-task" id="nova-tarefa" ref={assignTaskRef}>
               <input
@@ -374,9 +508,9 @@ export default function AdminTeamDashboard() {
             </div>
 
             <div className="detail-actions">
-              <button>Editar prazo</button>
-              <button>Enviar aviso</button>
-              <button>Gerar relatório</button>
+              <button><span className="material-symbols-outlined">edit_calendar</span> Editar prazo</button>
+              <button><span className="material-symbols-outlined">notifications</span> Enviar aviso</button>
+              <button><span className="material-symbols-outlined">description</span> Relatório</button>
             </div>
           </aside>
         )}

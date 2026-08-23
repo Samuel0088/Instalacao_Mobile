@@ -56,7 +56,7 @@ export default function ActivitiesList({ hasFarm, onViewAll, onRegister }) {
     <div className="activities-list">
       {/* Último Diagnóstico - Agora vai para Atividades */}
       {recentDiagnostics.length > 0 && (
-        <div className="activity-card glass" onClick={goToActivities}>
+        <div className="activity-card" onClick={goToActivities}>
           <div className="activity-icon atividades">
             <span className="material-symbols-outlined">assignment</span>
             <div className="icon-pulse"></div>
@@ -85,7 +85,7 @@ export default function ActivitiesList({ hasFarm, onViewAll, onRegister }) {
 
       {/* Mais Diagnósticos - Vai para o histórico */}
       {recentDiagnostics.length > 1 && (
-        <div className="activity-card glass" onClick={goToHistory}>
+        <div className="activity-card" onClick={goToHistory}>
           <div className="activity-icon diagnosticos">
             <span className="material-symbols-outlined">history</span>
             <div className="icon-pulse"></div>
@@ -118,7 +118,7 @@ export default function ActivitiesList({ hasFarm, onViewAll, onRegister }) {
       )}
 
       {/* Voo de Mapeamento - Vai para o mapa */}
-      <div className="activity-card glass" onClick={goToMap}>
+      <div className="activity-card" onClick={goToMap}>
         <div className="activity-icon mapeamento">
           <DroneIcon className="activity-drone-icon" />
           <div className="icon-pulse"></div>

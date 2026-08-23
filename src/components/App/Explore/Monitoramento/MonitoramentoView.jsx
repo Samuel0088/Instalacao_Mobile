@@ -73,16 +73,17 @@ export default function MonitoramentoView() {
 
   return (
     <div className={styles.container}>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* Cabeçalho                                                           */}
-      {/* ------------------------------------------------------------------ */}
-      <div className={styles.cabecalho}>
-        <h2 className={styles.titulo}>Monitoramento de Plantação</h2>
-        <p className={styles.subtitulo}>
-          Análise visual por imagem aérea ou galeria
-        </p>
-      </div>
+      <section className={styles.hero}>
+        <div className={styles.cabecalho}>
+          <h2 className={styles.titulo}>
+            <span>Alinhamento da</span>
+            <span>Plantação</span>
+          </h2>
+          <p className={styles.subtitulo}>
+            Analise o alinhamento e a uniformidade das fileiras
+          </p>
+        </div>
+      </section>
 
       {/* ------------------------------------------------------------------ */}
       {/* Upload — sempre visível                                             */}

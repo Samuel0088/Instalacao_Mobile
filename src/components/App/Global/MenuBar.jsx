@@ -7,10 +7,16 @@ import "../../../styles/Global/MenuBar.css"
 
 const adminItems = [
   { path: "/home", icon: "home", label: "Início" },
-  { path: "/explore", icon: "psychiatry", label: "Lavouras" },
-  { path: "/admin/team", hash: "#nova-tarefa", icon: "add", label: "Nova tarefa", isPrimary: true },
+  { path: "/admin/team", icon: "groups", label: "Equipe" },
+  { action: "create", icon: "add", label: "Adicionar", isPrimary: true },
   { path: "/explore", hash: "#mapa", icon: "grid_view", label: "Mapa" },
   { path: "/profile", icon: "person", label: "Perfil" },
+]
+
+const createActions = [
+  { path: "/admin/team", hash: "#novo-funcionario", icon: "person_add", label: "Novo funcionário" },
+  { path: "/admin/team", hash: "#nova-tarefa", icon: "assignment_add", label: "Nova tarefa" },
+  { path: "/admin/team", hash: "#configurar-drone", icon: "flight", label: "Configurar drone" },
 ]
 
 const employeeItems = [
@@ -23,19 +29,44 @@ export default function MenuBar() {
   const location  = useLocation()
   const lastScrollYRef = useRef(0)
   const tickingRef = useRef(false)
+  const createMenuRef = useRef(null)
   const [isVisible, setIsVisible] = useState(true)
+  const [isCreateMenuOpen, setIsCreateMenuOpen] = useState(false)
   const [role, setRole] = useState(ACCOUNT_ROLES.ADMIN)
   const items = isOperationalRole(role) ? employeeItems : adminItems
-  const isActive = ({ path, hash, isPrimary }) => {
-    if (isPrimary) return location.pathname === path && location.hash === hash
+  const isActive = ({ path, hash, action }) => {
+    if (action) return false
     if (hash) return location.pathname === path && location.hash === hash
     return location.pathname === path && !location.hash
   }
   const goToInternalPage = ({ path, hash }) => {
+    setIsCreateMenuOpen(false)
     if (location.pathname === path && location.hash === (hash || "")) return
     sessionStorage.setItem("zenithShowWhiteLoaderOnce", "true")
     navigate(`${path}${hash || ""}`)
   }
+
+  useEffect(() => {
+    if (!isCreateMenuOpen) return undefined
+
+    const closeMenu = (event) => {
+      if (!createMenuRef.current?.contains(event.target)) setIsCreateMenuOpen(false)
+    }
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") setIsCreateMenuOpen(false)
+    }
+
+    document.addEventListener("pointerdown", closeMenu)
+    document.addEventListener("keydown", closeOnEscape)
+    return () => {
+      document.removeEventListener("pointerdown", closeMenu)
+      document.removeEventListener("keydown", closeOnEscape)
+    }
+  }, [isCreateMenuOpen])
+
+  useEffect(() => {
+    setIsCreateMenuOpen(false)
+  }, [location.pathname, location.hash])
 
   useEffect(() => {
     const shouldKeepVisible = window.matchMedia("(max-width: 768px), (pointer: coarse)").matches
@@ -93,21 +124,36 @@ export default function MenuBar() {
   }, [])
 
   return (
-    <nav className={`nav ${isVisible ? "nav--visible" : "nav--hidden"}`}>
+    <nav
+      ref={createMenuRef}
+      className={`nav ${isVisible ? "nav--visible" : "nav--hidden"}${isCreateMenuOpen ? " nav--create-open" : ""}`}
+    >
+      {isCreateMenuOpen && !isOperationalRole(role) && (
+        <div className="nav__create-menu" role="menu" aria-label="Ações da equipe">
+          {createActions.map((action) => (
+            <button key={action.hash} type="button" role="menuitem" onClick={() => goToInternalPage(action)}>
+              <span className="material-symbols-outlined" aria-hidden="true">{action.icon}</span>
+              <span>{action.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
       <ul className="nav__items" style={{ "--nav-item-count": items.length }}>
         {items.map((item) => {
-          const { path, hash, icon, label, isPrimary } = item
+          const { path, hash, action, icon, label, isPrimary } = item
           const active = isActive(item)
           return (
             <li
-              key={`${path}${hash || ""}`}
+              key={action || `${path}${hash || ""}`}
               className={`nav__item${active ? " nav__item--active" : ""}${isPrimary ? " nav__item--primary" : ""}`}
             >
               <button
                 className={`nav__item-btn${active ? " nav__item-btn--active" : ""}${isPrimary ? " nav__item-btn--primary" : ""}`}
-                onClick={() => goToInternalPage(item)}
+                onClick={() => action === "create" ? setIsCreateMenuOpen((open) => !open) : goToInternalPage(item)}
                 aria-current={active ? "page" : undefined}
                 aria-label={label}
+                aria-expanded={action === "create" ? isCreateMenuOpen : undefined}
+                aria-haspopup={action === "create" ? "menu" : undefined}
               >
                 <span className="material-symbols-outlined">{icon}</span>
                 {!isPrimary && <span className="nav__label">{label}</span>}

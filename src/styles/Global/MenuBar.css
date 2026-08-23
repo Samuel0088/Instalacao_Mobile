@@ -598,3 +598,61 @@ body:has(.home-shell) .nav {
     width: min(calc(100vw - 20px), 398px);
   }
 }
+
+.nav__create-menu {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  width: min(248px, calc(100vw - 24px));
+  display: grid;
+  gap: 6px;
+  padding: 7px;
+  border: 1px solid rgba(45, 97, 64, 0.14);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 16px 34px rgba(23, 51, 38, 0.2);
+  transform: translateX(-50%);
+}
+
+.nav__create-menu button {
+  width: 100%;
+  min-height: 44px;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 9px;
+  padding: 5px 9px;
+  border: 0;
+  border-radius: 6px;
+  background: #f3f8f1;
+  color: #173326;
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-align: left;
+}
+
+.nav__create-menu button:hover,
+.nav__create-menu button:focus-visible {
+  outline: none;
+  background: #e5f2e5;
+}
+
+.nav__create-menu button .material-symbols-outlined {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #dceede;
+  color: #2d6140;
+  font-size: 19px;
+}
+
+.nav__item-btn--primary .material-symbols-outlined {
+  transition: transform 180ms ease;
+}
+
+.nav--create-open .nav__item-btn--primary .material-symbols-outlined {
+  transform: rotate(45deg);
+}

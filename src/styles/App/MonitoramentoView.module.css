@@ -948,3 +948,211 @@
     width: 100%;
   }
 }
+
+/* Experiência clara de Plantio. */
+.container {
+  --n-bg: #f4f9ef;
+  --n-card: #ffffff;
+  --n-card-solid: #ffffff;
+  --n-glass: rgba(45, 97, 64, 0.04);
+  --n-border: rgba(45, 97, 64, 0.1);
+  --n-border-md: rgba(45, 97, 64, 0.18);
+  --n-text: #173326;
+  --n-text-secondary: #4a6254;
+  --n-text-muted: #718076;
+  --n-shadow: 0 12px 28px rgba(15, 35, 24, 0.1);
+  --n-shadow-sm: 0 3px 10px rgba(15, 35, 24, 0.08);
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 10px calc(106px + env(safe-area-inset-bottom, 0px));
+  min-height: calc(100vh - 58px);
+  background-color: #f4f9ef;
+  background-image:
+    linear-gradient(180deg, rgba(244, 249, 239, 0.08) 0%, rgba(244, 249, 239, 0) 68%, rgba(244, 249, 239, 0) 100%),
+    url("/assets/image/imagem-fundo-plantio.png");
+  background-position: center, center center;
+  background-size: 100% 100%, auto 105%;
+  background-repeat: no-repeat;
+  color: var(--n-text);
+}
+
+.hero {
+  position: relative;
+  min-height: 260px;
+  margin: 0 -10px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 20px 52px;
+  background: transparent;
+}
+
+.cabecalho {
+  position: relative;
+  z-index: 1;
+  width: min(390px, 100%);
+  margin: 0;
+  text-align: center;
+}
+
+.titulo {
+  display: block;
+  max-width: none;
+  margin: 0 auto 9px;
+  background: none;
+  color: #215b38;
+  font-size: 2.15rem;
+  font-weight: 850;
+  line-height: 1.04;
+  letter-spacing: 0;
+  -webkit-text-fill-color: currentColor;
+}
+
+.titulo span {
+  display: block;
+}
+
+.titulo::after {
+  bottom: -12px;
+  width: 42px;
+  filter: none;
+}
+
+.subtitulo {
+  margin: 27px 0 0;
+  color: #6f7d73;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.uploadArea {
+  gap: 8px;
+  box-sizing: border-box;
+  width: min(500px, calc(100% - 56px));
+  max-width: 540px;
+  margin: -68px auto 22px;
+  padding: 26px 24px 22px;
+  border: 1px solid rgba(45, 97, 64, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 14px 28px rgba(15, 35, 24, 0.12);
+}
+
+.uploadArea::before {
+  inset: 10px;
+  border-radius: 7px;
+}
+
+.uploadArea:hover,
+.uploadArea:focus-visible {
+  border-color: rgba(45, 97, 64, 0.3);
+  transform: none;
+  box-shadow: 0 14px 28px rgba(15, 35, 24, 0.12);
+}
+
+.uploadVisual {
+  width: 154px;
+  height: 132px;
+  margin-bottom: 5px;
+  border: 0;
+  border-radius: 50%;
+  background-image:
+    linear-gradient(180deg, rgba(244, 249, 239, 0.12), rgba(244, 249, 239, 0.5)),
+    url("/assets/image/imagem-fundo-plantio.png");
+  background-position: center 70%;
+  background-size: cover;
+  box-shadow: none;
+}
+
+.uploadVisual::before,
+.uploadVisual::after {
+  display: none;
+}
+
+.uploadVisual img {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 116px;
+  height: 116px;
+  object-fit: contain;
+  opacity: 1;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 8px 8px rgba(15, 35, 24, 0.18));
+}
+
+.uploadAcoes {
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+
+.uploadAcao {
+  width: 100%;
+  min-height: 44px;
+  border-radius: 8px;
+}
+
+.uploadAcao:hover:not(:disabled) {
+  transform: none;
+  box-shadow: none;
+}
+
+.uploadAcaoSecundaria {
+  background: #ffffff;
+}
+
+.loadingTexto,
+.metricaAnelValor {
+  color: var(--n-text);
+}
+
+.imagemCard,
+.painelMetricas {
+  border-color: var(--n-border);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: var(--n-shadow-sm);
+}
+
+.imagemWrapper {
+  background: #edf4e9;
+}
+
+.botaoNova {
+  border-radius: 8px;
+  background: #ffffff;
+  color: #2d6140;
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 8px calc(100px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .hero {
+    min-height: 259px;
+    margin: 0 -8px;
+    padding: 36px 16px 52px;
+  }
+
+  .titulo {
+    font-size: 1.9rem;
+  }
+
+  .uploadArea {
+    width: calc(100% - 56px);
+    padding: 20px 16px 18px;
+    border-radius: 8px;
+  }
+
+  .uploadArea::before {
+    border-radius: 7px;
+  }
+
+  .uploadVisual {
+    width: 136px;
+    height: 116px;
+    border-radius: 50%;
+  }
+}

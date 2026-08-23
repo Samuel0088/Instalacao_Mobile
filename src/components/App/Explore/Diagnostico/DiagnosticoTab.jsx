@@ -404,13 +404,14 @@ export default function DiagnosticoTab() {
 
   return (
     <div className="diagnostic-container">
-      <div className="diagnostic-header">
-        <div className="header-glow"></div>
-        <h1 className="diagnostico-title">Diagnóstico</h1>
-        <p>
-          Identifique doenças em plantas com{" "}
-          <span className="highlight">inteligência artificial</span>
-        </p>
+      <div className="diagnostic-hero">
+        <div className="diagnostic-header">
+          <h1 className="diagnostico-title">Diagnóstico</h1>
+          <p>
+            Identifique doenças em plantas com{" "}
+            <span className="highlight">inteligência artificial.</span>
+          </p>
+        </div>
       </div>
 
       {selectionNotice?.text && (
@@ -437,8 +438,7 @@ export default function DiagnosticoTab() {
             <h3>Tirar foto</h3>
             <p>Capture uma imagem agora</p>
             <div className="card-action">
-              <span>Usar câmera</span>
-              <span className="arrow">→</span>
+              <span className="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
             </div>
           </button>
         )}
@@ -463,8 +463,7 @@ export default function DiagnosticoTab() {
           <h3>Galeria</h3>
           <p>Escolha até 100 imagens</p>
           <div className="card-action">
-            <span>Selecionar</span>
-            <span className="arrow">→</span>
+            <span className="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
           </div>
         </button>
       </div>
@@ -473,7 +472,7 @@ export default function DiagnosticoTab() {
         <div className="section-header">
           <div className="section-title">
             <span className="material-symbols-outlined">history</span>
-            <h3>Histórico de Diagnósticos</h3>
+            <h3>Histórico de diagnósticos</h3>
           </div>
           <button type="button" className="section-link" onClick={viewAllHistory}>
             Ver todos
@@ -541,17 +540,20 @@ export default function DiagnosticoTab() {
         )}
       </div>
 
-      <div className="tips-card">
-        <div className="tips-header">
-          <span className="material-symbols-outlined">
-            tips_and_updates
-          </span>
-          <h4>Dica</h4>
+      <div className="tips-card diagnostic-tip-card">
+        <div className="diagnostic-tip-copy">
+          <div className="tips-header">
+            <span className="material-symbols-outlined">
+              tips_and_updates
+            </span>
+            <h4>Dica</h4>
+          </div>
+          <p>
+            Fotografe a folha com boa iluminação e mantenha a câmera
+            estável para melhor resultado
+          </p>
         </div>
-        <p>
-          Fotografe a folha com boa iluminação e mantenha a câmera
-          estável para melhor resultado
-        </p>
+        <img src="/assets/image/soja-intro.jpg" alt="Folhas de soja no campo" />
       </div>
 
       {galleryInput}

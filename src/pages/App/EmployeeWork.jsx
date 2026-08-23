@@ -7,18 +7,12 @@ import MenuBar from "../../components/App/Global/MenuBar"
 import { ACCOUNT_ROLES } from "../../services/accessControl"
 import "../../styles/App/TeamAccess.css"
 
-const fallbackTasks = [
-  { id: "t1", title: "Inspecionar Setor A12", status: "andamento", due: "Hoje, 16:00", priority: "Alta" },
-  { id: "t2", title: "Registrar umidade do solo", status: "pendente", due: "Hoje, 17:30", priority: "Media" },
-  { id: "t3", title: "Enviar observacao do plantio", status: "concluida", due: "Ontem", priority: "Baixa" },
-]
-
 export default function EmployeeWork() {
   const navigate = useNavigate()
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
   const [farmData, setFarmData] = useState(null)
-  const [tasks, setTasks] = useState(fallbackTasks)
+  const [tasks, setTasks] = useState([])
   const [workStatus, setWorkStatus] = useState("trabalhando")
   const [note, setNote] = useState("")
   const [saving, setSaving] = useState(false)
@@ -68,23 +62,21 @@ export default function EmployeeWork() {
 
       const taskQuery = query(collection(db, "tasks"), where("employeeId", "==", currentUser.uid))
       const taskSnap = await getDocs(taskQuery)
-      if (!taskSnap.empty) {
-        setTasks(taskSnap.docs.map((taskDoc) => ({ id: taskDoc.id, ...taskDoc.data() })))
-      }
+      setTasks(taskSnap.docs.map((taskDoc) => ({ id: taskDoc.id, ...taskDoc.data() })))
     })
 
     return () => unsubscribe()
   }, [navigate])
 
   const stats = useMemo(() => {
-    const total = tasks.length || 1
+    const total = tasks.length
     const done = tasks.filter((task) => task.status === "concluida").length
 
     return {
       pending: tasks.filter((task) => task.status === "pendente").length,
       active: tasks.filter((task) => task.status === "andamento").length,
       done,
-      productivity: Math.round((done / total) * 100),
+      productivity: total === 0 ? null : Math.round((done / total) * 100),
     }
   }, [tasks])
 
@@ -94,12 +86,11 @@ export default function EmployeeWork() {
     setTasks((current) => current.map((task) => task.id === taskId ? { ...task, status } : task))
 
     try {
-      if (!String(taskId).startsWith("t")) {
-        await updateDoc(doc(db, "tasks", taskId), {
-          status,
-          updatedAt: new Date().toISOString(),
-        })
-      }
+      await updateDoc(doc(db, "tasks", taskId), {
+        status,
+        updatedAt: new Date().toISOString(),
+        ...(status === "concluida" ? { completedAt: new Date().toISOString() } : {}),
+      })
     } catch (error) {
       console.error("Erro ao atualizar tarefa:", error)
     }
@@ -152,9 +143,9 @@ export default function EmployeeWork() {
 
         <div className="employee-clock-card">
           <span>Entrada</span>
-          <strong>07:30</strong>
+          <strong>{profile?.entry || "--:--"}</strong>
           <span>Saída prevista</span>
-          <strong>17:30</strong>
+          <strong>{profile?.exit || "--:--"}</strong>
         </div>
       </section>
 
@@ -174,7 +165,7 @@ export default function EmployeeWork() {
         <article><span>Pendentes</span><strong>{stats.pending}</strong></article>
         <article><span>Em andamento</span><strong>{stats.active}</strong></article>
         <article><span>Concluídas</span><strong>{stats.done}</strong></article>
-        <article><span>Produtividade</span><strong>{stats.productivity}%</strong></article>
+        <article><span>Produtividade</span><strong>{stats.productivity === null ? "--" : `${stats.productivity}%`}</strong></article>
       </section>
 
       <section className="team-panel employee-farm-panel">
@@ -218,7 +209,7 @@ export default function EmployeeWork() {
             <article className="task-card" key={task.id}>
               <div>
                 <strong>{task.title}</strong>
-                <p>Prazo: {task.due || "Sem prazo"} • Prioridade: {task.priority || "Media"}</p>
+                <p>Prazo: {task.due || "Sem prazo"} • Prioridade: {task.priority || "Não informada"}</p>
               </div>
               <select value={task.status} onChange={(event) => updateTaskStatus(task.id, event.target.value)}>
                 <option value="pendente">Pendente</option>
@@ -227,6 +218,7 @@ export default function EmployeeWork() {
               </select>
             </article>
           ))}
+          {tasks.length === 0 && <p className="team-empty-text">Nenhuma tarefa atribuída.</p>}
         </div>
       </section>
 

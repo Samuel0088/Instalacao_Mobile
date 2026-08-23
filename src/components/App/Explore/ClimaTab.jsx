@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { useFarm } from "./hooks/useFarm"
 import "../../../styles/App/Explore.css"
+import "../../../styles/App/ClimaTab.css"
 
 const API_KEY = "d77668673cf15b7d0488f921007cbd6b"
 
@@ -10,6 +11,7 @@ export default function ClimaTab() {
   const [weatherData, setWeatherData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [expandedRecommendation, setExpandedRecommendation] = useState(null)
 
   const fetchWeather = async () => {
     if (!farmData) {
@@ -272,186 +274,137 @@ export default function ClimaTab() {
   }
 
   const recommendations = getRecommendations()
+  const updatedTime = new Date().toLocaleTimeString("pt-BR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  })
   const getRecommendationAccent = (type) => {
     if (type === "warning") return "#ffaa00"
     if (type === "success") return "#56a870"
     return "#0066ff"
   }
 
+  const getRecommendationDetails = (title) => {
+    if (title === "Solo seco" || title === "Alta umidade") {
+      return `Umidade atual de ${weatherData.humidity}% e chuva de ${weatherData.rain} mm na última hora.`
+    }
+    if (title === "Calor intenso" || title === "Temperatura baixa") {
+      return `Temperatura atual de ${weatherData.temperature}°C, com sensação de ${weatherData.feelsLike}°C.`
+    }
+    if (title === "Vento forte") {
+      return `Vento atual de ${weatherData.windSpeed} m/s, com rajadas de ${weatherData.windGust} m/s.`
+    }
+    if (title === "Chuva forte") {
+      return `Volume registrado de ${weatherData.rain} mm na última hora.`
+    }
+    return `Temperatura de ${weatherData.temperature}°C, umidade de ${weatherData.humidity}% e vento de ${weatherData.windSpeed} m/s.`
+  }
+
   return (
-    <div style={styles.container}>
-      {/* CARD PRINCIPAL */}
-      <div style={styles.mainCard}>
-        <div style={styles.mainCardHeader}>
-          <div>
-            <h1 style={styles.cityName}>{weatherData.city}</h1>
-            <p style={styles.date}>
-              <span className="material-symbols-outlined" style={{ fontSize: '14px', marginRight: '4px', verticalAlign: 'middle' }}>calendar_today</span>
-              {weatherData.date}
-            </p>
-          </div>
-          <div style={styles.weatherIcon}>
-            <span
-              className="material-symbols-outlined"
-              aria-label={weatherData.description}
-              style={styles.weatherSymbol}
-            >
-              {getWeatherSymbol(weatherData.icon)}
-            </span>
-            <p style={styles.weatherDesc}>{weatherData.description}</p>
-          </div>
-        </div>
+    <div className="climate-dashboard">
+      <section className="climate-hero">
+        <header className="climate-location">
+          <h1>{weatherData.city}, {weatherData.state}</h1>
+          <p>
+            <span className="material-symbols-outlined" aria-hidden="true">calendar_today</span>
+            {weatherData.date}
+          </p>
+        </header>
 
-        {/* TEMPERATURA PRINCIPAL */}
-        <div style={styles.tempSection}>
-          <div style={styles.tempCircle}>
-            <span style={styles.tempValue}>{weatherData.temperature}</span>
-            <span style={styles.tempUnit}>°C</span>
-          </div>
-          
-          <div style={styles.tempDetails}>
-            <div style={styles.tempDetail}>
-              <span className="material-symbols-outlined" style={{ fontSize: '20px', color: 'var(--primary)' }}>thermostat</span>
-              <span>Sensação {weatherData.feelsLike}°</span>
+        <div className="climate-overview-card">
+          <div className="climate-reading">
+            <div className="climate-condition">
+              <img
+                src={`https://openweathermap.org/img/wn/${weatherData.icon}@2x.png`}
+                alt={weatherData.description}
+              />
+              <strong>{weatherData.description}</strong>
             </div>
-            <div style={styles.tempRange}>
-              <div style={styles.tempRangeItem}>
-                <span style={styles.tempRangeLabel}>Mínima</span>
-                <span style={styles.tempMin}>
-                  <span className="material-symbols-outlined" style={styles.tempRangeIcon}>arrow_downward</span>
-                  {weatherData.tempMin}°
-                </span>
-              </div>
-              <div style={styles.tempRangeItem}>
-                <span style={styles.tempRangeLabel}>Máxima</span>
-                <span style={styles.tempMax}>
-                  <span className="material-symbols-outlined" style={styles.tempRangeIcon}>arrow_upward</span>
-                  {weatherData.tempMax}°
-                </span>
-              </div>
+            <div className="climate-temperature" aria-label={`${weatherData.temperature} graus Celsius`}>
+              <strong>{weatherData.temperature}</strong>
+              <span>°C</span>
+            </div>
+          </div>
+
+          <div className="climate-highlights">
+            <div>
+              <span className="material-symbols-outlined climate-min-icon">arrow_downward</span>
+              <small>Mínima</small>
+              <strong>{weatherData.tempMin}°</strong>
+            </div>
+            <div>
+              <span className="material-symbols-outlined climate-max-icon">arrow_upward</span>
+              <small>Máxima</small>
+              <strong>{weatherData.tempMax}°</strong>
             </div>
           </div>
         </div>
+      </section>
 
-        {/* GRID DE ESTATÍSTICAS */}
-        <div style={styles.statsGrid}>
-          <div style={styles.statCard}>
-            <span className="material-symbols-outlined" style={styles.statIcon}>humidity_percentage</span>
-            <div style={styles.statInfo}>
-              <span style={styles.statLabel}>Umidade</span>
-              <strong style={styles.statValue}>{weatherData.humidity}%</strong>
+      <section className="climate-stats" aria-label="Detalhes meteorológicos">
+        {[
+          ["humidity_percentage", "Umidade", `${weatherData.humidity}%`],
+          ["air", "Vento", `${weatherData.windSpeed} m/s`, getWindDirection(weatherData.windDeg)],
+          ["speed", "Pressão", `${weatherData.pressure} hPa`],
+          ["rainy", "Chuva", `${weatherData.rain} mm`],
+          ["airwave", "Rajada", `${weatherData.windGust} m/s`],
+          ["visibility", "Visibilidade", `${weatherData.visibility} km`],
+          ["cloud", "Nuvens", `${weatherData.clouds}%`],
+          ["wb_twilight", "Nascer", weatherData.sunrise],
+          ["wb_twilight", "Pôr", weatherData.sunset],
+        ].map(([icon, label, value, detail]) => (
+          <article className="climate-stat-card" key={label}>
+            <span className="material-symbols-outlined" aria-hidden="true">{icon}</span>
+            <div>
+              <small>{label}</small>
+              <strong>{value}</strong>
+              {detail && <em>{detail}</em>}
             </div>
-          </div>
+          </article>
+        ))}
+      </section>
 
-          <div style={styles.statCard}>
-            <span className="material-symbols-outlined" style={styles.statIcon}>air</span>
-            <div style={styles.statInfo}>
-              <span style={styles.statLabel}>Vento</span>
-              <div>
-                <strong style={styles.statValue}>{weatherData.windSpeed} m/s</strong>
-                <span style={styles.statSub}>{getWindDirection(weatherData.windDeg)}</span>
-              </div>
-            </div>
-          </div>
-
-          <div style={styles.statCard}>
-            <span className="material-symbols-outlined" style={styles.statIcon}>speed</span>
-            <div style={styles.statInfo}>
-              <span style={styles.statLabel}>Pressão</span>
-              <strong style={styles.statValue}>{weatherData.pressure} hPa</strong>
-            </div>
-          </div>
-
-          <div style={styles.statCard}>
-            <span className="material-symbols-outlined" style={styles.statIcon}>rainy</span>
-            <div style={styles.statInfo}>
-              <span style={styles.statLabel}>Chuva</span>
-              <strong style={styles.statValue}>{weatherData.rain} mm</strong>
-            </div>
-          </div>
-
-          <div style={styles.statCard}>
-            <span className="material-symbols-outlined" style={styles.statIcon}>airwave</span>
-            <div style={styles.statInfo}>
-              <span style={styles.statLabel}>Rajada</span>
-              <strong style={styles.statValue}>{weatherData.windGust} m/s</strong>
-            </div>
-          </div>
-
-          <div style={styles.statCard}>
-            <span className="material-symbols-outlined" style={styles.statIcon}>visibility</span>
-            <div style={styles.statInfo}>
-              <span style={styles.statLabel}>Visibilidade</span>
-              <strong style={styles.statValue}>{weatherData.visibility} km</strong>
-            </div>
-          </div>
-
-          <div style={styles.statCard}>
-            <span className="material-symbols-outlined" style={styles.statIcon}>cloud</span>
-            <div style={styles.statInfo}>
-              <span style={styles.statLabel}>Nuvens</span>
-              <strong style={styles.statValue}>{weatherData.clouds}%</strong>
-            </div>
-          </div>
-
-          <div style={styles.statCard}>
-            <span className="material-symbols-outlined" style={styles.statIcon}>sunny</span>
-            <div style={styles.statInfo}>
-              <span style={styles.statLabel}>Nascer</span>
-              <strong style={styles.statValue}>{weatherData.sunrise}</strong>
-            </div>
-          </div>
-
-          <div style={styles.statCard}>
-            <span className="material-symbols-outlined" style={styles.statIcon}>nightlight</span>
-            <div style={styles.statInfo}>
-              <span style={styles.statLabel}>Pôr</span>
-              <strong style={styles.statValue}>{weatherData.sunset}</strong>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* RECOMENDAÇÕES - AGORA SEMPRE APARECE */}
-      <div style={styles.recommendationsCard}>
-        <h3 style={styles.recommendationsTitle}>
-          <span className="material-symbols-outlined" style={{ fontSize: '24px', color: 'var(--primary)' }}>psychology</span>
+      <section className="climate-recommendations">
+        <h2>
+          <span className="material-symbols-outlined" aria-hidden="true">eco</span>
           Recomendações
-        </h3>
-        
-        <div style={styles.recommendationsList}>
+        </h2>
+        <div className="climate-recommendation-list">
           {recommendations.map((rec, index) => (
-            <div 
-              key={index} 
-              style={{
-                ...styles.recommendation,
-                ...(rec.type === "warning" ? styles.recommendationWarning : {}),
-                ...(rec.type === "success" ? styles.recommendationSuccess : {}),
-                ...(rec.type === "info" ? styles.recommendationInfo : {})
-              }}
+            <article
+              className={`climate-recommendation climate-recommendation--${rec.type} ${expandedRecommendation === index ? "is-expanded" : ""}`}
+              key={`${rec.title}-${index}`}
+              style={{ "--recommendation-accent": getRecommendationAccent(rec.type) }}
             >
-              <span
-                className="material-symbols-outlined"
-                style={{
-                  ...styles.recommendationIcon,
-                  color: getRecommendationAccent(rec.type)
-                }}
-              >
-                {rec.icon}
-              </span>
-              <div style={styles.recommendationText}>
-                <strong style={styles.recommendationTitleText}>{rec.title}</strong>
-                <p style={styles.recommendationMessage}>{rec.message}</p>
+              <span className="material-symbols-outlined" aria-hidden="true">{rec.icon}</span>
+              <div>
+                <strong>{rec.title}</strong>
+                <p>{rec.message}</p>
               </div>
-            </div>
+              <button
+                type="button"
+                className="climate-recommendation-details-button"
+                aria-expanded={expandedRecommendation === index}
+                onClick={() => setExpandedRecommendation(expandedRecommendation === index ? null : index)}
+              >
+                {expandedRecommendation === index ? "Ocultar" : "Ver detalhes"}
+                <span className="material-symbols-outlined" aria-hidden="true">
+                  {expandedRecommendation === index ? "expand_less" : "chevron_right"}
+                </span>
+              </button>
+              {expandedRecommendation === index && (
+                <p className="climate-recommendation-details">
+                  {getRecommendationDetails(rec.title)}
+                </p>
+              )}
+            </article>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* FOOTER */}
-      <p style={styles.footer}>
-        <span className="material-symbols-outlined" style={{ fontSize: '14px', color: 'var(--text-muted)' }}>update</span>
-        Atualizado agora
+      <p className="climate-updated">
+        <span className="material-symbols-outlined" aria-hidden="true">update</span>
+        Atualizado agora · {updatedTime}
       </p>
     </div>
   )

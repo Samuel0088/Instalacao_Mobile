@@ -22,7 +22,7 @@ import "../../styles/App/Explore.css";
 // ================= TABS =================
 const tabs = [
   { id: "diagnostico", label: "Diagnóstico", icon: "eco" },
-  { id: "monitoramento", label: "Plantio", icon: "analytics" },
+  { id: "monitoramento", label: "Plantio", icon: "psychiatry" },
   { id: "clima", label: "Clima", icon: "cloud" },
   { id: "diario", label: "Diário", icon: "menu_book" },
   { id: "mapa", label: "Mapa", icon: "map" },
@@ -100,17 +100,24 @@ export default function Explore() {
   };
 
   return (
-    <div className="explore-container" data-system-bar-color="#3f8a5d">
+    <div
+      className={`explore-container explore-container--${activeTab}`}
+      data-system-bar-color={["diagnostico", "monitoramento", "clima"].includes(activeTab) ? "#f4f9ef" : "#3f8a5d"}
+    >
       <ParticleBackground />
 
       
 
       {/* ================= TABS UI ================= */}
-      <div className="explore-tabs-header" data-system-bar-color="#3f8a5d">
+      <div
+        className="explore-tabs-header"
+        data-system-bar-color={["diagnostico", "monitoramento", "clima"].includes(activeTab) ? "#f4f9ef" : "#3f8a5d"}
+      >
         <div className="explore-tabs-modern">
           {tabs.map((tab) => (
             <button
               key={tab.id}
+              data-tab={tab.id}
               className={`explore-tab ${activeTab === tab.id ? "active" : ""}`}
               onClick={() => setActiveTab(tab.id)}
             >
