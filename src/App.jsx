@@ -182,11 +182,13 @@ function App() {
   useEffect(() => {
     // Detectar dispositivo
     const userAgent = navigator.userAgent
+    const isBraveBrowser = Boolean(navigator.brave)
     setIsIOS(/iPhone|iPad|iPod/i.test(userAgent))
     setIsAndroid(/Android/i.test(userAgent))
     setIsChromeAndroid(
       /Android/i.test(userAgent) &&
       /Chrome\//i.test(userAgent) &&
+      !isBraveBrowser &&
       !/; wv\)|EdgA|OPR|SamsungBrowser/i.test(userAgent)
     )
 

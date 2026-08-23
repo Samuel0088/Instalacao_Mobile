@@ -753,4 +753,8 @@ header::after {
   .app-header.home-app-header .header-top {
     padding-inline: 10px;
   }
+
+  .home-app-header .home-user-heading {
+    transform: translateY(10px);
+  }
 }

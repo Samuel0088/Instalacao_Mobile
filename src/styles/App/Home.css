@@ -4125,11 +4125,16 @@ body:has(.home-shell),
 
   .home-shell .weather-hero-top {
     position: relative;
+    min-height: 184px;
+  }
+
+  .home-shell .weather-hero-top > :first-child {
+    transform: translateY(10px);
   }
 
   .home-shell .weather-illustration {
     position: absolute;
-    top: -9px;
+    top: 15px;
     right: calc(50% - 50vw - 7px);
     width: 224px;
     height: 168px;
@@ -4143,6 +4148,25 @@ body:has(.home-shell),
 
 /* Rolagem leve em aparelhos touch */
 @media (max-width: 768px), (pointer: coarse) {
+  html,
+  body,
+  #root,
+  .app-route-transition,
+  .home-shell {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar,
+  #root::-webkit-scrollbar,
+  .app-route-transition::-webkit-scrollbar,
+  .home-shell::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+
   body:has(.home-shell),
   #root:has(.home-shell),
   .app-route-transition:has(.home-shell),
