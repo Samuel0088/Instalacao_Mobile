@@ -920,7 +920,7 @@
 
 @media (max-width: 820px) {
   .team-page {
-    padding-inline: 10px;
+    padding-inline: var(--app-content-gutter);
   }
 
   .team-hero {
@@ -960,7 +960,7 @@
 
 @media (max-width: 430px) {
   .team-page {
-    padding-inline: 8px;
+    padding-inline: var(--app-content-gutter);
   }
 
   .team-hero {

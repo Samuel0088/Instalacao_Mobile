@@ -1,10 +1,9 @@
-import React, { useRef, useState } from "react";
+import React from "react";
 import { useMonitoramento } from "../hooks/useMonitoramento";
 import UploadImage   from "./UploadImage";
 import OverlayResult from "./OverlayResult";
 import MetricsPanel  from "./MetricsPanel";
 import AlertBanner   from "./AlertBanner";
-import CameraView    from "../Diagnostico/CameraView";
 import { interpretar } from "../../utils/Interpretations";
 import styles from "../../../../styles/App/MonitoramentoView.module.css";
 
@@ -26,63 +25,58 @@ import styles from "../../../../styles/App/MonitoramentoView.module.css";
  */
 export default function MonitoramentoView() {
   const { analisar, resetar, result, loading, error, preview } = useMonitoramento();
-  const [cameraAberta, setCameraAberta] = useState(false);
-  const videoRef = useRef(null);
-
   // Interpretação agronômica só calculada quando há resultado
   const interpretacao = result ? interpretar(result) : null;
 
   const mostrarResultados = result && !loading && !error;
-
-  const fecharCamera = () => {
-    setCameraAberta(false);
-  };
-
-  const capturarFoto = () => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const canvas = document.createElement("canvas");
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(video, 0, 0);
-
-    canvas.toBlob((blob) => {
-      if (!blob) return;
-
-      const file = new File([blob], "monitoramento-camera.jpg", {
-        type: "image/jpeg",
-      });
-
-      fecharCamera();
-      analisar(file);
-    }, "image/jpeg", 0.92);
-  };
-
-  if (cameraAberta) {
-    return (
-      <CameraView
-        videoRef={videoRef}
-        onCapture={capturarFoto}
-        onCancel={fecharCamera}
-      />
-    );
-  }
+  const alignmentScore = Number.isFinite(result?.alignment?.score)
+    ? Math.round(result.alignment.score * 100)
+    : null;
+  const rowsDetected = Boolean(result?.rows?.detected || result?.alignment?.aligned);
+  const alignmentLabel = loading
+    ? "Detectando fileiras"
+    : result
+      ? rowsDetected ? "Fileiras detectadas" : "Fileiras não identificadas"
+      : "Aguardando imagem";
+  const alignmentIcon = loading
+    ? "progress_activity"
+    : alignmentScore == null
+      ? "image_search"
+      : rowsDetected && alignmentScore >= 75 ? "check" : "priority_high";
 
   return (
     <div className={styles.container}>
       <section className={styles.hero}>
         <div className={styles.cabecalho}>
-          <h2 className={styles.titulo}>
-            <span>Alinhamento da</span>
-            <span>Plantação</span>
-          </h2>
+          <h2 className={styles.titulo}>Alinhamento da Plantação</h2>
           <p className={styles.subtitulo}>
             Analise o alinhamento e a uniformidade das fileiras
           </p>
         </div>
+
+        <section
+          className={`${styles.alignmentCard} ${loading ? styles.alignmentCard_loading : ""}`}
+          aria-live="polite"
+          aria-busy={loading}
+        >
+          <div className={styles.alignmentGuide} aria-hidden="true">
+            {Array.from({ length: 7 }, (_, index) => (
+              <span key={index}></span>
+            ))}
+            <i className="material-symbols-outlined">{rowsDetected ? "check" : "eco"}</i>
+          </div>
+          <div className={styles.alignmentState}>
+            <span className="material-symbols-outlined" aria-hidden="true">psychiatry</span>
+            {alignmentLabel}
+          </div>
+          <div className={styles.alignmentResult}>
+            <div>
+              <strong>{loading ? "..." : alignmentScore == null ? "--" : `${alignmentScore}%`}</strong>
+              <small>{alignmentScore == null ? "após a análise" : "de alinhamento"}</small>
+            </div>
+            <span className="material-symbols-outlined" aria-hidden="true">{alignmentIcon}</span>
+          </div>
+        </section>
       </section>
 
       {/* ------------------------------------------------------------------ */}
@@ -90,9 +84,17 @@ export default function MonitoramentoView() {
       {/* ------------------------------------------------------------------ */}
       <UploadImage
         onSelect={analisar}
-        onCamera={() => setCameraAberta(true)}
         disabled={loading}
       />
+
+      <aside className={styles.tipCard}>
+        <span className="material-symbols-outlined" aria-hidden="true">lightbulb</span>
+        <div>
+          <strong>Dica</strong>
+          <p>Use uma imagem do drone capturada de cima, com boa iluminação e toda a área das fileiras visível.</p>
+        </div>
+        <span className="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+      </aside>
 
       {/* ------------------------------------------------------------------ */}
       {/* Loading                                                             */}

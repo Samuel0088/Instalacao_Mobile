@@ -613,7 +613,7 @@
 /* Responsividade */
 @media (max-width: 480px) {
   .estoque-container {
-    padding: 16px;
+    padding-inline: var(--app-content-gutter);
   }
 
   .estoque-modal {

@@ -2702,6 +2702,22 @@ span[style*="color: var(--primary)"] {
   box-shadow: none;
 }
 
+/* Um único recuo lateral para todo o conteúdo mobile do Explore. */
+@media (max-width: 550px) {
+  .explore-container .explore-tabs-modern {
+    padding-inline: var(--app-content-gutter);
+    scroll-padding-inline: var(--app-content-gutter);
+  }
+
+  .explore-container > .tab-content {
+    padding-inline: 0;
+  }
+
+  .drone-law-container {
+    padding-inline: var(--app-content-gutter);
+  }
+}
+
 @media (max-width: 480px) {
   .explore-container--diagnostico .explore-tabs-header {
     padding: calc(env(safe-area-inset-top, 0px) + 10px) 0 8px;

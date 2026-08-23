@@ -57,13 +57,27 @@ export function validarArquivo(file) {
 function normalizarResposta(data) {
   const isV2 = "coverage" in data || "failure_level" in data;
 
+  const limitarProporcao = (valor) => Math.min(1, Math.max(0, Number(valor) || 0));
+  const variacao = Number(data.alignment?.variation);
+  const scoreAlinhamento = Number.isFinite(variacao)
+    ? limitarProporcao(1 - variacao / 30)
+    : limitarProporcao(data.rows?.periodicity_snr ?? data.uniformity);
+
   const imageSrc = `data:image/jpeg;base64,${data.overlay_image}`;
   const debugSrc = data.debug_image
     ? `data:image/jpeg;base64,${data.debug_image}`
     : null;
 
   if (isV2) {
-    return { ...data, imageSrc, debugSrc };
+    return {
+      ...data,
+      alignment: {
+        ...data.alignment,
+        score: scoreAlinhamento,
+      },
+      imageSrc,
+      debugSrc,
+    };
   }
 
   // Mapeamento v1 → v2
@@ -84,6 +98,10 @@ function normalizarResposta(data) {
       row_spacing_px: null,
       row_count: null,
       periodicity_snr: alignmentSNR,
+    },
+    alignment: {
+      ...data.alignment,
+      score: alignmentSNR,
     },
     shadow_coverage: 0,
     illumination_quality: "good",

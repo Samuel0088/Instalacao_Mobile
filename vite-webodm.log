@@ -149,3 +149,40 @@
 [2m18:23:02[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/App/Explore.css[22m
 [2m18:29:55[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/App/Explore/ClimaTab.jsx[22m
 [2m18:34:55[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/App/Explore.css[22m
+[2m18:40:40[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/App/Home.css[22m
+[2m18:40:40[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/App/ClimaTab.css[22m
+[2m18:46:01[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m18:46:01[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m18:46:01[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/App/Home.css[22m
+[2m18:46:01[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/App/Diagnostico.css[22m
+[2m18:46:01[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/App/Explore/Monitoramento/MonitoramentoView.jsx, /src/components/App/Explore/Monitoramento/OverlayResult.jsx, /src/components/App/Explore/Monitoramento/AlertBanner.jsx, /src/components/App/Explore/Monitoramento/MetricsPanel.jsx, /src/components/App/Explore/Monitoramento/UploadImage.jsx[22m
+[2m18:46:01[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/App/ClimaTab.css[22m
+[2m18:46:01[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/App/DiarioTab.css[22m
+[2m18:46:01[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/App/EstoqueTab.css[22m
+[2m18:46:01[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/App/AtividadesTab.css[22m
+[2m18:46:01[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/App/TeamAccess.css[22m
+[2m18:46:01[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/App/Profile.css[22m
+[2m18:46:01[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/App/Planos.css[22m
+[2m18:46:01[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/App/MapaTab.css[22m
+[2m18:46:01[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/App/Explore.css[22m
+[2m18:47:56[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/Global/AppHeader.css[22m
+[2m18:47:56[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/Global/MenuBar.css[22m
+[2m18:47:56[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/App/Home.css[22m
+[2m18:47:56[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/App/Planos.css[22m
+[2m18:49:00[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/App/Diagnostico.css[22m
+[2m18:51:10[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/App/Diagnostico.css[22m
+[2m18:52:25[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/App/Diagnostico.css[22m
+[2m18:52:25[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/App/Diagnostico.css[22m
+[2m19:00:57[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/App/Explore/Monitoramento/MonitoramentoView.jsx[22m
+[2m19:00:57[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/App/Explore/Monitoramento/MonitoramentoView.jsx[22m
+[2m19:02:31[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/App/Explore/Monitoramento/MonitoramentoView.jsx, /src/components/App/Explore/Monitoramento/OverlayResult.jsx, /src/components/App/Explore/Monitoramento/AlertBanner.jsx, /src/components/App/Explore/Monitoramento/MetricsPanel.jsx, /src/components/App/Explore/Monitoramento/UploadImage.jsx[22m
+[2m19:04:52[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/App/Explore/Monitoramento/MonitoramentoView.jsx[22m
+[2m19:04:52[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/App/Explore/Monitoramento/MonitoramentoView.jsx, /src/components/App/Explore/Monitoramento/OverlayResult.jsx, /src/components/App/Explore/Monitoramento/AlertBanner.jsx, /src/components/App/Explore/Monitoramento/MetricsPanel.jsx, /src/components/App/Explore/Monitoramento/UploadImage.jsx[22m
+[2m19:13:37[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/App/Explore/Monitoramento/MonitoramentoView.jsx, /src/components/App/Explore/Monitoramento/OverlayResult.jsx, /src/components/App/Explore/Monitoramento/AlertBanner.jsx, /src/components/App/Explore/Monitoramento/MetricsPanel.jsx, /src/components/App/Explore/Monitoramento/UploadImage.jsx[22m
+[2m19:14:42[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/App/Explore/Monitoramento/MonitoramentoView.jsx, /src/components/App/Explore/Monitoramento/OverlayResult.jsx, /src/components/App/Explore/Monitoramento/AlertBanner.jsx, /src/components/App/Explore/Monitoramento/MetricsPanel.jsx, /src/components/App/Explore/Monitoramento/UploadImage.jsx[22m
+[2m19:18:39[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/App/Explore/Monitoramento/MonitoramentoView.jsx, /src/components/App/Explore/Monitoramento/OverlayResult.jsx, /src/components/App/Explore/Monitoramento/AlertBanner.jsx, /src/components/App/Explore/Monitoramento/MetricsPanel.jsx, /src/components/App/Explore/Monitoramento/UploadImage.jsx[22m
+[2m19:23:29[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/App/Explore/Monitoramento/MonitoramentoView.jsx, /src/components/App/Explore/Monitoramento/OverlayResult.jsx, /src/components/App/Explore/Monitoramento/AlertBanner.jsx, /src/components/App/Explore/Monitoramento/MetricsPanel.jsx, /src/components/App/Explore/Monitoramento/UploadImage.jsx[22m
+[2m19:32:42[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/App/Explore/Monitoramento/UploadImage.jsx[22m
+[2m19:32:42[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/App/Explore/Monitoramento/MonitoramentoView.jsx[22m
+[2m19:32:42[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/App/Explore/Monitoramento/MonitoramentoView.jsx, /src/components/App/Explore/Monitoramento/OverlayResult.jsx, /src/components/App/Explore/Monitoramento/AlertBanner.jsx, /src/components/App/Explore/Monitoramento/MetricsPanel.jsx, /src/components/App/Explore/Monitoramento/UploadImage.jsx[22m
+[2m19:33:26[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/App/Explore/Monitoramento/MonitoramentoView.jsx[22m

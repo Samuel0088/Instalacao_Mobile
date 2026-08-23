@@ -3184,11 +3184,11 @@ body:has(.home-shell) .nav {
   }
 
   .home-shell .home-app-header .header-top {
-    padding-inline: 12px;
+    padding-inline: var(--app-content-gutter);
   }
 
   body:has(.home-shell) .accessibility-widget {
-    right: 12px;
+    right: var(--app-content-gutter);
   }
 
   .weather-hero-top {
@@ -3207,19 +3207,19 @@ body:has(.home-shell) .nav {
 
 @media (max-width: 380px) {
   .home-container {
-    padding-inline: 10px;
+    padding-inline: var(--app-content-gutter);
   }
 
   .home-shell .home-app-header .header-top {
-    padding-inline: 10px;
+    padding-inline: var(--app-content-gutter);
   }
 
   body:has(.home-shell) .accessibility-widget {
-    right: 10px;
+    right: var(--app-content-gutter);
   }
 
   body:has(.home-shell) .nav {
-    width: calc(100vw - 20px);
+    width: calc(100vw - var(--app-content-gutter) - var(--app-content-gutter));
   }
 }
 
@@ -4122,7 +4122,7 @@ body:has(.home-shell),
 /* Aproveita melhor a largura em celulares */
 @media (max-width: 550px) {
   .home-shell {
-    --home-side-gutter: 10px;
+    --home-side-gutter: var(--app-content-gutter);
   }
 
   .home-shell .home-container {
@@ -4267,8 +4267,8 @@ body:has(.home-shell),
   }
 
   .home-shell--app-opening .weather-hero-top {
-    flex: 1;
-    min-height: min(520px, calc(100dvh - 160px));
+    flex: 0 0 220px;
+    min-height: 220px;
     align-items: center;
   }
 
@@ -4277,10 +4277,10 @@ body:has(.home-shell),
   }
 
   .home-shell--app-opening .weather-illustration {
-    top: 50%;
-    width: 252px;
-    height: 194px;
-    transform: translateY(-48%) rotate(-2deg);
+    top: 20px;
+    width: 224px;
+    height: 172px;
+    transform: rotate(-2deg);
   }
 
   .home-shell--app-opening .weather-stat-grid {

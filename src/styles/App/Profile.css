@@ -1220,7 +1220,7 @@ body {
 /* ================= RESPONSIVIDADE ================= */
 @media (max-width: 600px) {
   .profile-container-tech {
-    padding: 0 16px 90px;
+    padding: 0 var(--app-content-gutter) 90px;
   }
 
   .profile-header-section {

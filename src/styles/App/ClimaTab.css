@@ -1437,3 +1437,20 @@
   }
 }
 
+/* Alinhamento lateral único; apenas a paisagem permanece em largura total. */
+.climate-dashboard {
+  --climate-side-gutter: 20px;
+  padding-inline: var(--climate-side-gutter);
+}
+
+.climate-hero {
+  margin-inline: calc(var(--climate-side-gutter) * -1);
+  padding-inline: var(--climate-side-gutter);
+}
+
+@media (max-width: 480px) {
+  .climate-dashboard {
+    --climate-side-gutter: var(--app-content-gutter);
+  }
+}
+

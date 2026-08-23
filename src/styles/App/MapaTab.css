@@ -292,6 +292,12 @@
   z-index: 1;
 }
 
+@media (max-width: 550px) {
+  .mapa-container {
+    padding-inline: var(--app-content-gutter);
+  }
+}
+
 /* ================= WEBODM ================= */
 .webodm-panel {
   margin: 0 0 24px;

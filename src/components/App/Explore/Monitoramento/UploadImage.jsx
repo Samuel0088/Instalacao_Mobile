@@ -3,12 +3,11 @@ import styles from "../../../../styles/App/MonitoramentoView.module.css";
 
 /**
  * Zona de upload com:
- *  - Botao de camera controlado pela tela principal
- *  - Botao de galeria sem capture
+ *  - Selecao de imagem aerea pela galeria
  *  - Drag-and-drop para desktop
  *  - Estado desabilitado durante análise
  */
-export default function UploadImage({ onSelect, onCamera, disabled }) {
+export default function UploadImage({ onSelect, disabled }) {
   const [arrastando, setArrastando] = useState(false);
   const galleryInputRef = useRef(null);
 
@@ -49,34 +48,25 @@ export default function UploadImage({ onSelect, onCamera, disabled }) {
         {disabled ? (
           <span className="material-symbols-outlined">progress_activity</span>
         ) : (
-          <img src="/assets/image/drone-plantio.png" alt="" />
+          <img src="/assets/image/drone-alinhamento-aereo-2026.png" alt="" />
         )}
       </div>
       <span className={styles.uploadTexto}>
-        {disabled ? "Analisando as fileiras..." : "Enviar imagem das fileiras"}
+        {disabled ? "Analisando as fileiras..." : "Enviar imagem aérea das fileiras"}
       </span>
       <span className={styles.uploadDica}>
-        JPG ou PNG · Use uma foto aérea com as linhas do plantio visíveis
+        JPG ou PNG · Selecione uma foto do drone com as linhas do plantio visíveis
       </span>
 
       <div className={styles.uploadAcoes}>
         <button
           type="button"
           className={styles.uploadAcao}
-          onClick={() => !disabled && onCamera?.()}
-          disabled={disabled}
-        >
-          <span className="material-symbols-outlined" aria-hidden="true">center_focus_strong</span>
-          Fotografar plantação
-        </button>
-        <button
-          type="button"
-          className={`${styles.uploadAcao} ${styles.uploadAcaoSecundaria}`}
           onClick={() => !disabled && galleryInputRef.current?.click()}
           disabled={disabled}
         >
-          <span className="material-symbols-outlined" aria-hidden="true">photo_library</span>
-          Escolher da galeria
+          <span className="material-symbols-outlined" aria-hidden="true">upload</span>
+          Enviar foto aérea
         </button>
       </div>
 

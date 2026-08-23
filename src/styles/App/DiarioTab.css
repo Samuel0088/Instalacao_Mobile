@@ -400,7 +400,7 @@
 /* Responsividade */
 @media (max-width: 480px) {
   .diario-container {
-    padding: 16px;
+    padding-inline: var(--app-content-gutter);
   }
 
   .diario-card {

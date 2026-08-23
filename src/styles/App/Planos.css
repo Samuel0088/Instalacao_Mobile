@@ -376,9 +376,14 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .plans-hero,
+  .plans-faq {
+    padding-inline: var(--app-content-gutter);
+  }
+
   .plans-list {
     grid-template-columns: 1fr;
-    padding: 0 16px 32px;
+    padding: 0 var(--app-content-gutter) 32px;
   }
   
   .plan-card-content {

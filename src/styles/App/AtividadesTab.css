@@ -646,7 +646,7 @@
 
 @media (max-width: 480px) {
   .atividades-container {
-    padding: 16px;
+    padding-inline: var(--app-content-gutter);
   }
   
   .filters-row {

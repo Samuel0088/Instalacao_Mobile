@@ -751,7 +751,7 @@ header::after {
 /* Alinha o cabecalho com o conteudo mais largo da Home no celular */
 @media (max-width: 550px) {
   .app-header.home-app-header .header-top {
-    padding-inline: 10px;
+    padding-inline: var(--app-content-gutter);
   }
 
   .home-app-header .home-user-heading {
