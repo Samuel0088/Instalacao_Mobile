@@ -4116,7 +4116,7 @@ body:has(.home-shell),
 /* Aproveita melhor a largura em celulares */
 @media (max-width: 550px) {
   .home-shell {
-    --home-side-gutter: 20px;
+    --home-side-gutter: 10px;
   }
 
   .home-shell .home-container {
