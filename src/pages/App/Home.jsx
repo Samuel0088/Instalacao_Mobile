@@ -146,7 +146,7 @@ const HOME_REVEAL_SELECTOR = [
   ".explore-card",
 ].join(", ")
 
-export default function Home() {
+export default function Home({ onInstallRequest, isInstalled = false }) {
   const [userData, setUserData] = useState(null)
   const [farmData, setFarmData] = useState(null)
   const [weather, setWeather] = useState(null)
@@ -478,6 +478,23 @@ export default function Home() {
 
         {hasFarm && (
           <FlightActionButton onNavigate={() => navigate("/novo-voo")} />
+        )}
+
+        {!isInstalled && onInstallRequest && (
+          <section className="install-app-section">
+            <button className="install-app-trigger" type="button" onClick={onInstallRequest}>
+              <span className="install-app-trigger__icon material-symbols-outlined" aria-hidden="true">
+                download
+              </span>
+              <span className="install-app-trigger__text">
+                <strong>Baixar aplicativo</strong>
+                <small>Instale o Zenith neste celular</small>
+              </span>
+              <span className="install-app-trigger__arrow material-symbols-outlined" aria-hidden="true">
+                chevron_right
+              </span>
+            </button>
+          </section>
         )}
 
         {!isOperationalRole(userData?.role) && (

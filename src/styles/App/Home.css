@@ -4163,3 +4163,67 @@ body:has(.home-shell),
     will-change: auto;
   }
 }
+
+.install-app-section {
+  margin: 10px 0 24px;
+}
+
+.install-app-trigger {
+  width: 100%;
+  min-height: 58px;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) 28px;
+  align-items: center;
+  gap: 11px;
+  padding: 8px 10px;
+  border: 1px solid rgba(45, 97, 64, 0.14);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.86);
+  color: var(--g2);
+  text-align: left;
+  box-shadow: 0 10px 22px rgba(45, 97, 64, 0.08);
+}
+
+.install-app-trigger__icon {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--g4);
+  color: #ffffff;
+  font-size: 22px;
+}
+
+.install-app-trigger__text {
+  min-width: 0;
+}
+
+.install-app-trigger__text strong,
+.install-app-trigger__text small {
+  display: block;
+}
+
+.install-app-trigger__text strong {
+  font-size: 0.86rem;
+  font-weight: 850;
+  line-height: 1.2;
+}
+
+.install-app-trigger__text small {
+  margin-top: 3px;
+  color: #617366;
+  font-size: 0.66rem;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.install-app-trigger__arrow {
+  color: var(--g5);
+  font-size: 22px;
+}
+
+.install-app-trigger:hover {
+  border-color: rgba(45, 97, 64, 0.24);
+  background: #ffffff;
+}

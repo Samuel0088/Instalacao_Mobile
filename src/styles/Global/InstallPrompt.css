@@ -107,6 +107,26 @@
   line-height: 1.4;
 }
 
+.hint--expanded {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  opacity: 1;
+  text-align: left;
+}
+
+.install-steps {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding-left: 20px;
+}
+
+.install-steps li {
+  padding-left: 2px;
+  color: rgba(255, 255, 255, 0.86);
+}
+
 /* BENEFITS */
 .benefits {
   display: flex;

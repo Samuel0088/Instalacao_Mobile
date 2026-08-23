@@ -1,8 +1,12 @@
 import { motion } from "framer-motion"
+import { useState } from "react"
 import { FaDownload, FaTimes, FaAndroid, FaApple } from 'react-icons/fa'
 import '../../../styles/Global/InstallPrompt.css'
 
 const InstallPrompt = ({ onInstall, onClose, isIOS, isAndroid, hasPrompt }) => {
+  const [showInstructions, setShowInstructions] = useState(false)
+  const canInstallDirectly = hasPrompt && !isIOS
+
   return (
     <motion.div 
       className="install-overlay"
@@ -31,17 +35,28 @@ const InstallPrompt = ({ onInstall, onClose, isIOS, isAndroid, hasPrompt }) => {
           Acesse mais rápido e sem navegador.
         </p>
 
-        {/* BOTÃO PRINCIPAL */}
-        {hasPrompt && !isIOS && (
-          <button className="install-main-btn" onClick={onInstall}>
-            <FaDownload /> Instalar agora
-          </button>
-        )}
+        <button
+          className="install-main-btn"
+          onClick={canInstallDirectly ? onInstall : () => setShowInstructions(true)}
+        >
+          <FaDownload /> {canInstallDirectly ? "Instalar agora" : "Instalar neste celular"}
+        </button>
 
-        {/* INSTRUÇÃO CURTA */}
         {!hasPrompt && (
-          <div className="hint">
-            {isIOS ? (
+          <div className={`hint${showInstructions ? " hint--expanded" : ""}`}>
+            {showInstructions && isIOS ? (
+              <ol className="install-steps">
+                <li>Toque no botão <b>Compartilhar</b> do navegador.</li>
+                <li>Escolha <b>Adicionar à Tela de Início</b>.</li>
+                <li>Confirme tocando em <b>Adicionar</b>.</li>
+              </ol>
+            ) : showInstructions ? (
+              <ol className="install-steps">
+                <li>Abra o menu <b>⋮</b> do navegador.</li>
+                <li>Toque em <b>Instalar app</b>.</li>
+                <li>Confirme a instalação.</li>
+              </ol>
+            ) : isIOS ? (
               <>
                 <FaApple /> Toque em <b>Compartilhar</b> → <b>Tela de Início</b>
               </>
