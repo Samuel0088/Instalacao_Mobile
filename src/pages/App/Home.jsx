@@ -329,10 +329,10 @@ export default function Home() {
               : String(latestDiagnosis.disease).replaceAll("_", " "),
         }
   const weatherStats = [
-    { icon: "device_thermostat", label: "Solo", value: hasFarm ? "+23 C" : "--" },
+    { icon: "device_thermostat", label: "Solo", value: hasFarm ? "+23 °C" : "--" },
     { icon: "humidity_percentage", label: "Umidade", value: humidityValue },
     { icon: "air", label: "Vento", value: hasFarm ? "7 m/s" : "--" },
-    { icon: "water_drop", label: "Percepção", value: hasFarm ? "0 mm" : "--" },
+    { icon: "rainy", label: "Precipitação", value: hasFarm ? "0 mm" : "--" },
   ]
 
   return (
@@ -353,6 +353,14 @@ export default function Home() {
       
         <div className="home-container">
         <section className="home-weather-hero">
+          <div className="weather-background-details" aria-hidden="true">
+            <span className="weather-bg-leaf weather-bg-leaf--one"></span>
+            <span className="weather-bg-leaf weather-bg-leaf--two"></span>
+            <span className="weather-bg-leaf weather-bg-leaf--three"></span>
+            <span className="weather-bg-leaf weather-bg-leaf--four"></span>
+            <span className="weather-bg-spark weather-bg-spark--one"></span>
+            <span className="weather-bg-spark weather-bg-spark--two"></span>
+          </div>
           <div className="weather-hero-top">
             <div>
               <div className="weather-reading">
@@ -369,11 +377,16 @@ export default function Home() {
                   <WeatherConditionIcon aria-hidden="true" strokeWidth={2.15} />
                 </span>
               </div>
-              <p>{farmData?.name || "Cadastre sua fazenda"}</p>
+              <p>{weatherVisual.label}</p>
+              <strong className="weather-farm-label">
+                {farmData?.name || "Cadastre sua fazenda"}
+              </strong>
             </div>
 
             <div className="weather-illustration" aria-hidden="true">
-              <img src="/assets/image/image_soja_homepage.png" alt="" />
+              <img src="/assets/image/soja-hero-cutout.png" alt="" />
+              <span className="soy-tip-detail"></span>
+              <span className="soy-leaf-fade"></span>
             </div>
           </div>
 

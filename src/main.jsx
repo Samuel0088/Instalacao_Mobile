@@ -17,6 +17,7 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/sw.js")
       .then((registration) => {
         console.log("Service Worker registrado")
+        registration.update().catch(() => {})
 
         if (registration.waiting && navigator.serviceWorker.controller) {
           window.dispatchEvent(

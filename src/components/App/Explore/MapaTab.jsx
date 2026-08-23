@@ -1,5 +1,11 @@
 import { useState, useEffect, useRef } from "react"
 import { useFarm } from "./hooks/useFarm"
+import {
+  getStoredWebODMConfig,
+  getTileUrl,
+  hasWebODMConfig,
+  loadWebODMAnalysis,
+} from "../../../services/webodmService"
 import "../../../styles/App/MapaTab.css"
 
 import L from "leaflet"
@@ -645,6 +651,208 @@ function Field3DView({ area }) {
   )
 }
 
+function WebODMPanel({
+  analysis,
+  configured,
+  loading,
+  error,
+  activeLayer,
+  orthophotoEnabled,
+  onConnect,
+  onLayerChange,
+  onOrthophotoToggle,
+  onFocusRoute,
+  onExportReport,
+}) {
+  const hasDetections = analysis?.detections?.length > 0
+
+  if (!analysis) {
+    return (
+      <section className="webodm-panel empty">
+        <div className="webodm-connect-form">
+          <span className="webodm-eyebrow">WebODM</span>
+          <h3>{loading ? "Conectando ao WebODM..." : "WebODM automático"}</h3>
+          <p>
+            {configured
+              ? "O app está tentando carregar o ortomosaico e as detecções reais configuradas no ambiente."
+              : "Configure o WebODM uma vez no ambiente do projeto para o produtor não precisar preencher nada."}
+          </p>
+
+          {error && <p className="webodm-error">{error}</p>}
+
+          <button type="button" className="webodm-connect-btn" onClick={onConnect} disabled={loading || !configured}>
+            <span className="material-symbols-outlined">sync</span>
+            {loading ? "Conectando..." : "Tentar novamente"}
+          </button>
+        </div>
+      </section>
+    )
+  }
+
+  const layerOptions = [
+    { id: "detections", icon: "crisis_alert", label: "Detecções" },
+    { id: "heatmap", icon: "local_fire_department", label: "Calor" },
+    { id: "prescription", icon: "science", label: "Prescrição" },
+    { id: "route", icon: "route", label: "Rota" },
+  ]
+
+  return (
+    <section className="webodm-panel">
+      <div className="webodm-heading">
+        <div>
+          <span className="webodm-eyebrow">WebODM conectado ao mapa</span>
+          <h3>Projeto {analysis.projectId} · Task {analysis.taskId}</h3>
+          <p>{analysis.orthophoto} · {analysis.dsm} · {analysis.resolutionCm} cm/pixel</p>
+        </div>
+        <div className={`webodm-risk ${analysis.severity >= 70 ? "critical" : analysis.severity >= 45 ? "warning" : "ok"}`}>
+          <strong>{analysis.severity}%</strong>
+          <span>severidade</span>
+        </div>
+      </div>
+
+      <div className="webodm-layer-tabs" role="tablist" aria-label="Camadas WebODM">
+        <button
+          type="button"
+          className={orthophotoEnabled ? "active" : ""}
+          onClick={() => onOrthophotoToggle(value => !value)}
+        >
+          <span className="material-symbols-outlined">map</span>
+          Ortomosaico
+        </button>
+        {layerOptions.map(option => (
+          <button
+            key={option.id}
+            type="button"
+            className={activeLayer === option.id ? "active" : ""}
+            onClick={() => onLayerChange(option.id)}
+          >
+            <span className="material-symbols-outlined">{option.icon}</span>
+            {option.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="webodm-metrics-grid">
+        <div className="webodm-stat">
+          <span className="material-symbols-outlined">crop_free</span>
+          <strong>{formatArea(analysis.affectedHa)}</strong>
+          <p>área afetada ({analysis.affectedPct}%)</p>
+        </div>
+        <div className="webodm-stat">
+          <span className="material-symbols-outlined">eco</span>
+          <strong>{analysis.indices.ndvi}</strong>
+          <p>NDVI médio</p>
+        </div>
+        <div className="webodm-stat">
+          <span className="material-symbols-outlined">water_drop</span>
+          <strong>{analysis.indices.drainageRisk}</strong>
+          <p>risco de drenagem</p>
+        </div>
+        <div className="webodm-stat">
+          <span className="material-symbols-outlined">trending_down</span>
+          <strong>{analysis.productivityLoss}</strong>
+          <p>perda produtiva</p>
+        </div>
+      </div>
+
+      <div className="webodm-content-grid">
+        <div className="webodm-card">
+          <div className="webodm-card-title">
+            <span className="material-symbols-outlined">travel_explore</span>
+            Pontos detectados
+          </div>
+          {hasDetections ? (
+            <div className="webodm-detections-list">
+              {analysis.detections.map(item => (
+              <div key={item.id} className="webodm-detection-item" style={{ "--item-color": item.color }}>
+                <span className="webodm-color-dot"></span>
+                <div>
+                  <strong>{item.label}</strong>
+                  <p>{formatArea(item.affectedHa)} · confiança {item.confidence}%</p>
+                </div>
+                <b>{item.severity}%</b>
+              </div>
+              ))}
+            </div>
+          ) : (
+            <p className="webodm-muted">Nenhuma detecção georreferenciada foi carregada. Adicione uma URL de GeoJSON/JSON da sua IA para marcar problemas reais no mapa.</p>
+          )}
+        </div>
+
+        <div className="webodm-card">
+          <div className="webodm-card-title">
+            <span className="material-symbols-outlined">timeline</span>
+            Comparação temporal
+          </div>
+          {analysis.timeline.length > 0 ? (
+            <div className="webodm-timeline">
+              {analysis.timeline.map(item => (
+              <div key={item.label} className="webodm-timeline-row">
+                <span>{item.label}</span>
+                <div>
+                  <i style={{ width: `${item.value}%` }}></i>
+                </div>
+                <strong>{item.value}%</strong>
+              </div>
+              ))}
+            </div>
+          ) : (
+            <p className="webodm-muted">WebODM carregado. Para comparação temporal, conecte detecções de voos anteriores na sua API de IA.</p>
+          )}
+        </div>
+
+        <div className="webodm-card">
+          <div className="webodm-card-title">
+            <span className="material-symbols-outlined">fact_check</span>
+            Prescrição localizada
+          </div>
+          {analysis.prescription.length > 0 ? (
+            <div className="webodm-prescription-list">
+              {analysis.prescription.map(item => (
+              <div key={`${item.area}-${item.dose}`}>
+                <strong>{item.area}</strong>
+                <span>{item.dose}</span>
+                <p>{item.action}</p>
+              </div>
+              ))}
+            </div>
+          ) : (
+            <p className="webodm-muted">A prescrição aparece quando a IA envia detecções com coordenadas.</p>
+          )}
+        </div>
+
+        <div className="webodm-card webodm-actions-card">
+          <div className="webodm-card-title">
+            <span className="material-symbols-outlined">dashboard</span>
+            Resumo geral
+          </div>
+          <div className="webodm-summary-line">
+            <span>{analysis.detections.length} detecções reais</span>
+            <span>{formatArea(analysis.affectedHa)} afetados</span>
+            <span>Status WebODM: {analysis.task?.status || "carregado"}</span>
+          </div>
+          <div className="webodm-actions">
+            {analysis.publicTaskUrl && (
+              <button type="button" onClick={() => window.open(analysis.publicTaskUrl, "_blank", "noopener,noreferrer")}>
+                <span className="material-symbols-outlined">view_in_ar</span>
+                Abrir 3D
+              </button>
+            )}
+            <button type="button" onClick={onFocusRoute}>
+              <span className="material-symbols-outlined">route</span>
+              Ver rota
+            </button>
+            <button type="button" onClick={onExportReport}>
+              <span className="material-symbols-outlined">download</span>
+              Relatório
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 export default function MapaTab() {
   const { farmData } = useFarm()
 
@@ -655,6 +863,8 @@ export default function MapaTab() {
   const currentPointsRef = useRef([])
 
   const polygonsRef = useRef({})
+  const webodmLayerRef = useRef(null)
+  const orthophotoLayerRef = useRef(null)
   const lineRef = useRef(null)
   const tooltipRef = useRef(null)
   const markersRef = useRef([])
@@ -662,6 +872,12 @@ export default function MapaTab() {
   const [areas, setAreas] = useState([])
   const [selectedAreaId, setSelectedAreaId] = useState(null)
   const [visibleAreasCount, setVisibleAreasCount] = useState(3)
+  const [activeWebODMLayer, setActiveWebODMLayer] = useState("detections")
+  const [webodmConfig] = useState(() => getStoredWebODMConfig())
+  const [webodmAnalysis, setWebodmAnalysis] = useState(null)
+  const [webodmLoading, setWebodmLoading] = useState(false)
+  const [webodmError, setWebodmError] = useState("")
+  const [orthophotoLayerEnabled, setOrthophotoLayerEnabled] = useState(true)
 
   const [isDrawing, setIsDrawing] = useState(false)
   const [currentPoints, setCurrentPoints] = useState([])
@@ -670,6 +886,13 @@ export default function MapaTab() {
   const [searchAddress, setSearchAddress] = useState("")
   const [searching, setSearching] = useState(false)
 
+  const totalArea = areas.reduce((sum, a) => sum + (a.areaHa || 0), 0)
+  const visibleAreas = areas.slice(0, visibleAreasCount)
+  const hasMoreAreas = visibleAreasCount < areas.length
+  const selectedArea = areas.find(area => area.id === selectedAreaId) || areas[areas.length - 1] || null
+  const selectedWebODM = webodmAnalysis
+  const webodmConfigured = hasWebODMConfig(webodmConfig)
+
   useEffect(() => {
     isDrawingRef.current = isDrawing
   }, [isDrawing])
@@ -677,6 +900,39 @@ export default function MapaTab() {
   useEffect(() => {
     currentPointsRef.current = currentPoints
   }, [currentPoints])
+
+  const connectWebODM = async () => {
+    if (!webodmConfigured) {
+      setWebodmError("WebODM ainda não foi configurado no ambiente do projeto.")
+      return
+    }
+
+    setWebodmLoading(true)
+    setWebodmError("")
+
+    try {
+      const analysis = await loadWebODMAnalysis(webodmConfig)
+      setWebodmAnalysis(analysis)
+
+      if (analysis.bounds && mapInstanceRef.current) {
+        const bounds = analysis.bounds.bounds || analysis.bounds
+        if (Array.isArray(bounds) && bounds.length >= 2) {
+          mapInstanceRef.current.fitBounds(bounds)
+        }
+      }
+    } catch (error) {
+      setWebodmAnalysis(null)
+      setWebodmError(error.message || "Não foi possível conectar ao WebODM.")
+    } finally {
+      setWebodmLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (webodmConfigured) {
+      connectWebODM()
+    }
+  }, [])
 
   // carregar áreas
   useEffect(() => {
@@ -843,6 +1099,149 @@ export default function MapaTab() {
     })
   }, [selectedAreaId, areas])
 
+  useEffect(() => {
+    const map = mapInstanceRef.current
+    if (!map) return
+
+    if (webodmLayerRef.current) {
+      webodmLayerRef.current.remove()
+      webodmLayerRef.current = null
+    }
+
+    if (!selectedWebODM) return
+
+    const layerGroup = L.layerGroup().addTo(map)
+    webodmLayerRef.current = layerGroup
+
+    selectedWebODM.detections.forEach((item) => {
+      const popupHtml = `
+        <div style="font-family:Inter,sans-serif;min-width:190px">
+          <strong style="color:${item.color};font-size:14px">${item.label}</strong>
+          <p style="margin:6px 0;color:#33433a">Severidade: ${item.severity}%</p>
+          <p style="margin:6px 0;color:#33433a">Área afetada: ${formatArea(item.affectedHa)}</p>
+          <p style="margin:6px 0;color:#33433a">Confiança IA: ${item.confidence}%</p>
+        </div>
+      `
+
+      if (item.polygon?.length >= 3) {
+        const fillOpacity = activeWebODMLayer === "heatmap"
+          ? Math.min(0.72, 0.24 + item.severity / 150)
+          : activeWebODMLayer === "prescription"
+            ? 0.42
+            : 0.28
+
+        L.polygon(item.polygon, {
+          color: item.color,
+          fillColor: item.color,
+          fillOpacity,
+          weight: activeWebODMLayer === "detections" ? 2 : 1,
+          dashArray: activeWebODMLayer === "prescription" ? "6 6" : null,
+        }).addTo(layerGroup).bindPopup(popupHtml)
+      }
+
+      if (activeWebODMLayer === "detections" || activeWebODMLayer === "route") {
+        L.circleMarker(item.center, {
+          radius: 7,
+          color: "#ffffff",
+          fillColor: item.color,
+          fillOpacity: 1,
+          weight: 2,
+        }).addTo(layerGroup).bindPopup(popupHtml)
+      }
+    })
+
+    if (activeWebODMLayer === "route" && selectedWebODM.route.length > 1) {
+      L.polyline(selectedWebODM.route, {
+        color: "#111827",
+        weight: 4,
+        opacity: 0.86,
+        dashArray: "10 10",
+      }).addTo(layerGroup)
+
+      selectedWebODM.route.forEach((point, index) => {
+        L.marker(point, {
+          icon: L.divIcon({
+            className: "webodm-route-marker",
+            html: `<span>${index + 1}</span>`,
+          })
+        }).addTo(layerGroup)
+      })
+    }
+
+    return () => {
+      layerGroup.remove()
+      if (webodmLayerRef.current === layerGroup) {
+        webodmLayerRef.current = null
+      }
+    }
+  }, [selectedWebODM, activeWebODMLayer])
+
+  useEffect(() => {
+    const map = mapInstanceRef.current
+    if (!map) return
+
+    if (orthophotoLayerRef.current) {
+      orthophotoLayerRef.current.remove()
+      orthophotoLayerRef.current = null
+    }
+
+    if (!orthophotoLayerEnabled || !selectedWebODM?.orthophotoTiles) return
+
+    const tileUrl = getTileUrl(
+      selectedWebODM.config,
+      selectedWebODM.projectId,
+      selectedWebODM.taskId,
+      "orthophoto"
+    )
+
+    const AuthTileLayer = L.GridLayer.extend({
+      createTile(coords, done) {
+        const tile = document.createElement("img")
+        const url = L.Util.template(tileUrl, {
+          z: coords.z,
+          x: coords.x,
+          y: coords.y,
+        })
+
+        tile.alt = ""
+        tile.setAttribute("role", "presentation")
+
+        fetch(url, {
+          headers: selectedWebODM.config.token
+            ? { Authorization: `JWT ${selectedWebODM.config.token}` }
+            : {},
+        })
+          .then(response => {
+            if (!response.ok) throw new Error(`Tile ${response.status}`)
+            return response.blob()
+          })
+          .then(blob => {
+            const objectUrl = URL.createObjectURL(blob)
+            tile.onload = () => URL.revokeObjectURL(objectUrl)
+            tile.src = objectUrl
+            done(null, tile)
+          })
+          .catch(error => done(error, tile))
+
+        return tile
+      }
+    })
+
+    orthophotoLayerRef.current = new AuthTileLayer({
+      opacity: 0.84,
+      tileSize: 256,
+      maxZoom: 22,
+      zIndex: 350,
+    }).addTo(map)
+
+    return () => {
+      if (orthophotoLayerRef.current) {
+        orthophotoLayerRef.current.remove()
+        orthophotoLayerRef.current = null
+      }
+    }
+  }, [selectedWebODM, orthophotoLayerEnabled])
+
   const addPoint = (latlng) => {
     if (!isDrawingRef.current || !mapInstanceRef.current) return
 
@@ -1005,15 +1404,47 @@ export default function MapaTab() {
     }
   }, [])
 
-  const totalArea = areas.reduce((sum, a) => sum + (a.areaHa || 0), 0)
-  const visibleAreas = areas.slice(0, visibleAreasCount)
-  const hasMoreAreas = visibleAreasCount < areas.length
-  const selectedArea = areas.find(area => area.id === selectedAreaId) || areas[areas.length - 1] || null
+  const focusWebODMRoute = () => {
+    if (!selectedWebODM?.route?.length || !mapInstanceRef.current) return
+
+    setActiveWebODMLayer("route")
+    mapInstanceRef.current.fitBounds(L.latLngBounds(selectedWebODM.route), {
+      padding: [48, 48],
+      maxZoom: 18,
+    })
+  }
+
+  const exportWebODMReport = () => {
+    if (!selectedWebODM) return
+
+    const report = {
+      area: {
+        id: selectedArea?.id || null,
+        tamanho: selectedArea ? formatArea(selectedArea.areaHa) : null,
+        status: selectedArea?.status || null,
+      },
+      webodm: selectedWebODM,
+    }
+
+    const blob = new Blob([JSON.stringify(report, null, 2)], {
+      type: "application/json",
+    })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement("a")
+    link.href = url
+    link.download = `relatorio-webodm-task-${selectedWebODM.taskId}.json`
+    link.click()
+    URL.revokeObjectURL(url)
+  }
 
   return (
     <div className="mapa-container">
       <div className="mapa-header">
         <h2>🗺️ Mapa da Fazenda</h2>
+        <div className="total-area-badge">
+          <span>Área total mapeada</span>
+          <strong>{formatArea(totalArea)}</strong>
+        </div>
       </div>
 
       <form className="mapa-search" onSubmit={handleSearch}>
@@ -1059,6 +1490,20 @@ export default function MapaTab() {
       <div className="mapa-area">
         <div ref={mapContainerRef} className="map-container"></div>
       </div>
+
+      <WebODMPanel
+        analysis={selectedWebODM}
+        configured={webodmConfigured}
+        loading={webodmLoading}
+        error={webodmError}
+        activeLayer={activeWebODMLayer}
+        orthophotoEnabled={orthophotoLayerEnabled}
+        onConnect={connectWebODM}
+        onLayerChange={setActiveWebODMLayer}
+        onOrthophotoToggle={setOrthophotoLayerEnabled}
+        onFocusRoute={focusWebODMRoute}
+        onExportReport={exportWebODMReport}
+      />
 
       <Field3DView area={selectedArea} />
 

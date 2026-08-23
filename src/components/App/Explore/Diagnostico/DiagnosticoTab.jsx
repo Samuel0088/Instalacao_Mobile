@@ -1,372 +1,407 @@
-import { useState, useRef, useEffect } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useLocation } from "react-router-dom"
 import CameraView from "./CameraView"
-import ImagePreview from "./ImagePreview"
+import BatchImagePreview from "./BatchImagePreview"
+import BatchDiagnosisResult from "./BatchDiagnosisResult"
 import AnalysisLoader from "./AnalysisLoader"
 import DiagnosisResult from "./DiagnosisResult"
 import AllHistory from "./AllHistory"
+import { formatDiagnosisName } from "./diagnosisLabels"
+import { diagnosticarLote } from "../../../../services/sojaApi"
 import "../../../../styles/App/Diagnostico.css"
+import "../../../../styles/App/BatchDiagnosis.css"
 
-const API_URL = "https://tccamsamericana-api-doencas-soja.hf.space/predict"
+const MAX_BATCH_IMAGES = 100
+const MAX_FILE_SIZE = 20 * 1024 * 1024
+const MAX_BATCH_SIZE = 500 * 1024 * 1024
+const ACCEPTED_MIME_TYPES = new Set(["image/jpeg", "image/png", "image/webp"])
+const ACCEPTED_EXTENSIONS = /\.(jpe?g|png|webp)$/i
+
+const checkIsMobile = () => window.innerWidth < 1025
+
+function createImageId() {
+  return globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`
+}
+
+function isSupportedImage(file) {
+  if (!(file instanceof File)) return false
+  return ACCEPTED_MIME_TYPES.has(file.type) || (!file.type && ACCEPTED_EXTENSIONS.test(file.name))
+}
+
+function fileIdentity(file) {
+  return `${file.name}::${file.size}::${file.lastModified}`
+}
 
 export default function DiagnosticoTab() {
   const videoRef = useRef(null)
   const fileInputRef = useRef(null)
+  const selectedImagesRef = useRef([])
+  const requestControllerRef = useRef(null)
   const location = useLocation()
-  
+
   const [step, setStep] = useState("start")
-  const [image, setImage] = useState(null)
+  const [selectedImages, setSelectedImages] = useState([])
   const [result, setResult] = useState(null)
   const [history, setHistory] = useState([])
   const [showAllHistory, setShowAllHistory] = useState(false)
+  const [isMobile, setIsMobile] = useState(checkIsMobile)
+  const [isDraggingImage, setIsDraggingImage] = useState(false)
+  const [selectionNotice, setSelectionNotice] = useState(null)
+  const [selectionSource, setSelectionSource] = useState(null)
 
-  // ==============================
-  // VERIFICAR ESTADO DA NAVEGAÇÃO
-  // ==============================
   useEffect(() => {
-    // Se veio do link "Ver todos" dos diagnósticos recentes
-    if (location.state?.showHistory) {
-      setShowAllHistory(true)
-    }
-    
-    // Se veio do link do último diagnóstico
+    selectedImagesRef.current = selectedImages
+  }, [selectedImages])
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(checkIsMobile())
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
+
+  useEffect(() => {
+    if (location.state?.showHistory) setShowAllHistory(true)
     if (location.state?.showResult && location.state?.diagnosticData) {
       const diagnostic = location.state.diagnosticData
-      // Criar um objeto no formato que o DiagnosisResult espera
-      const resultData = {
-        resultado: diagnostic.disease,
+      setResult({
+        doenca: formatDiagnosisName(diagnostic.disease),
         confianca: diagnostic.confidence,
         probabilidades: {}
-      }
-      setResult(resultData)
+      })
       setStep("result")
     }
   }, [location])
 
-  // ==============================
-  // CARREGAR HISTÓRICO
-  // ==============================
   useEffect(() => {
-    const saved = localStorage.getItem("diagnosticHistory")
-    if (saved) {
-      setHistory(JSON.parse(saved))
+    try {
+      const saved = localStorage.getItem("diagnosticHistory")
+      if (saved) setHistory(JSON.parse(saved))
+    } catch {
+      // O diagnóstico continua funcionando mesmo se o navegador bloquear o armazenamento local.
     }
   }, [])
 
-  // ==============================
-  // SALVAR HISTÓRICO
-  // ==============================
-  const saveToHistory = (data, submittedAt) => {
-    // Extrair o nome da doença e confiança
-    let diseaseName = "Desconhecido"
-    let confidence = 0
-    
-    console.log("=== SALVANDO NO HISTÓRICO ===")
-    console.log("Dados recebidos:", data)
-    
-    // Verificar diferentes formatos de resposta da API
-    if (data) {
-      // Formato 1: { doenca: "Nome", confianca: 95 }
-      if (data.doenca) {
-        diseaseName = data.doenca
-        confidence = data.confianca
-        console.log("Formato 1 detectado - doenca:", diseaseName, "confianca:", confidence)
-      }
-      // Formato 2: { disease: "Nome", confidence: 95 }
-      else if (data.disease) {
-        diseaseName = data.disease
-        confidence = data.confidence
-        console.log("Formato 2 detectado - disease:", diseaseName, "confidence:", confidence)
-      }
-      // Formato 3: { classe: "Nome", probabilidade: 0.95 }
-      else if (data.classe) {
-        diseaseName = data.classe
-        confidence = data.probabilidade * 100
-        console.log("Formato 3 detectado - classe:", diseaseName, "probabilidade:", data.probabilidade)
-      }
-      // Formato 4: { label: "Nome", score: 0.95 }
-      else if (data.label) {
-        diseaseName = data.label
-        confidence = data.score * 100
-        console.log("Formato 4 detectado - label:", diseaseName, "score:", data.score)
-      }
-      // Formato 5: { prediction: "Nome", probability: 0.95 }
-      else if (data.prediction) {
-        diseaseName = data.prediction
-        confidence = data.probability * 100
-        console.log("Formato 5 detectado - prediction:", diseaseName, "probability:", data.probability)
-      }
-      // Formato 6: { resultado: "Nome", confianca: 95 }
-      else if (data.resultado) {
-        diseaseName = data.resultado
-        confidence = data.confianca
-        console.log("Formato 6 detectado - resultado:", diseaseName, "confianca:", data.confianca)
-      }
-      // Formato 7: Array de predições
-      else if (Array.isArray(data) && data.length > 0) {
-        const topPrediction = data[0]
-        diseaseName = topPrediction.nome || topPrediction.classe || topPrediction.label || "Desconhecido"
-        confidence = (topPrediction.confianca || topPrediction.probabilidade || topPrediction.score || 0) * 100
-        console.log("Formato 7 detectado - Array, top:", diseaseName, "confidence:", confidence)
-      }
-      // Formato 8: { predictions: [...] }
-      else if (data.predictions && data.predictions.length > 0) {
-        const topPrediction = data.predictions[0]
-        diseaseName = topPrediction.nome || topPrediction.classe || "Desconhecido"
-        confidence = (topPrediction.confianca || topPrediction.probabilidade || 0) * 100
-        console.log("Formato 8 detectado - predictions, top:", diseaseName, "confidence:", confidence)
-      }
-      // Formato 9: { nome: "Nome", confianca: 95 } (direto)
-      else if (data.nome) {
-        diseaseName = data.nome
-        confidence = data.confianca
-        console.log("Formato 9 detectado - nome:", diseaseName, "confianca:", confidence)
-      }
-      // Se não encontrou nenhum formato conhecido, mostra o objeto completo
-      else {
-        console.warn("Formato não reconhecido! Objeto completo:", data)
-        diseaseName = "Formato não reconhecido"
-        confidence = 0
-      }
+  useEffect(() => {
+    return () => {
+      selectedImagesRef.current.forEach((image) => URL.revokeObjectURL(image.preview))
+      requestControllerRef.current?.abort()
+      videoRef.current?.srcObject?.getTracks().forEach((track) => track.stop())
     }
-    
-    // Garantir que a confiança seja um número entre 0-100
-    if (confidence > 1 && confidence <= 100) {
-      confidence = Math.round(confidence)
-    } else if (confidence <= 1) {
-      confidence = Math.round(confidence * 100)
-    } else {
-      confidence = Math.min(100, Math.max(0, Math.round(confidence)))
-    }
-    
-    const newItem = {
-      id: Date.now(),
-      disease: diseaseName,
-      confidence: confidence,
-      date: new Date().toLocaleString("pt-BR"),
-      submittedAt
-    }
-    
-    console.log("Item salvo no histórico:", newItem)
-    console.log("===============================")
+  }, [])
 
-    const updated = [newItem, ...history].slice(0, 10)
-    setHistory(updated)
-    localStorage.setItem("diagnosticHistory", JSON.stringify(updated))
+  const persistHistoryItem = (item) => {
+    setHistory((currentHistory) => {
+      const updated = [item, ...currentHistory].slice(0, 20)
+      try {
+        localStorage.setItem("diagnosticHistory", JSON.stringify(updated))
+      } catch {
+        // Mantém o item em memória quando o localStorage não estiver disponível.
+      }
+      return updated
+    })
   }
 
-  // ==============================
-  // VER TODOS OS HISTÓRICOS
-  // ==============================
+  const saveBatchToHistory = (data) => {
+    const general = data?.resultado_geral
+    if (!general) return
+
+    const conditions = general.ocorrencias_confiaveis || []
+    let title = "Lote inconclusivo"
+
+    if (conditions.length > 1) title = `${conditions.length} condições detectadas`
+    else if (conditions.length === 1) title = formatDiagnosisName(conditions[0].classe)
+    else if (general.condicao_predominante) title = formatDiagnosisName(general.condicao_predominante)
+
+    persistHistoryItem({
+      id: Date.now(),
+      type: "batch",
+      disease: title,
+      confidence: Math.max(0, Math.min(100, Math.round(Number(general.confianca_media) || 0))),
+      date: new Date().toLocaleString("pt-BR"),
+      imageCount: Number(general.total_recebidas) || selectedImages.length,
+      reliableCount: Number(general.resultados_confiaveis) || 0,
+      conditionCount: conditions.length,
+      status: general.status
+    })
+  }
+
+  const stopCamera = () => {
+    videoRef.current?.srcObject?.getTracks().forEach((track) => track.stop())
+  }
+
+  const startCamera = async () => {
+    setSelectionSource((current) => selectedImagesRef.current.length > 0 ? current || "camera" : "camera")
+    setSelectionNotice(null)
+    setStep("camera")
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment" }
+      })
+      if (videoRef.current) videoRef.current.srcObject = stream
+    } catch (error) {
+      console.error("Câmera:", error)
+      setSelectionNotice({
+        type: "warning",
+        text: "Não foi possível acessar a câmera. Verifique a permissão do navegador ou selecione fotos da galeria."
+      })
+      if (selectedImagesRef.current.length > 0) {
+        setStep("preview")
+      } else {
+        setSelectionSource(null)
+        setStep("start")
+      }
+    }
+  }
+
+  const addSelectedFiles = (fileList) => {
+    const incomingFiles = Array.from(fileList || [])
+    if (incomingFiles.length === 0) return
+
+    const existingFiles = new Set(selectedImages.map((image) => fileIdentity(image.file)))
+    const currentBatchSize = selectedImages.reduce((total, image) => total + image.file.size, 0)
+    const accepted = []
+    let acceptedSize = 0
+    let unsupported = 0
+    let oversized = 0
+    let duplicated = 0
+    let exceeded = 0
+    let batchSizeExceeded = 0
+
+    incomingFiles.forEach((file) => {
+      if (!isSupportedImage(file)) {
+        unsupported += 1
+        return
+      }
+      if (file.size > MAX_FILE_SIZE) {
+        oversized += 1
+        return
+      }
+
+      const identity = fileIdentity(file)
+      if (existingFiles.has(identity)) {
+        duplicated += 1
+        return
+      }
+      if (selectedImages.length + accepted.length >= MAX_BATCH_IMAGES) {
+        exceeded += 1
+        return
+      }
+      if (currentBatchSize + acceptedSize + file.size > MAX_BATCH_SIZE) {
+        batchSizeExceeded += 1
+        return
+      }
+
+      existingFiles.add(identity)
+      acceptedSize += file.size
+      accepted.push({
+        id: createImageId(),
+        file,
+        preview: URL.createObjectURL(file)
+      })
+    })
+
+    if (accepted.length > 0) {
+      setSelectedImages((current) => [...current, ...accepted])
+      setStep("preview")
+    }
+
+    const problems = []
+    if (unsupported) problems.push(`${unsupported} em formato não compatível`)
+    if (oversized) problems.push(`${oversized} acima de 20 MB`)
+    if (duplicated) problems.push(`${duplicated} duplicada${duplicated > 1 ? "s" : ""}`)
+    if (exceeded) problems.push(`${exceeded} acima do limite de ${MAX_BATCH_IMAGES}`)
+    if (batchSizeExceeded) problems.push(`${batchSizeExceeded} acima do limite total de 500 MB`)
+
+    if (problems.length > 0) {
+      setSelectionNotice({
+        type: "warning",
+        text: `${accepted.length ? `${accepted.length} adicionada${accepted.length > 1 ? "s" : ""}. ` : ""}Ignoradas: ${problems.join(", ")}.`
+      })
+    } else {
+      setSelectionNotice(null)
+    }
+  }
+
+  const capturePhoto = () => {
+    const video = videoRef.current
+    if (!video || !video.videoWidth || !video.videoHeight) return
+
+    const canvas = document.createElement("canvas")
+    canvas.width = video.videoWidth
+    canvas.height = video.videoHeight
+    canvas.getContext("2d").drawImage(video, 0, 0)
+
+    canvas.toBlob((blob) => {
+      if (!blob) return
+      const timestamp = new Date().toISOString().replace(/[:.]/g, "-")
+      const cameraFile = new File([blob], `captura-soja-${timestamp}.jpg`, {
+        type: "image/jpeg",
+        lastModified: Date.now()
+      })
+      stopCamera()
+      addSelectedFiles([cameraFile])
+    }, "image/jpeg", 0.92)
+  }
+
+  const openGallery = () => {
+    setSelectionSource((current) => selectedImagesRef.current.length > 0 ? current || "gallery" : "gallery")
+    fileInputRef.current?.click()
+  }
+
+  const addMoreImages = () => {
+    if (selectionSource === "camera") {
+      startCamera()
+      return
+    }
+
+    openGallery()
+  }
+
+  const handleGalleryImages = (event) => {
+    if (!event.target.files?.length && selectedImagesRef.current.length === 0) {
+      setSelectionSource(null)
+    }
+    addSelectedFiles(event.target.files)
+    event.target.value = ""
+  }
+
+  const handleDragOverImage = (event) => {
+    event.preventDefault()
+    event.stopPropagation()
+    setIsDraggingImage(true)
+  }
+
+  const handleDragLeaveImage = (event) => {
+    event.preventDefault()
+    event.stopPropagation()
+    setIsDraggingImage(false)
+  }
+
+  const handleDropImage = (event) => {
+    event.preventDefault()
+    event.stopPropagation()
+    setIsDraggingImage(false)
+    setSelectionSource((current) => current || "gallery")
+    addSelectedFiles(event.dataTransfer.files)
+  }
+
+  const removeSelectedImage = (imageId) => {
+    const imageToRemove = selectedImages.find((image) => image.id === imageId)
+    if (imageToRemove) URL.revokeObjectURL(imageToRemove.preview)
+
+    const remaining = selectedImages.filter((image) => image.id !== imageId)
+    setSelectedImages(remaining)
+    if (remaining.length === 0) {
+      setSelectionNotice(null)
+      setSelectionSource(null)
+      setStep("start")
+    }
+  }
+
+  const clearSelectedImages = () => {
+    selectedImages.forEach((image) => URL.revokeObjectURL(image.preview))
+    setSelectedImages([])
+    setSelectionNotice(null)
+    setSelectionSource(null)
+  }
+
+  const analyzeBatch = async () => {
+    if (selectedImages.length === 0) return
+
+    const controller = new AbortController()
+    requestControllerRef.current = controller
+    setStep("analysis")
+
+    try {
+      const data = await diagnosticarLote(selectedImages, { signal: controller.signal })
+      setResult(data)
+      saveBatchToHistory(data)
+    } catch (error) {
+      if (controller.signal.aborted) return
+      setResult({
+        status: error?.status ? "erro_api" : "erro_conexao",
+        resultado: "Erro",
+        mensagem: error?.message || "Não foi possível analisar o lote agora. Verifique a conexão e tente novamente."
+      })
+    } finally {
+      if (!controller.signal.aborted) setStep("result")
+      if (requestControllerRef.current === controller) requestControllerRef.current = null
+    }
+  }
+
+  const reset = () => {
+    stopCamera()
+    clearSelectedImages()
+    setResult(null)
+    setStep("start")
+  }
+
+  const cancelCamera = () => {
+    stopCamera()
+    if (selectedImages.length > 0) {
+      setStep("preview")
+      return
+    }
+
+    reset()
+  }
+
+  const backFromHistory = () => {
+    setShowAllHistory(false)
+    try {
+      const saved = localStorage.getItem("diagnosticHistory")
+      if (saved) setHistory(JSON.parse(saved))
+    } catch {
+      // Mantém o histórico que já está em memória.
+    }
+  }
+
   const viewAllHistory = () => {
     setShowAllHistory(true)
     window.scrollTo({ top: 0, behavior: "auto" })
   }
 
-  // ==============================
-  // VOLTAR DO HISTÓRICO
-  // ==============================
-  const backFromHistory = () => {
-    setShowAllHistory(false)
-    window.scrollTo({ top: 0, behavior: "auto" })
-    const saved = localStorage.getItem("diagnosticHistory")
-    if (saved) {
-      setHistory(JSON.parse(saved))
-    }
-  }
+  const galleryInput = (
+    <input
+      type="file"
+      accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+      multiple
+      ref={fileInputRef}
+      className="hidden-input"
+      onChange={handleGalleryImages}
+    />
+  )
 
-  // ==============================
-  // CAMERA
-  // ==============================
-  const startCamera = async () => {
-    setStep("camera")
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" }
-      })
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream
-      }
-    } catch (err) {
-      console.error("Erro ao acessar câmera:", err)
-    }
-  }
-
-  const stopCamera = () => {
-    const stream = videoRef.current?.srcObject
-    if (!stream) return
-    stream.getTracks().forEach(track => track.stop())
-  }
-
-  const capturePhoto = () => {
-    const video = videoRef.current
-    if (!video) return
-
-    const canvas = document.createElement("canvas")
-    canvas.width = video.videoWidth
-    canvas.height = video.videoHeight
-
-    const ctx = canvas.getContext("2d")
-    ctx.drawImage(video, 0, 0)
-
-    const data = canvas.toDataURL("image/jpeg")
-
-    setImage(data)
-    stopCamera()
-    setStep("preview")
-  }
-
-  // ==============================
-  // GALERIA
-  // ==============================
-  const openGallery = () => {
-    fileInputRef.current.click()
-  }
-
-  const handleGalleryImage = (event) => {
-    const file = event.target.files[0]
-    if (!file) return
-
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      setImage(e.target.result)
-      setStep("preview")
-    }
-
-    reader.readAsDataURL(file)
-  }
-
-  // ==============================
-  // ANALISAR IMAGEM
-  // ==============================
-  const analyzeImage = async () => {
-    const submittedAt = new Date().toISOString()
-    localStorage.setItem("lastAiImageSubmission", submittedAt)
-    setStep("analysis")
-
-    try {
-      console.log("=== INICIANDO ANÁLISE ===")
-      console.log("Imagem base64 (primeiros 100 caracteres):", image.substring(0, 100))
-      
-      // Converter base64 para blob
-      const blob = await fetch(image).then(res => res.blob())
-      console.log("Blob criado, tamanho:", blob.size, "bytes")
-      
-      const formData = new FormData()
-      formData.append("file", blob, "image.jpg")
-      
-      console.log("Enviando requisição para API:", API_URL)
-      
-      const response = await fetch(API_URL, {
-        method: "POST",
-        body: formData
-      })
-      
-      console.log("Status da resposta:", response.status)
-      
-      if (!response.ok) {
-        throw new Error(`Erro na API: ${response.status}`)
-      }
-      
-      const data = await response.json()
-      
-      // LOG DETALHADO DA RESPOSTA DA API
-      console.log("=== RESPOSTA DA API ===")
-      console.log("Dados completos:", JSON.stringify(data, null, 2))
-      console.log("Tipo do dado:", typeof data)
-      console.log("É array?", Array.isArray(data))
-      console.log("Chaves do objeto:", data ? Object.keys(data) : "dados vazios")
-      
-      // Verificar campos comuns
-      if (data) {
-        console.log("Campo 'doenca':", data.doenca)
-        console.log("Campo 'confianca':", data.confianca)
-        console.log("Campo 'disease':", data.disease)
-        console.log("Campo 'confidence':", data.confidence)
-        console.log("Campo 'probabilidades':", data.probabilidades)
-        console.log("Campo 'predictions':", data.predictions)
-      }
-      console.log("=======================")
-      
-      setResult(data)
-      saveToHistory(data, submittedAt)
-      
-      setStep("result")
-    } catch (err) {
-      console.error("=== ERRO NA ANÁLISE ===")
-      console.error("Erro:", err)
-      console.error("Mensagem:", err.message)
-      console.error("Stack:", err.stack)
-      console.error("======================")
-
-      const errorResult = {
-        doenca: "Erro ao analisar imagem",
-        confianca: 0,
-        error: err.message
-      }
-
-      setResult(errorResult)
-      saveToHistory(errorResult, submittedAt)
-
-      setStep("result")
-    }
-  }
-
-  // ==============================
-  // RESET
-  // ==============================
-  const reset = () => {
-    setImage(null)
-    setResult(null)
-    setStep("start")
-  }
-
-  // ==============================
-  // TELAS
-  // ==============================
-  
-  if (showAllHistory) {
-    return <AllHistory onBack={backFromHistory} />
-  }
-
-  if (step === "camera") {
-    return (
-      <CameraView
-        videoRef={videoRef}
-        onCapture={capturePhoto}
-        onCancel={reset}
-      />
-    )
-  }
-
+  if (showAllHistory) return <AllHistory onBack={backFromHistory} />
+  if (step === "camera") return <CameraView videoRef={videoRef} onCapture={capturePhoto} onCancel={cancelCamera} />
   if (step === "preview") {
     return (
-      <ImagePreview
-        image={image}
-        onBack={reset}
-        onAnalyze={analyzeImage}
-      />
+      <>
+        <BatchImagePreview
+          images={selectedImages}
+          notice={selectionNotice}
+          onAddImages={addMoreImages}
+          onRemoveImage={removeSelectedImage}
+          onBack={reset}
+          onAnalyze={analyzeBatch}
+          addImagesLabel={selectionSource === "camera" ? "Tirar outra foto" : "Adicionar fotos"}
+          addImagesIcon={selectionSource === "camera" ? "photo_camera" : "add_photo_alternate"}
+          addTileTitle={selectionSource === "camera" ? "Tirar foto" : "Adicionar"}
+          addTileSubtitle={selectionSource === "camera" ? "novamente" : "mais imagens"}
+        />
+        {galleryInput}
+      </>
     )
   }
-
-  if (step === "analysis") {
-    return <AnalysisLoader />
+  if (step === "analysis") return <AnalysisLoader imageCount={selectedImages.length} />
+  if (step === "result" && result?.resultado_geral) {
+    return <BatchDiagnosisResult result={result} selectedImages={selectedImages} onRestart={reset} />
   }
-
-  if (step === "result") {
-    return (
-      <DiagnosisResult
-        result={result}
-        onRestart={reset}
-      />
-    )
+  if (step === "result" && selectedImages.length > 0) {
+    return <BatchDiagnosisResult result={result} selectedImages={selectedImages} onRestart={reset} />
   }
+  if (step === "result") return <DiagnosisResult result={result} onRestart={reset} />
 
-  // ==============================
-  // TELA INICIAL
-  // ==============================
   return (
     <div className="diagnostic-container">
       <div className="diagnostic-header">
@@ -378,25 +413,45 @@ export default function DiagnosticoTab() {
         </p>
       </div>
 
-      <div className="options-grid">
-        <button className="option-card" onClick={startCamera}>
-          <div className="card-glow"></div>
-          <div className="option-icon-wrapper">
-            <div className="option-icon">
-              <span className="material-symbols-outlined">
-                photo_camera
-              </span>
-            </div>
+      {selectionNotice?.text && (
+        <div className="tips-card" role="status">
+          <div className="tips-header">
+            <span className="material-symbols-outlined">warning</span>
+            <h4>Atenção</h4>
           </div>
-          <h3>Tirar foto</h3>
-          <p>Capture uma imagem agora</p>
-          <div className="card-action">
-            <span>Usar câmera</span>
-            <span className="arrow">→</span>
-          </div>
-        </button>
+          <p>{selectionNotice.text}</p>
+        </div>
+      )}
 
-        <button className="option-card" onClick={openGallery}>
+      <div className="options-grid">
+        {isMobile && (
+          <button type="button" className="option-card" onClick={startCamera}>
+            <div className="card-glow"></div>
+            <div className="option-icon-wrapper">
+              <div className="option-icon">
+                <span className="material-symbols-outlined">
+                  photo_camera
+                </span>
+              </div>
+            </div>
+            <h3>Tirar foto</h3>
+            <p>Capture uma imagem agora</p>
+            <div className="card-action">
+              <span>Usar câmera</span>
+              <span className="arrow">→</span>
+            </div>
+          </button>
+        )}
+
+        <button
+          type="button"
+          className={`option-card ${isDraggingImage ? "drag-active" : ""}`}
+          onClick={openGallery}
+          onDragEnter={handleDragOverImage}
+          onDragOver={handleDragOverImage}
+          onDragLeave={handleDragLeaveImage}
+          onDrop={handleDropImage}
+        >
           <div className="card-glow"></div>
           <div className="option-icon-wrapper">
             <div className="option-icon">
@@ -406,7 +461,7 @@ export default function DiagnosticoTab() {
             </div>
           </div>
           <h3>Galeria</h3>
-          <p>Escolha uma imagem</p>
+          <p>Escolha até 100 imagens</p>
           <div className="card-action">
             <span>Selecionar</span>
             <span className="arrow">→</span>
@@ -414,14 +469,13 @@ export default function DiagnosticoTab() {
         </button>
       </div>
 
-      {/* HISTÓRICO COM BOTÃO VER TODOS */}
       <div className="history-section">
         <div className="section-header">
           <div className="section-title">
             <span className="material-symbols-outlined">history</span>
             <h3>Histórico de Diagnósticos</h3>
           </div>
-          <button className="section-link" onClick={viewAllHistory}>
+          <button type="button" className="section-link" onClick={viewAllHistory}>
             Ver todos
             <span className="material-symbols-outlined">chevron_right</span>
           </button>
@@ -438,11 +492,13 @@ export default function DiagnosticoTab() {
                 Realize seu primeiro diagnóstico tirando uma foto ou selecionando da galeria
               </p>
               <div className="empty-actions">
-                <button className="empty-action" onClick={startCamera}>
-                  <span className="material-symbols-outlined">photo_camera</span>
-                  Tirar foto
-                </button>
-                <button className="empty-action secondary" onClick={openGallery}>
+                {isMobile && (
+                  <button type="button" className="empty-action" onClick={startCamera}>
+                    <span className="material-symbols-outlined">photo_camera</span>
+                    Tirar foto
+                  </button>
+                )}
+                <button type="button" className="empty-action secondary" onClick={openGallery}>
                   <span className="material-symbols-outlined">photo_library</span>
                   Galeria
                 </button>
@@ -452,15 +508,17 @@ export default function DiagnosticoTab() {
             history.slice(0, 5).map((item) => (
               <div key={item.id} className="history-item">
                 <div className="history-icon">
-                  <span className="material-symbols-outlined">eco</span>
+                  <span className="material-symbols-outlined">{item.type === "batch" ? "flight" : "eco"}</span>
                 </div>
 
                 <div className="history-info">
-                  <div className="history-name">{item.disease}</div>
-                  <div className="history-date">{item.date}</div>
+                  <div className="history-name">{formatDiagnosisName(item.disease)}</div>
+                  <div className="history-date">
+                    {item.type === "batch" && item.imageCount ? `${item.imageCount} fotos • ` : ""}{item.date}
+                  </div>
                 </div>
 
-                <div className="history-confidence">
+                <div className="history-confidence" title="Confiança média">
                   <div className="confidence-value">
                     {item.confidence}%
                   </div>
@@ -476,7 +534,7 @@ export default function DiagnosticoTab() {
           )}
         </div>
         {history.length > 5 && (
-          <button className="show-more-history-btn" onClick={viewAllHistory}>
+          <button type="button" className="show-more-history-btn" onClick={viewAllHistory}>
             Ver mais
             <span className="material-symbols-outlined">expand_more</span>
           </button>
@@ -496,13 +554,7 @@ export default function DiagnosticoTab() {
         </p>
       </div>
 
-      <input
-        type="file"
-        accept="image/*"
-        ref={fileInputRef}
-        className="hidden-input"
-        onChange={handleGalleryImage}
-      />
+      {galleryInput}
     </div>
   )
 }

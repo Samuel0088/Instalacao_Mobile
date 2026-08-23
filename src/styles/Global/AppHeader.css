@@ -626,7 +626,7 @@
 
 .home-user-heading span:first-child {
   color: #22261d;
-  font-size: 1.36rem;
+  font-size: 1.78rem;
   font-weight: 500;
 }
 
@@ -704,4 +704,56 @@ header::after {
   border: none !important;
   box-shadow: none !important;
   filter: none !important;
+}
+
+/* Polimento home: cabecalho leve, no estilo do mockup agricola */
+.home-app-header .home-user-heading {
+  max-width: min(270px, calc(100vw - 110px));
+}
+
+.home-user-heading span:first-child {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  line-height: 1.04;
+}
+
+.home-user-heading span:first-child strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-user-heading .home-user-leaf {
+  flex: 0 0 auto;
+  width: auto;
+  color: var(--g5);
+  font-size: 24px;
+  transform: rotate(-17deg) translateY(1px);
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 600,
+    "GRAD" 0,
+    "opsz" 24;
+}
+
+.home-app-header .notification-btn {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(248, 253, 245, 0.7));
+  border-color: rgba(45, 97, 64, 0.1);
+  box-shadow:
+    0 10px 22px rgba(45, 97, 64, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.86);
+}
+
+/* Alinha o cabecalho com o conteudo mais largo da Home no celular */
+@media (max-width: 550px) {
+  .app-header.home-app-header .header-top {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    padding-inline: 14px;
+  }
 }

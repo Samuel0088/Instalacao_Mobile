@@ -217,7 +217,10 @@ export default function AppHeader({
       <div className="header-top">
         {showHomeContent ? (
           <button className="home-user-heading" onClick={() => goToInternalPage("/home")}>
-            <span>Olá, <strong>{userName || "Agricultor"}</strong></span>
+            <span>
+              Olá, <strong>{userName || "Agricultor"}</strong>
+              <span className="home-user-leaf material-symbols-outlined" aria-hidden="true">eco</span>
+            </span>
             <small>
               <span className="material-symbols-outlined">location_on</span>
               {cityName || farmName || "Cadastre sua fazenda"}
