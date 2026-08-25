@@ -1905,8 +1905,8 @@ body {
   }
 }
 
-/* Plantio compartilha a navegação clara do Diagnóstico. */
-:is(.explore-container--monitoramento, .explore-container--clima) {
+/* Plantio, Clima e Diario compartilham a navegacao clara do Diagnostico. */
+:is(.explore-container--monitoramento, .explore-container--clima, .explore-container--diario) {
   --diagnostic-surface: #f4f9ef;
   padding-bottom: 0;
   background: var(--diagnostic-surface);
@@ -1918,7 +1918,7 @@ body {
   overflow: hidden;
 }
 
-:is(.explore-container--monitoramento, .explore-container--clima) .explore-tabs-header {
+:is(.explore-container--monitoramento, .explore-container--clima, .explore-container--diario) .explore-tabs-header {
   padding: calc(env(safe-area-inset-top, 0px) + 12px) 0 10px;
   border: 0;
   background-color: var(--diagnostic-surface) !important;
@@ -1927,11 +1927,11 @@ body {
   box-shadow: none;
 }
 
-:is(.explore-container--monitoramento, .explore-container--clima) .explore-tabs-header::after {
+:is(.explore-container--monitoramento, .explore-container--clima, .explore-container--diario) .explore-tabs-header::after {
   display: none;
 }
 
-:is(.explore-container--monitoramento, .explore-container--clima) .explore-tabs-modern {
+:is(.explore-container--monitoramento, .explore-container--clima, .explore-container--diario) .explore-tabs-modern {
   gap: 7px;
   padding-inline: 10px;
   scroll-padding-inline: 10px;
@@ -1939,7 +1939,7 @@ body {
   mask-image: none;
 }
 
-:is(.explore-container--monitoramento, .explore-container--clima) .explore-tab {
+:is(.explore-container--monitoramento, .explore-container--clima, .explore-container--diario) .explore-tab {
   min-height: 38px;
   padding: 7px 12px;
   border: 1px solid rgba(45, 97, 64, 0.13);
@@ -1950,13 +1950,13 @@ body {
   -webkit-backdrop-filter: none;
 }
 
-:is(.explore-container--monitoramento, .explore-container--clima) .explore-tab:hover {
+:is(.explore-container--monitoramento, .explore-container--clima, .explore-container--diario) .explore-tab:hover {
   border-color: rgba(45, 97, 64, 0.25);
   background: #f0f7ee;
   color: #275f3c;
 }
 
-:is(.explore-container--monitoramento, .explore-container--clima) .explore-tab.active {
+:is(.explore-container--monitoramento, .explore-container--clima, .explore-container--diario) .explore-tab.active {
   border-color: #2d6140;
   background: #2d6140;
   color: #ffffff;
@@ -1964,7 +1964,7 @@ body {
   transform: none;
 }
 
-:is(.explore-container--monitoramento, .explore-container--clima) > .tab-content {
+:is(.explore-container--monitoramento, .explore-container--clima, .explore-container--diario) > .tab-content {
   min-height: 60vh;
   margin-top: 0;
   padding: 0;
@@ -1976,11 +1976,11 @@ body {
 }
 
 @media (max-width: 480px) {
-  :is(.explore-container--monitoramento, .explore-container--clima) .explore-tabs-header {
+  :is(.explore-container--monitoramento, .explore-container--clima, .explore-container--diario) .explore-tabs-header {
     padding: calc(env(safe-area-inset-top, 0px) + 10px) 0 8px;
   }
 
-  :is(.explore-container--monitoramento, .explore-container--clima) .explore-tab {
+  :is(.explore-container--monitoramento, .explore-container--clima, .explore-container--diario) .explore-tab {
     min-height: 36px;
     padding: 7px 11px;
   }

@@ -102,7 +102,7 @@ export default function Explore() {
   return (
     <div
       className={`explore-container explore-container--${activeTab}`}
-      data-system-bar-color={["diagnostico", "monitoramento", "clima"].includes(activeTab) ? "#f4f9ef" : "#3f8a5d"}
+      data-system-bar-color={["diagnostico", "monitoramento", "clima", "diario"].includes(activeTab) ? "#f4f9ef" : "#3f8a5d"}
     >
       <ParticleBackground />
 
@@ -111,7 +111,7 @@ export default function Explore() {
       {/* ================= TABS UI ================= */}
       <div
         className="explore-tabs-header"
-        data-system-bar-color={["diagnostico", "monitoramento", "clima"].includes(activeTab) ? "#f4f9ef" : "#3f8a5d"}
+        data-system-bar-color={["diagnostico", "monitoramento", "clima", "diario"].includes(activeTab) ? "#f4f9ef" : "#3f8a5d"}
       >
         <div className="explore-tabs-modern">
           {tabs.map((tab) => (

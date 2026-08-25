@@ -2,6 +2,13 @@ import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import "../../../styles/App/DiarioTab.css"
 
+function getLocalDateValue(date = new Date()) {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const day = String(date.getDate()).padStart(2, "0")
+  return `${year}-${month}-${day}`
+}
+
 export default function DiarioTab() {
   const [entries, setEntries] = useState([])
   const [showForm, setShowForm] = useState(false)
@@ -9,7 +16,7 @@ export default function DiarioTab() {
     title: "",
     description: "",
     type: "observacao",
-    date: new Date().toISOString().split("T")[0]
+    date: getLocalDateValue()
   })
   const [selectedEntry, setSelectedEntry] = useState(null)
 
@@ -72,7 +79,7 @@ export default function DiarioTab() {
       title: "",
       description: "",
       type: "observacao",
-      date: new Date().toISOString().split("T")[0]
+      date: getLocalDateValue()
     })
     setShowForm(false)
   }
@@ -84,18 +91,23 @@ export default function DiarioTab() {
     }
   }
 
-  // Formatar data
+  const parseLocalDate = (dateStr) => {
+    const [year, month, day] = String(dateStr).split("-").map(Number)
+    return new Date(year, month - 1, day)
+  }
+
+  // Formatar data sem deslocamento de fuso horario
   const formatDate = (dateStr) => {
-    const date = new Date(dateStr)
+    const date = parseLocalDate(dateStr)
     return date.toLocaleDateString("pt-BR", { day: "numeric", month: "short" })
   }
 
   // Obter ícone baseado no tipo
   const getTypeIcon = (type) => {
     switch(type) {
-      case "tratamento": return "science"
+      case "tratamento": return "experiment"
       case "irrigacao": return "water_drop"
-      case "alerta": return "warning"
+      case "alerta": return "pest_control"
       default: return "edit_note"
     }
   }
@@ -111,14 +123,16 @@ export default function DiarioTab() {
 
   return (
     <div className="diario-container">
-      {/* Header */}
-      <div className="diario-header">
-        <h2>Diário de Campo</h2>
-        <p>Registre suas atividades diárias</p>
-      </div>
+      <section className="diario-hero">
+        <div className="diario-header">
+          <h2>Diário de Campo</h2>
+          <p>Registre suas atividades diárias</p>
+        </div>
+      </section>
 
       {/* Botão Nova Entrada */}
       <button 
+        type="button"
         className="diario-add-btn"
         onClick={() => setShowForm(true)}
       >
@@ -169,6 +183,15 @@ export default function DiarioTab() {
               </div>
 
               <div className="form-group">
+                <label>Data</label>
+                <input
+                  type="date"
+                  value={newEntry.date}
+                  onChange={(e) => setNewEntry({...newEntry, date: e.target.value})}
+                />
+              </div>
+
+              <div className="form-group">
                 <label>Tipo</label>
                 <select
                   value={newEntry.type}
@@ -198,30 +221,49 @@ export default function DiarioTab() {
             <p className="empty-hint">Clique em "Nova entrada" para começar</p>
           </div>
         ) : (
-          entries.map((entry, index) => (
-            <motion.div
+          entries.map((entry, index) => {
+            const entryColor = getTypeColor(entry.type)
+
+            return (
+            <motion.article
               key={entry.id}
               className="diario-card"
+              style={{ "--entry-color": entryColor, "--entry-soft": `${entryColor}18` }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
               onClick={() => setSelectedEntry(entry)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault()
+                  setSelectedEntry(entry)
+                }
+              }}
+              role="button"
+              tabIndex={0}
             >
-              <div className="diario-card-date">
-                <span className="day">{formatDate(entry.date)}</span>
-                <span className="time">{entry.time}</span>
+              <div className="diario-card-icon" aria-hidden="true">
+                <span className="material-symbols-outlined">{getTypeIcon(entry.type)}</span>
               </div>
+
               <div className="diario-card-content">
-                <div className="diario-card-header">
-                  <span 
-                    className="type-icon"
-                    style={{ background: `${getTypeColor(entry.type)}20`, color: getTypeColor(entry.type) }}
-                  >
-                    <span className="material-symbols-outlined">{getTypeIcon(entry.type)}</span>
+                <div className="diario-card-meta">
+                  <span>
+                    <span className="material-symbols-outlined" aria-hidden="true">calendar_today</span>
+                    {formatDate(entry.date)}
                   </span>
+                  <span>
+                    <span className="material-symbols-outlined" aria-hidden="true">schedule</span>
+                    {entry.time}
+                  </span>
+                </div>
+
+                <div className="diario-card-header">
                   <h3>{entry.title}</h3>
                   <button 
+                    type="button"
                     className="delete-entry"
+                    aria-label={`Excluir ${entry.title}`}
                     onClick={(e) => {
                       e.stopPropagation()
                       deleteEntry(entry.id)
@@ -232,8 +274,9 @@ export default function DiarioTab() {
                 </div>
                 <p>{entry.description}</p>
               </div>
-            </motion.div>
-          ))
+            </motion.article>
+            )
+          })
         )}
       </div>
 
@@ -267,7 +310,7 @@ export default function DiarioTab() {
                 <div>
                   <h3>{selectedEntry.title}</h3>
                   <p className="detail-date">
-                    {new Date(selectedEntry.date).toLocaleDateString("pt-BR")} • {selectedEntry.time}
+                    {parseLocalDate(selectedEntry.date).toLocaleDateString("pt-BR")} • {selectedEntry.time}
                   </p>
                 </div>
               </div>
