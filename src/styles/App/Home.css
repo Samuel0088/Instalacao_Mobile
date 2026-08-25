@@ -4257,33 +4257,3 @@ body:has(.home-shell),
   border-color: rgba(45, 97, 64, 0.24);
   background: #ffffff;
 }
-
-/* Primeira tela do PWA: clima em destaque antes dos demais cards. */
-@media (max-width: 550px) {
-  .home-shell--app-opening .home-weather-hero {
-    min-height: calc(100dvh - 126px);
-    display: flex;
-    flex-direction: column;
-  }
-
-  .home-shell--app-opening .weather-hero-top {
-    flex: 0 0 220px;
-    min-height: 220px;
-    align-items: center;
-  }
-
-  .home-shell--app-opening .weather-hero-top > :first-child {
-    transform: translateY(0);
-  }
-
-  .home-shell--app-opening .weather-illustration {
-    top: 20px;
-    width: 224px;
-    height: 172px;
-    transform: rotate(-2deg);
-  }
-
-  .home-shell--app-opening .weather-stat-grid {
-    display: none;
-  }
-}

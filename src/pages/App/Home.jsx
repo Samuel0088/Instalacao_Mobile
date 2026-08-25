@@ -153,20 +153,11 @@ export default function Home({ onInstallRequest, isInstalled = false }) {
   const [activities, setActivities] = useState([])
   const [diagnosticHistory, setDiagnosticHistory] = useState([])
   const [lastAiImageSubmission, setLastAiImageSubmission] = useState(null)
-  const [showAppOpeningWeather, setShowAppOpeningWeather] = useState(false)
-  
   const navigate = useNavigate()
   const goToInternalPage = (path, options) => {
     sessionStorage.setItem("zenithShowWhiteLoaderOnce", "true")
     navigate(path, options)
   }
-
-  useEffect(() => {
-    if (!isInstalled || window.__zenithHomeOpeningShown) return
-
-    window.__zenithHomeOpeningShown = true
-    setShowAppOpeningWeather(true)
-  }, [isInstalled])
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -362,10 +353,7 @@ export default function Home({ onInstallRequest, isInstalled = false }) {
       <ParticleBackground />
       <MouseGlow />
 
-      <main
-        className={`home-shell${showAppOpeningWeather ? " home-shell--app-opening" : ""}`}
-        data-system-bar-color="#f7f5f0"
-      >
+      <main className="home-shell" data-system-bar-color="#f7f5f0">
         <AppHeader
           userName={userName}
           hasFarm={hasFarm}
