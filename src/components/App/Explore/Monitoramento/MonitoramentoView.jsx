@@ -45,7 +45,7 @@ export default function MonitoramentoView() {
       : rowsDetected && alignmentScore >= 75 ? "check" : "priority_high";
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} data-page-gutter="planting">
       <section className={styles.hero}>
         <div className={styles.cabecalho}>
           <h2 className={styles.titulo}>Alinhamento da Plantação</h2>

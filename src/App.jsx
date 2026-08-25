@@ -30,6 +30,7 @@ import SystemBarTheme from "./components/App/System/SystemBarTheme"
 
 // Estilos
 import "./App.css"
+import "./styles/Global/PageGutters.css"
 
 const UPDATE_PROMPT_PENDING_KEY = "zenithUpdatePromptPending"
 

@@ -1,0 +1,62 @@
+/* Recuo externo único para todas as páginas do app em celulares. */
+@media (max-width: 550px), (pointer: coarse) and (max-width: 900px) {
+  .home-shell {
+    --home-side-gutter: var(--app-content-gutter);
+  }
+
+  .home-shell .home-container,
+  .profile-container-tech,
+  .team-page,
+  .diario-container,
+  .mapa-container,
+  .estoque-container,
+  .atividades-container,
+  .drone-law-container,
+  .all-history-container,
+  .batch-result-page,
+  .register-container,
+  .register-header {
+    padding-left: var(--app-content-gutter);
+    padding-right: var(--app-content-gutter);
+  }
+
+  .register-card {
+    max-width: 100%;
+  }
+
+  .explore-container .explore-tabs-modern {
+    padding-left: var(--app-content-gutter);
+    padding-right: var(--app-content-gutter);
+    scroll-padding-left: var(--app-content-gutter);
+    scroll-padding-right: var(--app-content-gutter);
+  }
+
+  .explore-container--diagnostico .diagnostic-container {
+    padding-left: var(--app-content-gutter);
+    padding-right: var(--app-content-gutter);
+  }
+
+  .explore-container--diagnostico .diagnostic-hero {
+    margin-left: calc(var(--app-content-gutter) * -1);
+    margin-right: calc(var(--app-content-gutter) * -1);
+  }
+
+  .climate-dashboard {
+    --climate-side-gutter: var(--app-content-gutter);
+  }
+
+  [data-page-gutter="planting"] {
+    --planting-gutter: var(--app-content-gutter);
+  }
+
+  .plans-hero,
+  .plans-faq {
+    padding-left: var(--app-content-gutter);
+    padding-right: var(--app-content-gutter);
+  }
+
+  .plans-list {
+    padding-left: var(--app-content-gutter);
+    padding-right: var(--app-content-gutter);
+  }
+}
