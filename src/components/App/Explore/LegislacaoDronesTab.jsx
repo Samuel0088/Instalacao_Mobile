@@ -1,21 +1,32 @@
+import { AnimatePresence, motion } from "framer-motion"
+import { useState } from "react"
+
 const officialLinks = [
   {
     label: "Cadastrar drone na ANAC",
+    agency: "ANAC",
+    description: "Cadastro oficial da aeronave não tripulada",
     href: "https://www.gov.br/pt-br/servicos/cadastrar-drone-basico",
     icon: "app_registration"
   },
   {
     label: "Portal Drone UAS / DECEA",
+    agency: "DECEA",
+    description: "Orientações para acesso ao espaço aéreo",
     href: "https://www.decea.mil.br/drone/",
     icon: "flight_takeoff"
   },
   {
     label: "Acessar SARPAS",
+    agency: "SARPAS",
+    description: "Solicitação e acompanhamento de voos",
     href: "https://servicos.decea.mil.br/sarpas/",
     icon: "map"
   },
   {
     label: "Homologação Anatel",
+    agency: "ANATEL",
+    description: "Informações sobre homologação de equipamentos",
     href: "https://www.gov.br/anatel/pt-br/assuntos/noticias/saiba-como-funciona-o-processo-de-homologacao",
     icon: "settings_input_antenna"
   }
@@ -63,63 +74,120 @@ const agencies = [
 ]
 
 export default function LegislacaoDronesTab() {
+  const [activeTopic, setActiveTopic] = useState(null)
+
   return (
-    <section className="drone-law-container">
+    <section className="drone-law-container drone-law-dashboard">
       <div className="drone-law-hero">
-        <span className="drone-law-kicker">Uso responsável de drones</span>
-        <h2>Legislação para voar sem risco</h2>
-        <p>
-          Drones agrícolas também são veículos aéreos não tripulados. Na prática,
-          operar corretamente envolve três frentes: aeronave regularizada, rádio
-          homologado e acesso ao espaço aéreo autorizado quando aplicável.
-        </p>
+        <div className="drone-law-hero-copy">
+          <h1>Legislação</h1>
+          <p>Informações e orientações sobre o uso de drones na agricultura</p>
+        </div>
       </div>
 
-      <div className="drone-law-grid">
-        {checklist.map((item) => (
-          <article className="drone-law-card" key={item.title}>
-            <span className="drone-law-card-icon material-symbols-outlined">{item.icon}</span>
-            <div>
-              <h3>{item.title}</h3>
-              <p>{item.text}</p>
-            </div>
-          </article>
-        ))}
-      </div>
+      <a
+        className="drone-law-featured"
+        href={officialLinks[0].href}
+        target="_blank"
+        rel="noreferrer"
+      >
+        <span className="drone-law-featured-icon material-symbols-outlined" aria-hidden="true">contract_edit</span>
+        <span>
+          <strong>Voar com segurança e dentro da lei</strong>
+          <small>Acesse orientações oficiais para operar drones na agricultura.</small>
+        </span>
+        <span className="drone-law-featured-action">
+          Saiba mais
+          <span className="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+        </span>
+      </a>
 
-      <div className="drone-law-section">
-        <div className="drone-law-section-title">
-          <span className="material-symbols-outlined">account_balance</span>
-          <h3>Quem regula o quê</h3>
+      <section className="drone-law-topics" aria-labelledby="drone-law-topics-title">
+        <div className="drone-law-section-heading">
+          <span className="material-symbols-outlined" aria-hidden="true">topic</span>
+          <h2 id="drone-law-topics-title">Temas principais</h2>
         </div>
 
-        <div className="drone-law-agencies">
-          {agencies.map((agency) => (
-            <article className="drone-law-agency" key={agency.name}>
-              <span className="material-symbols-outlined">{agency.icon}</span>
-              <strong>{agency.name}</strong>
-              <p>{agency.role}</p>
-            </article>
+        <div className="drone-law-grid">
+          {checklist.map((item, index) => (
+            <button
+              type="button"
+              className={`drone-law-card ${activeTopic === index ? "active" : ""}`}
+              key={item.title}
+              aria-pressed={activeTopic === index}
+              onClick={() => setActiveTopic(activeTopic === index ? null : index)}
+            >
+              <span className="drone-law-card-icon material-symbols-outlined" aria-hidden="true">{item.icon}</span>
+              <strong>{item.title}</strong>
+            </button>
           ))}
         </div>
-      </div>
 
-      <div className="drone-law-section">
-        <div className="drone-law-section-title">
-          <span className="material-symbols-outlined">link</span>
-          <h3>Links oficiais</h3>
+        <AnimatePresence initial={false}>
+          {activeTopic !== null && (
+            <motion.article
+              className="drone-law-topic-detail"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+            >
+              <span className="material-symbols-outlined" aria-hidden="true">{checklist[activeTopic].icon}</span>
+              <div>
+                <h3>{checklist[activeTopic].title}</h3>
+                <p>{checklist[activeTopic].text}</p>
+              </div>
+            </motion.article>
+          )}
+        </AnimatePresence>
+      </section>
+
+      <section className="drone-law-documents" aria-labelledby="drone-law-documents-title">
+        <div className="drone-law-section-heading">
+          <span className="material-symbols-outlined" aria-hidden="true">description</span>
+          <h2 id="drone-law-documents-title">Canais oficiais</h2>
         </div>
 
         <div className="drone-law-links">
           {officialLinks.map((link) => (
             <a key={link.href} href={link.href} target="_blank" rel="noreferrer">
-              <span className="material-symbols-outlined">{link.icon}</span>
-              {link.label}
-              <span className="material-symbols-outlined">open_in_new</span>
+              <span className="drone-law-agency-label">{link.agency}</span>
+              <span className="drone-law-link-copy">
+                <strong>{link.label}</strong>
+                <small>{link.description}</small>
+              </span>
+              <span className="material-symbols-outlined" aria-hidden="true">chevron_right</span>
             </a>
           ))}
         </div>
-      </div>
+      </section>
+
+      <section className="drone-law-agencies-section" aria-labelledby="drone-law-agencies-title">
+        <div className="drone-law-section-heading">
+          <span className="material-symbols-outlined" aria-hidden="true">lightbulb</span>
+          <h2 id="drone-law-agencies-title">Órgãos responsáveis</h2>
+        </div>
+
+        <div className="drone-law-agencies">
+          {agencies.map((agency) => (
+            <article className="drone-law-agency" key={agency.name}>
+              <span className="material-symbols-outlined" aria-hidden="true">{agency.icon}</span>
+              <strong>{agency.name}</strong>
+              <p>{agency.role}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <aside className="drone-law-responsibility">
+        <span className="material-symbols-outlined" aria-hidden="true">balance</span>
+        <div>
+          <strong>Consulte os órgãos responsáveis em caso de dúvida</strong>
+          <p>Confirme as regras vigentes antes de cada voo e opere com responsabilidade.</p>
+        </div>
+        <a href={officialLinks[1].href} target="_blank" rel="noreferrer" aria-label="Abrir portal oficial do DECEA">
+          <span className="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+        </a>
+      </aside>
 
       <p className="drone-law-note">
         Este material é informativo. Antes de voar, confirme as regras vigentes nos canais oficiais,

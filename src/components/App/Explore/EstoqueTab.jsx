@@ -8,6 +8,8 @@ export default function EstoqueTab() {
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [filterCategory, setFilterCategory] = useState("todos")
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [movements, setMovements] = useState([])
   const [newProduct, setNewProduct] = useState({
     name: "",
     category: "insumo",
@@ -79,6 +81,18 @@ export default function EstoqueTab() {
   }, [])
 
   useEffect(() => {
+    const savedMovements = localStorage.getItem("inventoryMovements")
+    if (savedMovements) {
+      try {
+        const parsedMovements = JSON.parse(savedMovements)
+        setMovements(Array.isArray(parsedMovements) ? parsedMovements : [])
+      } catch {
+        setMovements([])
+      }
+    }
+  }, [])
+
+  useEffect(() => {
     const menuBars = document.querySelectorAll(".nav, .menu-bar")
 
     menuBars.forEach((menuBar) => {
@@ -98,6 +112,16 @@ export default function EstoqueTab() {
     localStorage.setItem("inventory", JSON.stringify(newProducts))
   }
 
+  const recordMovement = (productId, type, amount = 0) => {
+    const nextMovements = [
+      { id: Date.now(), productId, type, amount, createdAt: new Date().toISOString() },
+      ...movements,
+    ].slice(0, 300)
+
+    setMovements(nextMovements)
+    localStorage.setItem("inventoryMovements", JSON.stringify(nextMovements))
+  }
+
   // Adicionar produto
   const addProduct = () => {
     if (!newProduct.name.trim()) return
@@ -112,6 +136,7 @@ export default function EstoqueTab() {
     }
 
     saveProducts([...products, product])
+    recordMovement(product.id, "entrada", product.quantity)
     setNewProduct({
       name: "",
       category: "insumo",
@@ -129,34 +154,39 @@ export default function EstoqueTab() {
   const updateProduct = () => {
     if (!selectedProduct) return
 
+    const previousProduct = products.find(product => product.id === selectedProduct.id)
+
     const updatedProducts = products.map(p => 
       p.id === selectedProduct.id ? { ...selectedProduct } : p
     )
     saveProducts(updatedProducts)
+    recordMovement(
+      selectedProduct.id,
+      "ajuste",
+      selectedProduct.quantity - (previousProduct?.quantity || 0)
+    )
     setSelectedProduct(null)
   }
 
   // Deletar produto
   const deleteProduct = (id) => {
-    if (window.confirm("Tem certeza que deseja remover este produto?")) {
-      saveProducts(products.filter(p => p.id !== id))
-    }
-  }
+    if (!window.confirm("Tem certeza que deseja remover este produto?")) return false
 
-  // Atualizar quantidade
-  const updateQuantity = (id, newQuantity) => {
-    const updatedProducts = products.map(p => {
-      if (p.id === id) {
-        return { ...p, quantity: Math.max(0, parseFloat(newQuantity) || 0) }
-      }
-      return p
-    })
-    saveProducts(updatedProducts)
+    const product = products.find(item => item.id === id)
+    saveProducts(products.filter(p => p.id !== id))
+    recordMovement(id, "exclusão", -(product?.quantity || 0))
+    return true
   }
 
   // Filtrar produtos
   const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    const normalizedSearch = searchTerm.trim().toLocaleLowerCase("pt-BR")
+    const searchableText = [
+      product.name,
+      categories.find(category => category.id === product.category)?.name,
+      product.supplier,
+    ].filter(Boolean).join(" ").toLocaleLowerCase("pt-BR")
+    const matchesSearch = searchableText.includes(normalizedSearch)
     const matchesCategory = filterCategory === "todos" || product.category === filterCategory
     return matchesSearch && matchesCategory
   })
@@ -164,7 +194,9 @@ export default function EstoqueTab() {
   // Estatísticas
   const totalProducts = products.length
   const lowStock = products.filter(p => p.quantity <= p.minQuantity).length
-  const totalValue = products.reduce((sum, p) => sum + (p.price * p.quantity), 0)
+  const recentMovements = movements.filter(movement => (
+    new Date(movement.createdAt).getTime() >= Date.now() - (7 * 24 * 60 * 60 * 1000)
+  )).length
 
   // Obter ícone da categoria
   const getCategoryIcon = (category) => {
@@ -183,95 +215,100 @@ export default function EstoqueTab() {
     return product.quantity <= product.minQuantity
   }
 
-  // Formatar data
-  const formatDate = (dateStr) => {
-    if (!dateStr) return "Não definida"
-    const date = new Date(dateStr)
-    return date.toLocaleDateString("pt-BR")
-  }
-
-  // Verificar se está perto do vencimento
-  const isExpiringSoon = (dateStr) => {
-    if (!dateStr) return false
-    const expiry = new Date(dateStr)
-    const today = new Date()
-    const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24))
-    return diffDays <= 30 && diffDays > 0
+  const getStockStatus = (product) => {
+    if (product.quantity <= 0) return { label: "Crítico", tone: "critical" }
+    if (isLowStock(product)) return { label: "Baixo estoque", tone: "warning" }
+    return { label: "Disponível", tone: "available" }
   }
 
   return (
-    <div className="estoque-container">
-      {/* Header */}
-      <div className="estoque-header">
-        <h2>Estoque</h2>
-        <p>Gerencie seus insumos, fertilizantes e equipamentos</p>
-      </div>
-
-      {/* Barra de Busca e Filtros */}
-      <div className="estoque-controls">
-        <div className="search-bar">
-          <span className="material-symbols-outlined">search</span>
-          <input
-            type="text"
-            placeholder="Buscar produto..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+    <div className="estoque-container estoque-dashboard">
+      <section className="estoque-hero" aria-labelledby="estoque-title">
+        <div className="estoque-hero-copy">
+          <h1 id="estoque-title">Estoque</h1>
+          <p>Gerencie insumos, produtos e materiais da fazenda</p>
         </div>
+      </section>
 
-        <div className="category-filters">
-          <button
-            className={`filter-chip ${filterCategory === "todos" ? "active" : ""}`}
-            onClick={() => setFilterCategory("todos")}
-          >
-            Todos
-          </button>
-          {categories.map(cat => (
-            <button
-              key={cat.id}
-              className={`filter-chip ${filterCategory === cat.id ? "active" : ""}`}
-              onClick={() => setFilterCategory(cat.id)}
-            >
-              <span className="material-symbols-outlined">{cat.icon}</span>
-              {cat.name}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Botão Adicionar */}
-      <button className="add-product-btn" onClick={() => setShowForm(true)}>
-        <span className="material-symbols-outlined">add</span>
-        Novo produto
-      </button>
-
-      {/* Cards de Estatísticas */}
-      <div className="estoque-stats">
+      <section className="estoque-stats" aria-label="Resumo do estoque">
         <div className="stat-card">
-          <span className="material-symbols-outlined">inventory</span>
-          <div>
-            <strong>{totalProducts}</strong>
-            <p>Produtos</p>
-          </div>
+          <span className="material-symbols-outlined" aria-hidden="true">deployed_code</span>
+          <strong>{totalProducts}</strong>
+          <p>Itens em estoque</p>
         </div>
         <div className="stat-card warning">
-          <span className="material-symbols-outlined">warning</span>
-          <div>
-            <strong>{lowStock}</strong>
-            <p>Estoque baixo</p>
-          </div>
+          <span className="material-symbols-outlined" aria-hidden="true">warning</span>
+          <strong>{lowStock}</strong>
+          <p>Baixo estoque</p>
         </div>
-        <div className="stat-card">
-          <span className="material-symbols-outlined">payments</span>
-          <div>
-            <strong>R$ {totalValue.toLocaleString("pt-BR")}</strong>
-            <p>Valor total</p>
-          </div>
+        <div className="stat-card movements">
+          <span className="material-symbols-outlined" aria-hidden="true">sync</span>
+          <strong>{recentMovements}</strong>
+          <p>Movimentações</p>
+          <small>Últimos 7 dias</small>
         </div>
-      </div>
+      </section>
 
-      {/* Lista de Produtos */}
-      <div className="products-list">
+      <section className="estoque-content">
+        <div className="estoque-controls">
+          <label className="search-bar">
+            <span className="material-symbols-outlined" aria-hidden="true">search</span>
+            <input
+              type="search"
+              aria-label="Buscar produto"
+              placeholder="Buscar produto ou categoria..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </label>
+          <button
+            type="button"
+            className={`filter-toggle ${filtersOpen ? "active" : ""}`}
+            aria-label="Filtrar produtos"
+            aria-expanded={filtersOpen}
+            onClick={() => setFiltersOpen(value => !value)}
+          >
+            <span className="material-symbols-outlined" aria-hidden="true">filter_list</span>
+          </button>
+          <button
+            type="button"
+            className="add-product-btn"
+            aria-label="Adicionar produto"
+            onClick={() => setShowForm(true)}
+          >
+            <span className="material-symbols-outlined" aria-hidden="true">add</span>
+          </button>
+        </div>
+
+        <AnimatePresence initial={false}>
+          {filtersOpen && (
+            <motion.div
+              className="category-filters"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+            >
+              <button
+                className={`filter-chip ${filterCategory === "todos" ? "active" : ""}`}
+                onClick={() => setFilterCategory("todos")}
+              >
+                Todos
+              </button>
+              {categories.map(cat => (
+                <button
+                  key={cat.id}
+                  className={`filter-chip ${filterCategory === cat.id ? "active" : ""}`}
+                  onClick={() => setFilterCategory(cat.id)}
+                >
+                  <span className="material-symbols-outlined" aria-hidden="true">{cat.icon}</span>
+                  {cat.name}
+                </button>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div className="products-list">
         {filteredProducts.length === 0 ? (
           <div className="empty-state">
             <span className="material-symbols-outlined">inventory</span>
@@ -279,101 +316,49 @@ export default function EstoqueTab() {
             <button onClick={() => setShowForm(true)}>Adicionar produto</button>
           </div>
         ) : (
-          filteredProducts.map((product, index) => (
+          filteredProducts.map((product, index) => {
+            const stockStatus = getStockStatus(product)
+
+            return (
             <motion.div
               key={product.id}
               className={`product-card ${isLowStock(product) ? "low-stock" : ""}`}
-              initial={{ opacity: 0, y: 20 }}
+              role="button"
+              tabIndex={0}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
+              transition={{ delay: Math.min(index * 0.04, 0.2) }}
+              onClick={() => setSelectedProduct(product)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault()
+                  setSelectedProduct(product)
+                }
+              }}
             >
-              <div className="product-header">
-                <div className="product-icon">
-                  <span className="material-symbols-outlined">{getCategoryIcon(product.category)}</span>
-                </div>
-                <div className="product-info">
-                  <h3>{product.name}</h3>
-                  <span className="product-category">{getCategoryName(product.category)}</span>
-                </div>
-                <button
-                  className="product-actions"
-                  onClick={() => setSelectedProduct(product)}
-                >
-                  <span className="material-symbols-outlined">more_vert</span>
-                </button>
+              <div className={`product-icon product-icon--${product.category}`}>
+                <span className="material-symbols-outlined" aria-hidden="true">{getCategoryIcon(product.category)}</span>
               </div>
-
-              <div className="product-details">
-                <div className="quantity-section">
-                  <div className="quantity-display">
-                    <span className="quantity-value">{product.quantity}</span>
-                    <span className="quantity-unit">{product.unit}</span>
-                  </div>
-                  <div className="quantity-controls">
-                    <button
-                      className="qty-btn"
-                      onClick={() => updateQuantity(product.id, product.quantity - 10)}
-                    >
-                      <span className="material-symbols-outlined">remove</span>
-                    </button>
-                    <button
-                      className="qty-btn"
-                      onClick={() => updateQuantity(product.id, product.quantity + 10)}
-                    >
-                      <span className="material-symbols-outlined">add</span>
-                    </button>
-                  </div>
+              <div className="product-info">
+                <h3>{product.name}</h3>
+                <span className="product-category">{getCategoryName(product.category)}</span>
+                <div className="product-quantity">
+                  <strong>{product.quantity.toLocaleString("pt-BR")}</strong>
+                  <span>{product.unit}</span>
                 </div>
-
-                {product.minQuantity > 0 && (
-                  <div className="stock-indicator">
-                    <div className="stock-bar">
-                      <div
-                        className="stock-fill"
-                        style={{
-                          width: `${Math.min(100, (product.quantity / product.minQuantity) * 100)}%`,
-                          background: isLowStock(product) ? "#ffaa00" : "#56a870"
-                        }}
-                      ></div>
-                    </div>
-                    <span className="stock-text">
-                      Mínimo: {product.minQuantity} {product.unit}
-                    </span>
-                  </div>
-                )}
-
-                {product.price > 0 && (
-                  <div className="product-price">
-                    <span className="price-label">Preço unitário:</span>
-                    <span className="price-value">R$ {product.price.toFixed(2)}</span>
-                  </div>
-                )}
-
-                {product.supplier && (
-                  <div className="product-supplier">
-                    <span className="material-symbols-outlined">local_shipping</span>
-                    <span>{product.supplier}</span>
-                  </div>
-                )}
-
-                {product.expiryDate && (
-                  <div className={`product-expiry ${isExpiringSoon(product.expiryDate) ? "expiring-soon" : ""}`}>
-                    <span className="material-symbols-outlined">event</span>
-                    <span>Vence: {formatDate(product.expiryDate)}</span>
-                  </div>
-                )}
               </div>
-
-              <button
-                className="delete-product"
-                onClick={() => deleteProduct(product.id)}
-              >
-                <span className="material-symbols-outlined">delete</span>
-              </button>
+              <div className="product-row-end">
+                <span className={`stock-status stock-status--${stockStatus.tone}`}>
+                  {stockStatus.label}
+                </span>
+                <span className="material-symbols-outlined product-chevron" aria-hidden="true">chevron_right</span>
+              </div>
             </motion.div>
-          ))
+            )
+          })
         )}
-      </div>
+        </div>
+      </section>
 
       {/* Modal Novo Produto */}
       <AnimatePresence>
@@ -606,6 +591,15 @@ export default function EstoqueTab() {
 
               <button className="submit-btn" onClick={updateProduct}>
                 Salvar alterações
+              </button>
+              <button
+                className="delete-form-btn"
+                onClick={() => {
+                  if (deleteProduct(selectedProduct.id)) setSelectedProduct(null)
+                }}
+              >
+                <span className="material-symbols-outlined" aria-hidden="true">delete</span>
+                Excluir produto
               </button>
             </motion.div>
           </motion.div>

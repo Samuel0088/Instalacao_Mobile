@@ -54,6 +54,13 @@ const statusLabels = {
   cancelada: "Cancelada"
 }
 
+const statusFilters = [
+  { value: "todas", label: "Todas", icon: "format_list_bulleted" },
+  { value: "pendente", label: "Pendentes", icon: "schedule" },
+  { value: "em_andamento", label: "Em andamento", icon: "sync" },
+  { value: "concluida", label: "Concluídas", icon: "check" }
+]
+
 function getTypeIcon(type) {
   switch (type) {
     case "tarefa":
@@ -105,6 +112,18 @@ function formatDate(dateStr) {
   return date.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })
 }
 
+function formatActivityDate(dateStr) {
+  const activityDate = new Date(`${dateStr}T00:00:00`)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  const differenceInDays = Math.round((activityDate - today) / 86400000)
+  if (differenceInDays === 0) return "Hoje"
+  if (differenceInDays === 1) return "Amanhã"
+  if (differenceInDays === -1) return "Ontem"
+  return formatDate(dateStr)
+}
+
 function isOverdue(activity) {
   if (activity.status === "concluida" || activity.status === "cancelada") return false
   const today = new Date()
@@ -118,12 +137,21 @@ export default function AtividadesTab() {
   const [search, setSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState("todas")
   const [typeFilter, setTypeFilter] = useState("todos")
+  const [dateFilter, setDateFilter] = useState("")
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [calendarOpen, setCalendarOpen] = useState(false)
+  const [expandedActivityId, setExpandedActivityId] = useState(null)
   const [form, setForm] = useState(initialForm)
 
   useEffect(() => {
     const saved = localStorage.getItem("activities")
     if (saved) {
-      setActivities(JSON.parse(saved))
+      try {
+        const parsedActivities = JSON.parse(saved)
+        setActivities(Array.isArray(parsedActivities) ? parsedActivities : [])
+      } catch {
+        setActivities([])
+      }
     } else {
       setActivities(sampleActivities)
       localStorage.setItem("activities", JSON.stringify(sampleActivities))
@@ -141,15 +169,17 @@ export default function AtividadesTab() {
     return activities.filter((activity) => {
       const matchesSearch =
         !normalizedSearch ||
-        activity.title.toLowerCase().includes(normalizedSearch) ||
-        activity.description.toLowerCase().includes(normalizedSearch)
+        (activity.title || "").toLocaleLowerCase("pt-BR").includes(normalizedSearch) ||
+        (activity.description || "").toLocaleLowerCase("pt-BR").includes(normalizedSearch) ||
+        (activity.responsible || "").toLocaleLowerCase("pt-BR").includes(normalizedSearch)
 
       const matchesStatus = statusFilter === "todas" || activity.status === statusFilter
       const matchesType = typeFilter === "todos" || activity.type === typeFilter
+      const matchesDate = !dateFilter || activity.date === dateFilter
 
-      return matchesSearch && matchesStatus && matchesType
+      return matchesSearch && matchesStatus && matchesType && matchesDate
     })
-  }, [activities, search, statusFilter, typeFilter])
+  }, [activities, search, statusFilter, typeFilter, dateFilter])
 
   const stats = useMemo(() => ({
     total: activities.length,
@@ -188,172 +218,226 @@ export default function AtividadesTab() {
   }
 
   return (
-    <div className="atividades-container">
-      <div className="atividades-header">
-        <h2>Atividades</h2>
-        <p>Organize as tarefas do campo</p>
-      </div>
+    <div className="atividades-container activities-dashboard">
+      <header className="activities-page-header">
+        <div>
+          <h1>Atividades</h1>
+          <p>Acompanhe e gerencie suas tarefas</p>
+        </div>
+        <button
+          type="button"
+          className="activities-add-button"
+          aria-label="Criar nova atividade"
+          onClick={() => setShowForm(true)}
+        >
+          <span className="material-symbols-outlined" aria-hidden="true">add</span>
+        </button>
+      </header>
 
-      <div className="atividades-controls">
-        <div className="search-bar">
-          <span className="material-symbols-outlined">search</span>
+      <nav className="activities-status-tabs" aria-label="Filtrar por status">
+        {statusFilters.map((filter) => (
+          <button
+            key={filter.value}
+            type="button"
+            className={statusFilter === filter.value ? "active" : ""}
+            onClick={() => setStatusFilter(filter.value)}
+          >
+            <span className="material-symbols-outlined" aria-hidden="true">{filter.icon}</span>
+            {filter.label}
+          </button>
+        ))}
+      </nav>
+
+      <div className="activities-search-row">
+        <label className="activities-search">
+          <span className="material-symbols-outlined" aria-hidden="true">search</span>
           <input
             type="search"
-            placeholder="Buscar atividade"
+            aria-label="Buscar atividades"
+            placeholder="Buscar atividades..."
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
-        </div>
-
-        <div className="filters-row">
-          <select
-            className="filter-select"
-            value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value)}
-          >
-            <option value="todas">Todos os status</option>
-            <option value="pendente">Pendente</option>
-            <option value="em_andamento">Em andamento</option>
-            <option value="concluida">Concluída</option>
-            <option value="cancelada">Cancelada</option>
-          </select>
-
-          <select
-            className="filter-select"
-            value={typeFilter}
-            onChange={(event) => setTypeFilter(event.target.value)}
-          >
-            <option value="todos">Todos os tipos</option>
-            {Object.entries(typeLabels).map(([value, label]) => (
-              <option key={value} value={value}>{label}</option>
-            ))}
-          </select>
-        </div>
+        </label>
+        <button
+          type="button"
+          className={`activities-filter-button ${filtersOpen ? "active" : ""}`}
+          aria-expanded={filtersOpen}
+          onClick={() => setFiltersOpen((current) => !current)}
+        >
+          <span className="material-symbols-outlined" aria-hidden="true">filter_list</span>
+          Filtros
+          <span className="material-symbols-outlined activities-filter-chevron" aria-hidden="true">expand_more</span>
+        </button>
       </div>
 
-      <div className="atividades-stats">
-        <div className="stat-card">
-          <span className="material-symbols-outlined">list_alt</span>
-          <div>
+      <AnimatePresence initial={false}>
+        {filtersOpen && (
+          <motion.div
+            className="activities-type-filter"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+          >
+            <label htmlFor="activity-type-filter">Tipo de atividade</label>
+            <select
+              id="activity-type-filter"
+              value={typeFilter}
+              onChange={(event) => setTypeFilter(event.target.value)}
+            >
+              <option value="todos">Todos os tipos</option>
+              {Object.entries(typeLabels).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <section className="activities-summary" aria-labelledby="activities-summary-title">
+        <h2 id="activities-summary-title">Resumo</h2>
+        <div className="atividades-stats">
+          <div className="stat-card">
+            <span className="material-symbols-outlined" aria-hidden="true">description</span>
             <strong>{stats.total}</strong>
             <p>Total</p>
           </div>
-        </div>
-        <div className="stat-card pending">
-          <span className="material-symbols-outlined">schedule</span>
-          <div>
+          <div className="stat-card pending">
+            <span className="material-symbols-outlined" aria-hidden="true">schedule</span>
             <strong>{stats.pending}</strong>
             <p>Pendentes</p>
           </div>
-        </div>
-        <div className="stat-card progress">
-          <span className="material-symbols-outlined">autorenew</span>
-          <div>
+          <div className="stat-card progress">
+            <span className="material-symbols-outlined" aria-hidden="true">sync</span>
             <strong>{stats.progress}</strong>
             <p>Em andamento</p>
           </div>
-        </div>
-        <div className="stat-card completed">
-          <span className="material-symbols-outlined">check_circle</span>
-          <div>
+          <div className="stat-card completed">
+            <span className="material-symbols-outlined" aria-hidden="true">check_circle</span>
             <strong>{stats.completed}</strong>
             <p>Concluídas</p>
           </div>
         </div>
-      </div>
+      </section>
 
-      <button className="add-activity-btn" onClick={() => setShowForm(true)}>
-        <span className="material-symbols-outlined">add</span>
-        Nova atividade
-      </button>
+      <section className="activities-recent" aria-labelledby="activities-recent-title">
+        <h2 id="activities-recent-title">Atividades recentes</h2>
+        <div className="activities-list">
+          {filteredActivities.length > 0 ? (
+            filteredActivities.map((activity, index) => {
+              const expanded = expandedActivityId === activity.id
 
-      <div className="activities-list">
-        {filteredActivities.length > 0 ? (
-          filteredActivities.map((activity) => (
-            <motion.article
-              key={activity.id}
-              className={`activity-card ${isOverdue(activity) ? "overdue" : ""}`}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <div className="activity-header">
-                <div
-                  className="activity-icon"
-                  style={{
-                    color: getTypeColor(activity.type),
-                    background: `${getTypeColor(activity.type)}22`
-                  }}
+              return (
+                <motion.article
+                  key={activity.id}
+                  className={`activity-card ${isOverdue(activity) ? "overdue" : ""} ${expanded ? "expanded" : ""}`}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: Math.min(index * 0.04, 0.2) }}
                 >
-                  <span className="material-symbols-outlined">{getTypeIcon(activity.type)}</span>
-                </div>
-
-                <div className="activity-info">
-                  <h3>{activity.title}</h3>
-                  <div className="activity-meta">
-                    <span className="activity-type">{typeLabels[activity.type] || "Atividade"}</span>
-                    <span className="activity-date">
-                      <span className="material-symbols-outlined">event</span>
-                      {formatDate(activity.date)}
+                  <button
+                    type="button"
+                    className="activity-row-toggle"
+                    aria-expanded={expanded}
+                    onClick={() => setExpandedActivityId(expanded ? null : activity.id)}
+                  >
+                    <span
+                      className="activity-icon"
+                      style={{ color: getTypeColor(activity.type), background: `${getTypeColor(activity.type)}18` }}
+                    >
+                      <span className="material-symbols-outlined" aria-hidden="true">{getTypeIcon(activity.type)}</span>
                     </span>
-                  </div>
-                </div>
 
-                <div className="activity-badges">
-                  <span className={`priority-badge ${activity.priority}`}>
-                    <span className="material-symbols-outlined">flag</span>
-                    {activity.priority}
-                  </span>
-                  <span className={`status-badge ${activity.status}`}>
-                    {statusLabels[activity.status] || activity.status}
-                  </span>
-                </div>
-              </div>
+                    <span className="activity-info">
+                      <strong>{activity.title}</strong>
+                      <small>
+                        {activity.responsible || typeLabels[activity.type] || "Atividade"}
+                        {activity.responsible && ` · ${typeLabels[activity.type] || "Atividade"}`}
+                      </small>
+                      {activity.description && <span>{activity.description}</span>}
+                    </span>
 
-              {activity.description && (
-                <p className="activity-description">{activity.description}</p>
-              )}
+                    <span className="activity-row-side">
+                      <span className={`status-badge ${activity.status}`}>
+                        {isOverdue(activity) ? "Atrasada" : statusLabels[activity.status] || activity.status}
+                      </span>
+                      <small>{formatActivityDate(activity.date)}</small>
+                    </span>
 
-              {activity.responsible && (
-                <div className="activity-responsible">
-                  <span className="material-symbols-outlined">person</span>
-                  {activity.responsible}
-                </div>
-              )}
-
-              {isOverdue(activity) && (
-                <div className="overdue-badge">
-                  <span className="material-symbols-outlined">warning</span>
-                  Atrasada
-                </div>
-              )}
-
-              <div className="activity-actions">
-                {activity.status === "pendente" && (
-                  <button className="action-start" onClick={() => updateStatus(activity.id, "em_andamento")}>
-                    <span className="material-symbols-outlined">play_arrow</span>
-                    Iniciar
+                    <span className="material-symbols-outlined activity-row-chevron" aria-hidden="true">
+                      chevron_right
+                    </span>
                   </button>
-                )}
-                {activity.status !== "concluida" && activity.status !== "cancelada" && (
-                  <button className="action-complete" onClick={() => updateStatus(activity.id, "concluida")}>
-                    <span className="material-symbols-outlined">check</span>
-                    Concluir
-                  </button>
-                )}
-                <button className="action-delete" onClick={() => deleteActivity(activity.id)} aria-label="Excluir atividade">
-                  <span className="material-symbols-outlined">delete</span>
-                </button>
-              </div>
-            </motion.article>
-          ))
-        ) : (
-          <div className="empty-state">
-            <span className="material-symbols-outlined">assignment</span>
-            <p>Nenhuma atividade encontrada</p>
-            <button onClick={() => setShowForm(true)}>Criar atividade</button>
-          </div>
-        )}
-      </div>
+
+                  <AnimatePresence initial={false}>
+                    {expanded && (
+                      <motion.div
+                        className="activity-actions"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                      >
+                        {activity.status === "pendente" && (
+                          <button className="action-start" onClick={() => updateStatus(activity.id, "em_andamento")}>
+                            <span className="material-symbols-outlined" aria-hidden="true">play_arrow</span>
+                            Iniciar
+                          </button>
+                        )}
+                        {activity.status !== "concluida" && activity.status !== "cancelada" && (
+                          <button className="action-complete" onClick={() => updateStatus(activity.id, "concluida")}>
+                            <span className="material-symbols-outlined" aria-hidden="true">check</span>
+                            Concluir
+                          </button>
+                        )}
+                        <button className="action-delete" onClick={() => deleteActivity(activity.id)} aria-label="Excluir atividade">
+                          <span className="material-symbols-outlined" aria-hidden="true">delete</span>
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.article>
+              )
+            })
+          ) : (
+            <div className="empty-state">
+              <span className="material-symbols-outlined">assignment</span>
+              <p>Nenhuma atividade encontrada</p>
+              <button onClick={() => setShowForm(true)}>Criar atividade</button>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className="activities-calendar-card">
+        <span className="activities-calendar-icon material-symbols-outlined" aria-hidden="true">calendar_month</span>
+        <div>
+          <h2>Planeje suas atividades</h2>
+          <p>Organize suas tarefas e acompanhe os próximos trabalhos da lavoura.</p>
+        </div>
+        <button type="button" onClick={() => setCalendarOpen((current) => !current)}>
+          {calendarOpen ? "Fechar" : "Ver calendário"}
+        </button>
+        <AnimatePresence initial={false}>
+          {calendarOpen && (
+            <motion.div
+              className="activities-calendar-filter"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+            >
+              <input
+                type="date"
+                aria-label="Filtrar atividades por data"
+                value={dateFilter}
+                onChange={(event) => setDateFilter(event.target.value)}
+              />
+              {dateFilter && (
+                <button type="button" onClick={() => setDateFilter("")}>Limpar data</button>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </section>
 
       <AnimatePresence>
         {showForm && (

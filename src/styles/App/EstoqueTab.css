@@ -638,3 +638,467 @@
     opacity: 1;
   }
 }
+
+/* Dashboard de estoque */
+.estoque-container.estoque-dashboard {
+  width: 100%;
+  max-width: 600px;
+  min-height: calc(100dvh - 58px);
+  margin: 0 auto;
+  padding: 0 0 112px !important;
+  overflow-x: hidden;
+  background: #f4f9ef;
+  color: #173d28;
+}
+
+.estoque-dashboard .estoque-hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 218px;
+  isolation: isolate;
+  overflow: hidden;
+  background-image: url("/assets/image/imagem-fundo-estoque.png");
+  background-position: 56% calc(50% + 26px);
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.estoque-dashboard .estoque-hero::before {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 128px;
+  content: "";
+  background: linear-gradient(
+    180deg,
+    #f4f9ef 0%,
+    #f4f9ef 30%,
+    rgba(244, 249, 239, 0.82) 41%,
+    rgba(244, 249, 239, 0.42) 56%,
+    rgba(244, 249, 239, 0.12) 73%,
+    rgba(244, 249, 239, 0) 100%
+  );
+  pointer-events: none;
+}
+
+.estoque-dashboard .estoque-hero::after {
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 38%;
+  content: "";
+  background: linear-gradient(
+    180deg,
+    rgba(244, 249, 239, 0) 0%,
+    rgba(244, 249, 239, 0.06) 42%,
+    rgba(244, 249, 239, 0.24) 72%,
+    rgba(244, 249, 239, 0.72) 92%,
+    #f4f9ef 100%
+  );
+  pointer-events: none;
+}
+
+.estoque-dashboard .estoque-hero-copy {
+  position: absolute;
+  z-index: 2;
+  top: 24px;
+  left: 14px;
+  width: min(62%, 310px);
+  margin: 0;
+  transform: none;
+}
+
+.estoque-dashboard .estoque-hero h1 {
+  margin: 0 0 7px;
+  color: #153d27;
+  font-size: 2rem;
+  font-weight: 750;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.estoque-dashboard .estoque-hero p {
+  margin: 0;
+  color: #294b36;
+  font-size: 0.79rem;
+  font-weight: 600;
+  line-height: 1.32;
+  text-shadow: none;
+}
+
+.estoque-dashboard .estoque-stats {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin: -25px 14px 14px;
+  overflow: hidden;
+  border: 1px solid rgba(27, 72, 45, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 8px 22px rgba(34, 78, 47, 0.1);
+}
+
+.estoque-dashboard .stat-card {
+  position: relative;
+  display: grid;
+  grid-template-rows: 28px 24px 26px 12px;
+  place-items: center;
+  gap: 0;
+  min-width: 0;
+  min-height: 112px;
+  padding: 13px 5px 8px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  text-align: center;
+}
+
+.estoque-dashboard .stat-card + .stat-card::before {
+  position: absolute;
+  top: 18px;
+  bottom: 18px;
+  left: 0;
+  width: 1px;
+  content: "";
+  background: rgba(27, 72, 45, 0.1);
+}
+
+.estoque-dashboard .stat-card > span {
+  color: #3b784b;
+  font-size: 27px;
+}
+
+.estoque-dashboard .stat-card.warning > span {
+  color: #e69a13;
+}
+
+.estoque-dashboard .stat-card strong,
+.estoque-dashboard .estoque-stats .stat-card strong {
+  color: #173d28 !important;
+  font-size: 1.22rem;
+  font-weight: 750;
+  line-height: 1;
+}
+
+.estoque-dashboard .stat-card p {
+  align-self: start;
+  max-width: 100%;
+  margin: 3px 0 0;
+  color: #53665a;
+  font-size: 0.61rem;
+  line-height: 1.2;
+}
+
+.estoque-dashboard .stat-card small {
+  align-self: start;
+  color: #8a978d;
+  font-size: 0.53rem;
+  line-height: 1;
+}
+
+.estoque-dashboard .estoque-content {
+  margin-inline: 14px;
+}
+
+.estoque-dashboard .estoque-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 42px 42px;
+  gap: 8px;
+  margin: 0 0 11px;
+}
+
+.estoque-dashboard .search-bar {
+  min-width: 0;
+  min-height: 42px;
+  margin: 0;
+  padding: 0 12px;
+  gap: 8px;
+  border: 1px solid rgba(27, 72, 45, 0.1);
+  border-radius: 7px;
+  background: #ffffff;
+  box-shadow: 0 3px 12px rgba(34, 78, 47, 0.04);
+  backdrop-filter: none;
+}
+
+.estoque-dashboard .search-bar span {
+  flex: 0 0 auto;
+  color: #7b8d80;
+  font-size: 19px;
+}
+
+.estoque-dashboard .search-bar input {
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  color: #233e2c;
+  font-size: 0.72rem;
+}
+
+.estoque-dashboard .filter-toggle,
+.estoque-dashboard .add-product-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  min-height: 42px;
+  margin: 0;
+  padding: 0;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.estoque-dashboard .filter-toggle {
+  border: 1px solid rgba(27, 72, 45, 0.1);
+  background: #ffffff;
+  color: #39764a;
+}
+
+.estoque-dashboard .filter-toggle.active {
+  border-color: #2d6140;
+  background: #e5f1e5;
+}
+
+.estoque-dashboard .add-product-btn {
+  border: 1px solid #2d6140;
+  background: #2d6140;
+  box-shadow: none;
+  color: #ffffff;
+}
+
+.estoque-dashboard .filter-toggle span,
+.estoque-dashboard .add-product-btn span {
+  color: inherit;
+  font-size: 21px;
+}
+
+.estoque-dashboard .category-filters {
+  margin: -2px 0 10px;
+  padding: 2px 0 5px;
+}
+
+.estoque-dashboard .filter-chip {
+  min-height: 32px;
+  padding: 6px 11px;
+  border-radius: 6px;
+  background: #ffffff;
+  box-shadow: none;
+  color: #53665a;
+  font-size: 0.65rem;
+}
+
+.estoque-dashboard .filter-chip.active {
+  border-color: #2d6140;
+  background: #2d6140;
+  color: #ffffff;
+}
+
+.estoque-dashboard .products-list {
+  gap: 8px;
+}
+
+.estoque-dashboard .product-card {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  min-height: 78px;
+  padding: 9px 10px;
+  border: 1px solid rgba(27, 72, 45, 0.08);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 5px 16px rgba(34, 78, 47, 0.06);
+  cursor: pointer;
+}
+
+.estoque-dashboard .product-card.low-stock {
+  border-left: 1px solid rgba(27, 72, 45, 0.08);
+}
+
+.estoque-dashboard .product-card:hover,
+.estoque-dashboard .product-card:focus-visible {
+  border-color: rgba(45, 97, 64, 0.28);
+  outline: none;
+  transform: none;
+}
+
+.estoque-dashboard .product-icon {
+  width: 52px;
+  height: 58px;
+  margin: 0;
+  border-radius: 6px;
+  background: linear-gradient(150deg, #edf5e9, #dcead8);
+}
+
+.estoque-dashboard .product-icon--fertilizante {
+  background: linear-gradient(150deg, #efe5cf, #dfd0ad);
+}
+
+.estoque-dashboard .product-icon--defensivo {
+  background: linear-gradient(150deg, #e3f0df, #c9dfc3);
+}
+
+.estoque-dashboard .product-icon--semente {
+  background: linear-gradient(150deg, #f2ead5, #dfd1aa);
+}
+
+.estoque-dashboard .product-icon--equipamento {
+  background: linear-gradient(150deg, #e2ebea, #cbdad8);
+}
+
+.estoque-dashboard .product-icon span {
+  color: #356e45;
+  font-size: 30px;
+}
+
+.estoque-dashboard .product-info {
+  min-width: 0;
+}
+
+.estoque-dashboard .product-info h3 {
+  overflow: hidden;
+  margin: 0 0 1px;
+  color: #1e3a27;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.estoque-dashboard .product-category {
+  display: block;
+  overflow: hidden;
+  margin-bottom: 4px;
+  color: #849087;
+  font-size: 0.57rem;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.estoque-dashboard .product-quantity {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.estoque-dashboard .product-quantity strong {
+  color: #193c27;
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.estoque-dashboard .product-quantity span {
+  color: #6d7e72;
+  font-size: 0.6rem;
+}
+
+.estoque-dashboard .product-row-end {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.estoque-dashboard .stock-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.54rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.estoque-dashboard .stock-status--available {
+  background: #e4f1df;
+  color: #3d7445;
+}
+
+.estoque-dashboard .stock-status--warning {
+  background: #fff1d1;
+  color: #c08212;
+}
+
+.estoque-dashboard .stock-status--critical {
+  background: #fee4de;
+  color: #d64e40;
+}
+
+.estoque-dashboard .product-chevron {
+  color: #89958c;
+  font-size: 18px;
+}
+
+.estoque-dashboard .empty-state {
+  min-height: 210px;
+  border: 1px dashed rgba(45, 97, 64, 0.24);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.estoque-dashboard .delete-form-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 9px;
+  border: 1px solid #db4b42;
+  border-radius: 40px;
+  background: #fff5f3;
+  color: #c83f38;
+  font-size: 0.84rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.estoque-dashboard .delete-form-btn span {
+  font-size: 19px;
+}
+
+@media (max-width: 360px) {
+  .estoque-dashboard .estoque-hero {
+    height: 205px;
+  }
+
+  .estoque-dashboard .estoque-stats {
+    margin-inline: 14px;
+  }
+
+  .estoque-dashboard .stat-card {
+    min-height: 106px;
+    padding-inline: 3px;
+  }
+
+  .estoque-dashboard .product-card {
+    grid-template-columns: 46px minmax(0, 1fr) auto;
+    gap: 8px;
+    padding-inline: 8px;
+  }
+
+  .estoque-dashboard .product-icon {
+    width: 46px;
+    height: 54px;
+  }
+
+  .estoque-dashboard .stock-status {
+    max-width: 72px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
