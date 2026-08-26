@@ -1,5 +1,5 @@
 :root {
-  --app-content-gutter: 14px;
+  --app-content-gutter: clamp(14px, 3.9vw, 16px);
   --g0: #0a1a0f;
   --g1: #0f2318;
   --g2: #163020;

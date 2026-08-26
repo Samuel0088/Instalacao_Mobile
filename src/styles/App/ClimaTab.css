@@ -1454,3 +1454,35 @@
   }
 }
 
+/* Mantém a mesma escala visual em celulares com viewports lógicas diferentes. */
+@media (max-width: 550px) {
+  .climate-hero {
+    min-height: 0;
+    aspect-ratio: 1 / 0.98;
+  }
+
+  .climate-overview-card {
+    width: 70%;
+    max-width: none;
+    min-height: 0;
+    aspect-ratio: 1.75;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+
+  .climate-reading,
+  .climate-highlights {
+    min-height: 0;
+  }
+
+  .climate-stat-card {
+    min-height: 0;
+    aspect-ratio: 1.83;
+  }
+
+  .climate-recommendations {
+    min-height: 0;
+    aspect-ratio: 3.1;
+  }
+}
+
