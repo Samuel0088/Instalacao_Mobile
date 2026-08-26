@@ -1,11 +1,5 @@
 import { useState, useEffect, useRef } from "react"
 import { useFarm } from "./hooks/useFarm"
-import {
-  getStoredWebODMConfig,
-  getTileUrl,
-  hasWebODMConfig,
-  loadWebODMAnalysis,
-} from "../../../services/webodmService"
 import "../../../styles/App/MapaTab.css"
 
 import L from "leaflet"
@@ -39,17 +33,24 @@ function calculateArea(latLngs) {
   return areaM2 / 10000
 }
 
-// status dinâmico
-function getAreaStatus() {
-  const rand = Math.random()
+function calculatePerimeter(latLngs) {
+  if (!latLngs || latLngs.length < 2) return 0
 
-  if (rand < 0.33) {
-    return { label: "Saudável", color: "#56a870" }
-  } else if (rand < 0.66) {
-    return { label: "Atenção", color: "#FFC107" }
-  } else {
-    return { label: "Crítico", color: "#F44336" }
-  }
+  const coordinates = latLngs.map(point => Array.isArray(point)
+    ? [point[1], point[0]]
+    : [point.lng, point.lat])
+  coordinates.push(coordinates[0])
+
+  return turf.length(turf.lineString(coordinates), { units: "kilometers" }) * 1000
+}
+
+function getAreaStatus() {
+  return { label: "Mapeada", color: "#3d8057" }
+}
+
+function matchesAreaFilter(area, filter) {
+  if (filter === "all") return true
+  return getAreaStatusTone(area?.status) === filter
 }
 
 function generateZones(points) {
@@ -863,8 +864,11 @@ export default function MapaTab() {
   const currentPointsRef = useRef([])
 
   const polygonsRef = useRef({})
+  const zoneLayersRef = useRef([])
+  const baseLayerRef = useRef(null)
   const webodmLayerRef = useRef(null)
   const orthophotoLayerRef = useRef(null)
+  const webodmServiceRef = useRef(null)
   const lineRef = useRef(null)
   const tooltipRef = useRef(null)
   const markersRef = useRef([])
@@ -873,11 +877,19 @@ export default function MapaTab() {
   const [selectedAreaId, setSelectedAreaId] = useState(null)
   const [visibleAreasCount, setVisibleAreasCount] = useState(3)
   const [activeWebODMLayer, setActiveWebODMLayer] = useState("detections")
-  const [webodmConfig] = useState(() => getStoredWebODMConfig())
+  const [webodmConfig, setWebodmConfig] = useState(null)
   const [webodmAnalysis, setWebodmAnalysis] = useState(null)
   const [webodmLoading, setWebodmLoading] = useState(false)
   const [webodmError, setWebodmError] = useState("")
   const [orthophotoLayerEnabled, setOrthophotoLayerEnabled] = useState(true)
+  const [mapStyle, setMapStyle] = useState("satellite")
+  const [layersOpen, setLayersOpen] = useState(false)
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [areaFilter, setAreaFilter] = useState("all")
+  const [openAreaMenuId, setOpenAreaMenuId] = useState(null)
+  const [isMobileMap, setIsMobileMap] = useState(() => (
+    typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches
+  ))
 
   const [isDrawing, setIsDrawing] = useState(false)
   const [currentPoints, setCurrentPoints] = useState([])
@@ -887,11 +899,46 @@ export default function MapaTab() {
   const [searching, setSearching] = useState(false)
 
   const totalArea = areas.reduce((sum, a) => sum + (a.areaHa || 0), 0)
-  const visibleAreas = areas.slice(0, visibleAreasCount)
-  const hasMoreAreas = visibleAreasCount < areas.length
+  const filteredAreas = areas.filter(area => matchesAreaFilter(area, areaFilter))
+  const visibleAreas = filteredAreas.slice(0, visibleAreasCount)
+  const hasMoreAreas = visibleAreasCount < filteredAreas.length
   const selectedArea = areas.find(area => area.id === selectedAreaId) || areas[areas.length - 1] || null
-  const selectedWebODM = webodmAnalysis
-  const webodmConfigured = hasWebODMConfig(webodmConfig)
+  const selectedWebODM = isMobileMap ? null : webodmAnalysis
+  const webodmConfigured = !isMobileMap
+    && Boolean(webodmConfig)
+    && Boolean(webodmServiceRef.current?.hasWebODMConfig(webodmConfig))
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 767px)")
+    const updateViewportMode = (event) => setIsMobileMap(event.matches)
+
+    setIsMobileMap(mediaQuery.matches)
+    mediaQuery.addEventListener?.("change", updateViewportMode)
+
+    return () => mediaQuery.removeEventListener?.("change", updateViewportMode)
+  }, [])
+
+  useEffect(() => {
+    let active = true
+
+    if (isMobileMap) {
+      webodmServiceRef.current = null
+      setWebodmConfig(null)
+      setWebodmAnalysis(null)
+      setWebodmError("")
+      return undefined
+    }
+
+    import("../../../services/webodmService").then(service => {
+      if (!active) return
+      webodmServiceRef.current = service
+      setWebodmConfig(service.getStoredWebODMConfig())
+    })
+
+    return () => {
+      active = false
+    }
+  }, [isMobileMap])
 
   useEffect(() => {
     isDrawingRef.current = isDrawing
@@ -902,7 +949,11 @@ export default function MapaTab() {
   }, [currentPoints])
 
   const connectWebODM = async () => {
-    if (!webodmConfigured) {
+    if (isMobileMap) return
+
+    const webodmService = webodmServiceRef.current
+
+    if (!webodmService || !webodmConfigured) {
       setWebodmError("WebODM ainda não foi configurado no ambiente do projeto.")
       return
     }
@@ -911,7 +962,7 @@ export default function MapaTab() {
     setWebodmError("")
 
     try {
-      const analysis = await loadWebODMAnalysis(webodmConfig)
+      const analysis = await webodmService.loadWebODMAnalysis(webodmConfig)
       setWebodmAnalysis(analysis)
 
       if (analysis.bounds && mapInstanceRef.current) {
@@ -929,10 +980,10 @@ export default function MapaTab() {
   }
 
   useEffect(() => {
-    if (webodmConfigured) {
+    if (!isMobileMap && webodmConfigured) {
       connectWebODM()
     }
-  }, [])
+  }, [isMobileMap, webodmConfigured])
 
   // carregar áreas
   useEffect(() => {
@@ -998,8 +1049,11 @@ export default function MapaTab() {
 
     Object.values(polygonsRef.current).forEach(p => p.remove())
     polygonsRef.current = {}
+    zoneLayersRef.current.forEach(layer => layer.remove())
+    zoneLayersRef.current = []
 
     areas.forEach(area => {
+      if (!matchesAreaFilter(area, areaFilter)) return
       // 🔥 ZONAS INTERNAS
       if (area.zones && area.zones.length > 0) {
         area.zones.forEach(zone => {
@@ -1009,6 +1063,7 @@ export default function MapaTab() {
             fillOpacity: 0.5,
             weight: 1
           }).addTo(mapInstanceRef.current)
+          zoneLayersRef.current.push(zonePolygon)
 
           zonePolygon.on("click", () => {
             const center = zonePolygon.getBounds().getCenter()
@@ -1086,7 +1141,7 @@ export default function MapaTab() {
       polygon.addTo(mapInstanceRef.current)
       polygonsRef.current[area.id] = polygon
     })
-  }, [areas])
+  }, [areas, areaFilter])
 
   // destaque
   useEffect(() => {
@@ -1185,9 +1240,10 @@ export default function MapaTab() {
       orthophotoLayerRef.current = null
     }
 
-    if (!orthophotoLayerEnabled || !selectedWebODM?.orthophotoTiles) return
+    const webodmService = webodmServiceRef.current
+    if (isMobileMap || !webodmService || !orthophotoLayerEnabled || !selectedWebODM?.orthophotoTiles) return
 
-    const tileUrl = getTileUrl(
+    const tileUrl = webodmService.getTileUrl(
       selectedWebODM.config,
       selectedWebODM.projectId,
       selectedWebODM.taskId,
@@ -1240,7 +1296,7 @@ export default function MapaTab() {
         orthophotoLayerRef.current = null
       }
     }
-  }, [selectedWebODM, orthophotoLayerEnabled])
+  }, [selectedWebODM, orthophotoLayerEnabled, isMobileMap])
 
   const addPoint = (latlng) => {
     if (!isDrawingRef.current || !mapInstanceRef.current) return
@@ -1377,16 +1433,34 @@ export default function MapaTab() {
     }
   }
 
+  const locateUser = () => {
+    if (!navigator.geolocation || !mapInstanceRef.current) {
+      alert("Localização indisponível neste dispositivo")
+      return
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        const position = [coords.latitude, coords.longitude]
+        mapInstanceRef.current.setView(position, 17)
+        L.circleMarker(position, {
+          radius: 7,
+          color: "#ffffff",
+          fillColor: "#2d6140",
+          fillOpacity: 1,
+          weight: 3,
+        }).addTo(mapInstanceRef.current).bindPopup("Sua localização").openPopup()
+      },
+      () => alert("Não foi possível acessar sua localização"),
+      { enableHighAccuracy: true, timeout: 10000 }
+    )
+  }
+
   useEffect(() => {
     if (!mapContainerRef.current || mapInstanceRef.current) return
 
     const map = L.map(mapContainerRef.current).setView([-15, -47], 4)
     mapInstanceRef.current = map
-
-    L.tileLayer(
-      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-      { maxZoom: 19 }
-    ).addTo(map)
 
     map.on("click", (e) => {
       if (isDrawingRef.current) addPoint(e.latlng)
@@ -1403,6 +1477,32 @@ export default function MapaTab() {
       mapInstanceRef.current = null
     }
   }, [])
+
+  useEffect(() => {
+    const map = mapInstanceRef.current
+    if (!map) return
+
+    if (baseLayerRef.current) {
+      baseLayerRef.current.remove()
+    }
+
+    const tileUrl = mapStyle === "streets"
+      ? "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      : "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+
+    baseLayerRef.current = L.tileLayer(tileUrl, {
+      maxZoom: 19,
+      attribution: mapStyle === "streets" ? "© OpenStreetMap" : "Tiles © Esri",
+    }).addTo(map)
+    baseLayerRef.current.bringToBack()
+
+    return () => {
+      if (baseLayerRef.current) {
+        baseLayerRef.current.remove()
+        baseLayerRef.current = null
+      }
+    }
+  }, [mapStyle])
 
   const focusWebODMRoute = () => {
     if (!selectedWebODM?.route?.length || !mapInstanceRef.current) return
@@ -1437,87 +1537,216 @@ export default function MapaTab() {
     URL.revokeObjectURL(url)
   }
 
+  const focusAreaOnMap = (area) => {
+    setSelectedAreaId(area.id)
+    const polygon = polygonsRef.current[area.id]
+
+    if (polygon && mapInstanceRef.current) {
+      mapInstanceRef.current.fitBounds(polygon.getBounds(), { padding: [24, 24] })
+    }
+
+    document.querySelector(".mapa-workspace")?.scrollIntoView({ behavior: "smooth", block: "start" })
+  }
+
+  const startNewArea = () => {
+    startDrawing()
+    document.querySelector(".mapa-workspace")?.scrollIntoView({ behavior: "smooth", block: "start" })
+  }
+
   return (
-    <div className="mapa-container">
-      <div className="mapa-header">
-        <h2>🗺️ Mapa da Fazenda</h2>
+    <div className="mapa-container mapa-dashboard">
+      <section className="mapa-hero">
+        <header className="mapa-header">
+          <h1>Mapa da Fazenda</h1>
+          <p>Visualize e gerencie sua área</p>
+        </header>
+
         <div className="total-area-badge">
           <span>Área total mapeada</span>
           <strong>{formatArea(totalArea)}</strong>
+          {!isDrawing && (
+            <button type="button" className="draw-area-btn" onClick={startDrawing}>
+              <span className="material-symbols-outlined" aria-hidden="true">edit_location_alt</span>
+              Desenhar área
+            </button>
+          )}
         </div>
-      </div>
+      </section>
 
-      <form className="mapa-search" onSubmit={handleSearch}>
-        <div className="search-wrapper">
-          <span className="search-icon">🔍</span>
-          <input
-            type="text"
-            placeholder="Digite CEP ou endereço..."
-            value={searchAddress}
-            onChange={(e) => setSearchAddress(e.target.value)}
-          />
-        </div>
-        <button type="submit" className="search-btn">
-          {searching ? "..." : "Buscar"}
-        </button>
-      </form>
-
-      <div className="draw-button-container">
-        {!isDrawing ? (
-          <button className="draw-area-btn" onClick={startDrawing}>
-            <span className="material-symbols-outlined btn-icon">edit_location_alt</span>
-            Desenhar área
-          </button>
-        ) : (
-          <div className="drawing-controls">
-            <div className="drawing-info">
-              <span className="info-badge">✏️ Modo desenho</span>
-              <span className="info-points">📍 Pontos: {currentPoints.length}</span>
-              <strong className="info-area">📐 Área: {formatArea(currentArea)}</strong>
-            </div>
-            <div className="drawing-buttons">
-              <button onClick={finishDrawing} className="finish-draw-btn">
-                ✅ Finalizar
-              </button>
-              <button onClick={cancelDrawing} className="cancel-draw-btn">
-                ❌ Cancelar
-              </button>
-            </div>
+      {isDrawing && (
+        <div className="drawing-controls">
+          <div className="drawing-info">
+            <span className="info-badge">Modo desenho</span>
+            <span className="info-points">{currentPoints.length} pontos</span>
+            <strong className="info-area">{formatArea(currentArea)}</strong>
           </div>
-        )}
-      </div>
+          <div className="drawing-buttons">
+            <button type="button" onClick={finishDrawing} className="finish-draw-btn">
+              <span className="material-symbols-outlined" aria-hidden="true">check</span>
+              Finalizar
+            </button>
+            <button type="button" onClick={cancelDrawing} className="cancel-draw-btn">
+              <span className="material-symbols-outlined" aria-hidden="true">close</span>
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
 
-      <div className="mapa-area">
-        <div ref={mapContainerRef} className="map-container"></div>
-      </div>
+      <section className="mapa-workspace" aria-label="Mapa e controles da fazenda">
+        <div className="mapa-toolbar">
+          <form className="mapa-search" onSubmit={handleSearch}>
+            <span className="material-symbols-outlined search-icon" aria-hidden="true">search</span>
+            <input
+              type="search"
+              aria-label="Buscar por CEP ou endereço"
+              placeholder="Digite CEP ou endereço..."
+              value={searchAddress}
+              onChange={(e) => setSearchAddress(e.target.value)}
+            />
+            <button type="submit" className="search-btn" aria-label="Buscar endereço" disabled={searching}>
+              <span className="material-symbols-outlined" aria-hidden="true">
+                {searching ? "progress_activity" : "arrow_forward"}
+              </span>
+            </button>
+          </form>
 
-      <WebODMPanel
-        analysis={selectedWebODM}
-        configured={webodmConfigured}
-        loading={webodmLoading}
-        error={webodmError}
-        activeLayer={activeWebODMLayer}
-        orthophotoEnabled={orthophotoLayerEnabled}
-        onConnect={connectWebODM}
-        onLayerChange={setActiveWebODMLayer}
-        onOrthophotoToggle={setOrthophotoLayerEnabled}
-        onFocusRoute={focusWebODMRoute}
-        onExportReport={exportWebODMReport}
-      />
+          <div className="map-filter-wrap">
+            <button
+              type="button"
+              className={`map-filter-button ${filtersOpen ? "is-active" : ""}`}
+              onClick={() => setFiltersOpen(open => !open)}
+              aria-expanded={filtersOpen}
+            >
+              <span className="material-symbols-outlined" aria-hidden="true">filter_alt</span>
+              Filtros
+            </button>
+            {filtersOpen && (
+              <div className="map-filter-menu" role="menu" aria-label="Filtrar áreas por situação">
+                {[
+                  ["all", "Todas"],
+                  ["healthy", "Saudáveis"],
+                  ["warning", "Atenção"],
+                  ["critical", "Críticas"],
+                ].map(([value, label]) => (
+                  <button
+                    type="button"
+                    role="menuitemradio"
+                    aria-checked={areaFilter === value}
+                    className={areaFilter === value ? "is-selected" : ""}
+                    key={value}
+                    onClick={() => {
+                      setAreaFilter(value)
+                      setFiltersOpen(false)
+                    }}
+                  >
+                    <span className="material-symbols-outlined" aria-hidden="true">
+                      {areaFilter === value ? "radio_button_checked" : "radio_button_unchecked"}
+                    </span>
+                    {label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
 
-      <Field3DView area={selectedArea} />
+        <div className="mapa-area">
+          <div ref={mapContainerRef} className="map-container"></div>
+
+          <div className="map-quick-controls" aria-label="Controles rápidos do mapa">
+            <button type="button" onClick={locateUser} title="Minha localização" aria-label="Ir para minha localização">
+              <span className="material-symbols-outlined" aria-hidden="true">my_location</span>
+            </button>
+          </div>
+
+          <div className="map-layers-control">
+            <button
+              type="button"
+              className="map-layers-button"
+              onClick={() => setLayersOpen(open => !open)}
+              aria-expanded={layersOpen}
+            >
+              <span className="material-symbols-outlined" aria-hidden="true">layers</span>
+              Camadas
+            </button>
+            {layersOpen && (
+              <div className="map-layers-menu" role="menu" aria-label="Camadas do mapa">
+                <button
+                  type="button"
+                  className={mapStyle === "satellite" ? "is-selected" : ""}
+                  onClick={() => {
+                    setMapStyle("satellite")
+                    setLayersOpen(false)
+                  }}
+                >
+                  <span className="material-symbols-outlined" aria-hidden="true">satellite_alt</span>
+                  Satélite
+                </button>
+                <button
+                  type="button"
+                  className={mapStyle === "streets" ? "is-selected" : ""}
+                  onClick={() => {
+                    setMapStyle("streets")
+                    setLayersOpen(false)
+                  }}
+                >
+                  <span className="material-symbols-outlined" aria-hidden="true">map</span>
+                  Ruas
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="mapa-selection-summary">
+          <span className="mapa-selection-icon material-symbols-outlined" aria-hidden="true">psychiatry</span>
+          <div>
+            <small>{selectedArea ? "Área selecionada" : "Nenhuma área selecionada"}</small>
+            <strong>{selectedArea ? formatArea(selectedArea.areaHa) : "Desenhe uma área"}</strong>
+            {selectedArea && <span>Perímetro {calculatePerimeter(selectedArea.coordinates).toFixed(0)} m</span>}
+          </div>
+          <button
+            type="button"
+            disabled={!selectedArea}
+            onClick={() => document.querySelector(".areas-grid")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+          >
+            Ver detalhes
+            <span className="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+          </button>
+        </div>
+      </section>
+
+      {!isMobileMap && (
+        <WebODMPanel
+          analysis={selectedWebODM}
+          configured={webodmConfigured}
+          loading={webodmLoading}
+          error={webodmError}
+          activeLayer={activeWebODMLayer}
+          orthophotoEnabled={orthophotoLayerEnabled}
+          onConnect={connectWebODM}
+          onLayerChange={setActiveWebODMLayer}
+          onOrthophotoToggle={setOrthophotoLayerEnabled}
+          onFocusRoute={focusWebODMRoute}
+          onExportReport={exportWebODMReport}
+        />
+      )}
 
       <div className="areas-grid">
         <div className="areas-header">
-          <h3>📌 Áreas cadastradas</h3>
-          <span className="areas-count">{areas.length} área(s)</span>
+          <h3>
+            <span className="material-symbols-outlined" aria-hidden="true">psychiatry</span>
+            Áreas cadastradas
+          </h3>
+          <span className="areas-count">{filteredAreas.length} área(s)</span>
         </div>
 
-        {areas.length === 0 ? (
+        {filteredAreas.length === 0 ? (
           <div className="empty-areas">
-            <div className="empty-icon">🗺️</div>
-            <p>Nenhuma área desenhada ainda</p>
-            <span>Clique em "Desenhar área" para começar</span>
+            <div className="empty-icon material-symbols-outlined">map</div>
+            <p>{areas.length === 0 ? "Nenhuma área desenhada ainda" : "Nenhuma área encontrada neste filtro"}</p>
+            <span>{areas.length === 0 ? "Use Desenhar área para começar" : "Selecione outro filtro para visualizar suas áreas"}</span>
           </div>
         ) : (
           <>
@@ -1526,21 +1755,47 @@ export default function MapaTab() {
                 <div
                   key={area.id}
                   className={`area-card-modern ${selectedAreaId === area.id ? "selected" : ""}`}
-                  onClick={() => {
-                    setSelectedAreaId(area.id)
-                    const polygon = polygonsRef.current[area.id]
-                    if (polygon && mapInstanceRef.current) {
-                      mapInstanceRef.current.fitBounds(polygon.getBounds())
-                    }
-                  }}
+                  style={{ "--area-status-color": area.color || "#56a870" }}
                 >
                   <div className="card-header">
-                    <div className="card-icon">🌾</div>
+                    <div className="card-icon">
+                      <span className="material-symbols-outlined" aria-hidden="true">psychiatry</span>
+                    </div>
                     <div className="card-title">
                       <h4>Área #{String(area.id).slice(-6)}</h4>
                       <span className="card-date">
-                        {new Date(area.id).toLocaleDateString()}
+                        <span className="material-symbols-outlined" aria-hidden="true">calendar_month</span>
+                        {new Date(area.id).toLocaleDateString("pt-BR")}
                       </span>
+                    </div>
+                    <div className="area-card-menu-wrap">
+                      <button
+                        type="button"
+                        className="area-card-menu-button"
+                        aria-label={`Opções da área ${String(area.id).slice(-6)}`}
+                        aria-expanded={openAreaMenuId === area.id}
+                        onClick={() => setOpenAreaMenuId(current => current === area.id ? null : area.id)}
+                      >
+                        <span className="material-symbols-outlined" aria-hidden="true">more_vert</span>
+                      </button>
+                      {openAreaMenuId === area.id && (
+                        <div className="area-card-menu" role="menu">
+                          <button type="button" role="menuitem" onClick={() => {
+                            setOpenAreaMenuId(null)
+                            focusAreaOnMap(area)
+                          }}>
+                            <span className="material-symbols-outlined" aria-hidden="true">visibility</span>
+                            Ver no mapa
+                          </button>
+                          <button type="button" role="menuitem" className="is-danger" onClick={() => {
+                            setOpenAreaMenuId(null)
+                            deleteArea(area.id)
+                          }}>
+                            <span className="material-symbols-outlined" aria-hidden="true">delete</span>
+                            Excluir
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -1562,24 +1817,17 @@ export default function MapaTab() {
                   <div className="card-footer-actions">
                     <button
                       className="view-btn"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        const polygon = polygonsRef.current[area.id]
-                        if (polygon && mapInstanceRef.current) {
-                          mapInstanceRef.current.fitBounds(polygon.getBounds())
-                        }
-                      }}
+                      onClick={() => focusAreaOnMap(area)}
                     >
-                      👁️ Ver no mapa
+                      <span className="material-symbols-outlined" aria-hidden="true">visibility</span>
+                      Ver no mapa
                     </button>
                     <button
                       className="delete-btn-modern"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        deleteArea(area.id)
-                      }}
+                      onClick={() => deleteArea(area.id)}
                     >
-                      🗑️ Excluir
+                      <span className="material-symbols-outlined" aria-hidden="true">delete</span>
+                      Excluir
                     </button>
                   </div>
                 </div>
@@ -1592,11 +1840,25 @@ export default function MapaTab() {
                 onClick={() => setVisibleAreasCount(count => count + 3)}
               >
                 Ver mais áreas
-                <span>{areas.length - visibleAreasCount} restante(s)</span>
+                <span>{filteredAreas.length - visibleAreasCount} restante(s)</span>
               </button>
             )}
           </>
         )}
+
+        <button
+          type="button"
+          className="add-area-card"
+          onClick={startNewArea}
+          disabled={isDrawing}
+        >
+          <span className="add-area-icon material-symbols-outlined" aria-hidden="true">add</span>
+          <span>
+            <strong>{isDrawing ? "Desenho em andamento" : "Cadastrar nova área"}</strong>
+            <small>Delimite uma nova área no mapa</small>
+          </span>
+          <span className="add-area-decoration material-symbols-outlined" aria-hidden="true">psychiatry</span>
+        </button>
       </div>
     </div>
   )

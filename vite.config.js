@@ -13,6 +13,7 @@ export default defineConfig({
           '**/*.{js,css,html,ico,svg,woff2}',
           'assets/icons/icon-*.png',
         ],
+        globIgnores: ['**/webodmService-*.js'],
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
