@@ -12,7 +12,7 @@ export default function ProfileEditForm({ formData, onChange, onIconSelect }) {
           <span className="material-symbols-outlined">edit</span>
           <div className="icon-glow"></div>
         </div>
-        <h3>Editar Perfil</h3>
+        <h3 className="personal-info-title">Editar Perfil</h3>
         <div className="header-line"></div>
       </div>
       

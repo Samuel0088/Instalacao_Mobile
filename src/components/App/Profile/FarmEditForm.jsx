@@ -126,7 +126,7 @@ const FarmEditForm = ({ farmData, onSave, onCancel, saving }) => {
     >
 
       <div className="card-header">
-        <h3>Editar Fazenda</h3>
+        <h3 className="personal-info-title">Editar Fazenda</h3>
       </div>
 
       <form onSubmit={handleSubmit}>

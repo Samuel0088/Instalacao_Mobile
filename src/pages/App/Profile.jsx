@@ -3,22 +3,16 @@ import { useState, useEffect } from "react"
 import { auth, db } from "../../services/firebase"
 import { doc, getDoc, updateDoc, collection, query, where, getDocs } from "firebase/firestore"
 import { useNavigate } from "react-router-dom"
+import { sendPasswordResetEmail } from "firebase/auth"
 
 import FarmEditForm from "../../components/App/Profile/FarmEditForm"
 // Componentes
-import ProfileParticleBackground from "../../components/App/Profile/ProfileParticleBackground"
-import ProfileMouseGlow from "../../components/App/Profile/ProfileMouseGlow"
 import ProfileLoadingScreen from "../../components/App/Profile/ProfileLoadScreen"
-import ProfileHeader from "../../components/App/Profile/ProfileHeader"
-import ProfileStatsRow from "../../components/App/Profile/ProfileStatsRow"
-import ProfileTabs from "../../components/App/Profile/ProfileTabs"
-import ProfileActions from "../../components/App/Profile/ProfileActions"
 import AlertMessage from "../../components/App/Profile/AlertMessage"
 import PersonalInfoView from "../../components/App/Profile/PersonalInfoView"
 import FarmInfoView from "../../components/App/Profile/FarmInfoView"
 import ProfileEditForm from "../../components/App/Profile/ProfileEditForm"
 import MenuBar from "../../components/App/Global/MenuBar"
-import AppHeader from "../../components/App/Global/AppHeader"
 import { ACCOUNT_ROLES } from "../../services/accessControl"
 
 // CSS
@@ -31,9 +25,12 @@ export default function Profile() {
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [activeTab, setActiveTab] = useState("pessoal")
+  const [activeTab, setActiveTab] = useState(null)
+  const [farmCount, setFarmCount] = useState(null)
+  const [totalFarmArea, setTotalFarmArea] = useState(null)
   const [editingFarm, setEditingFarm] = useState(false)
   const [savingFarm, setSavingFarm] = useState(false)
+  const [passwordResetting, setPasswordResetting] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
     age: "",
@@ -96,6 +93,11 @@ export default function Profile() {
       const farmsRef = collection(db, "farms")
       const q = query(farmsRef, where("ownerId", "==", uid))
       const querySnapshot = await getDocs(q)
+      setFarmCount(querySnapshot.size)
+      setTotalFarmArea(querySnapshot.docs.reduce((total, farmDoc) => {
+        const area = Number(farmDoc.data().area_total)
+        return Number.isFinite(area) ? total + area : total
+      }, 0))
 
       if (!querySnapshot.empty) {
         const farmDoc = querySnapshot.docs[0]
@@ -120,6 +122,8 @@ export default function Profile() {
       }
     } catch (error) {
       console.error("Erro ao carregar fazenda:", error)
+      setFarmCount(null)
+      setTotalFarmArea(null)
       showAlert("error", "Erro ao carregar dados da fazenda")
     }
   }
@@ -217,38 +221,56 @@ export default function Profile() {
   setEditingFarm(true)
 }
 
-  const formatDocument = (doc) => {
-    if (!doc) return "Não informado"
-    if (formData.type === "CPF" && doc.length === 11) {
-      return doc.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4")
-    } else if (formData.type === "PJ" && doc.length === 14) {
-      return doc.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5")
-    }
-    return doc
-  }
-
   const calculateMemberTime = () => {
-    if (!userData?.createdAt) return "Hoje"
-    const created = new Date(userData.createdAt)
+    const accountCreatedAt = userData?.createdAt || user?.metadata?.creationTime
+    if (!accountCreatedAt) return null
+    const created = accountCreatedAt?.toDate
+      ? accountCreatedAt.toDate()
+      : new Date(accountCreatedAt)
+    if (Number.isNaN(created.getTime())) return null
     const now = new Date()
-    const diffTime = Math.abs(now - created)
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    const diffTime = Math.max(0, now - created)
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
     
+    if (diffDays === 0) return "menos de um dia"
+    if (diffDays === 1) return "1 dia"
     if (diffDays < 30) return `${diffDays} dias`
+    if (diffDays < 60) return "1 mês"
     if (diffDays < 365) return `${Math.floor(diffDays / 30)} meses`
+    if (diffDays < 730) return "1 ano"
     return `${Math.floor(diffDays / 365)} anos`
   }
 
+  const handlePasswordReset = async () => {
+    if (!user?.email || passwordResetting) return
+
+    setPasswordResetting(true)
+    try {
+      await sendPasswordResetEmail(auth, user.email)
+      showAlert("success", "Enviamos um link para alterar sua senha no e-mail cadastrado.")
+    } catch (error) {
+      console.error("Erro ao enviar redefinição de senha:", error)
+      showAlert("error", "Não foi possível enviar o link para alterar a senha.")
+    } finally {
+      setPasswordResetting(false)
+    }
+  }
+
+  const openProfileEditor = () => {
+    setActiveTab(null)
+    setEditingFarm(false)
+    setEditing(true)
+  }
+
   const getTotalHectares = () => {
-    if (farmData?.area_total) {
-      const area = parseFloat(farmData.area_total)
-      if (!isNaN(area)) return area.toFixed(1)
+    if (totalFarmArea !== null && farmCount > 0) {
+      return totalFarmArea.toFixed(1)
     }
-    if (userData?.hectares) {
-      const userArea = parseFloat(userData.hectares)
-      if (!isNaN(userArea)) return userArea.toFixed(1)
+    if (farmCount === 0 && userData?.hectares !== undefined && userData?.hectares !== null) {
+      const userArea = Number(userData.hectares)
+      if (Number.isFinite(userArea)) return userArea.toFixed(1)
     }
-    return "0"
+    return null
   }
 
   const formatPhone = (phone) => {
@@ -261,102 +283,200 @@ export default function Profile() {
     return phone
   }
 
+  const handleCancelEdit = () => {
+    setEditing(false)
+    setFormData({
+      name: userData?.name || "",
+      age: userData?.age || "",
+      type: userData?.type || "",
+      document: userData?.document || "",
+      hectares: userData?.hectares || "",
+      email: user?.email || "",
+      role: userData?.role || ACCOUNT_ROLES.ADMIN,
+      profileIcon: userData?.profileIcon || "👨‍🌾",
+      phone: userData?.phone || "",
+      city: userData?.city || "",
+      state: userData?.state || ""
+    })
+  }
+
+  const roleLabels = {
+    [ACCOUNT_ROLES.ADMIN]: "Conta administradora",
+    [ACCOUNT_ROLES.EMPLOYEE]: "Conta de funcionário",
+    [ACCOUNT_ROLES.COLLABORATOR]: "Conta de colaborador"
+  }
+
+  const displayName = userData?.name || user?.displayName || "Agricultor"
+  const profileInitial = displayName.trim().charAt(0).toLocaleUpperCase("pt-BR") || "A"
+  const membershipTime = calculateMemberTime()
+  const totalHectares = getTotalHectares()
+  const userAge = Number(userData?.age)
+  const hasValidAge = Number.isInteger(userAge) && userAge > 0
+
   if (loading) {
     return <ProfileLoadingScreen />
   }
 
   return (
     <>
-      <ProfileParticleBackground />
-      <ProfileMouseGlow />
-      
-      {/*
-        <AppHeader title="Perfil" showLogo={true} showNotification={true} />
-      */}
+      <div className="profile-container-tech profile-redesign" data-system-bar-color="#f4f9ef">
+        <header className="profile-overview-hero">
+          <div>
+            <h1>Perfil</h1>
+            <p>Sua conta e propriedades</p>
+          </div>
+        </header>
 
-      <div className="profile-container-tech" data-system-bar-color="#f7f5f0">
-        <ProfileHeader 
-          profileIcon={formData.profileIcon}
-          userName={userData?.name}
-          memberTime={calculateMemberTime()}
-          editing={editing}
-          onAvatarClick={() => editing && setActiveTab("editar")}
-        />
+        <section className="profile-identity-card" aria-label="Resumo da conta">
+          <div className="profile-identity-avatar" aria-hidden="true">
+            <span>{profileInitial}</span>
+            <span className="profile-identity-verified material-symbols-outlined">verified</span>
+          </div>
+          <div className="profile-identity-copy">
+            <h2>{displayName}</h2>
+            <p>
+              <span className="material-symbols-outlined" aria-hidden="true">eco</span>
+              {membershipTime ? `Membro há ${membershipTime}` : "Data de cadastro não informada"}
+            </p>
+            <span className="profile-account-type">
+              <span className="material-symbols-outlined" aria-hidden="true">person</span>
+              {roleLabels[userData?.role] || "Conta pessoal"}
+            </span>
+          </div>
+          <span className="profile-identity-leaf material-symbols-outlined" aria-hidden="true">eco</span>
+        </section>
 
-        <ProfileStatsRow 
-          hectares={getTotalHectares()}
-          age={userData?.age || "-"}
-          farmsCount={farmData ? 1 : 0}
-        />
-
-        <ProfileActions 
-          editing={editing}
-          saving={saving}
-          onEdit={() => setEditing(true)}
-          onSave={handleSave}
-          onCancel={() => {
-            setEditing(false)
-            setFormData({
-              name: userData?.name || "",
-              age: userData?.age || "",
-              type: userData?.type || "",
-              document: userData?.document || "",
-              hectares: userData?.hectares || "",
-              email: user?.email || "",
-              role: userData?.role || ACCOUNT_ROLES.ADMIN,
-              profileIcon: userData?.profileIcon || "👨‍🌾",
-              phone: userData?.phone || "",
-              city: userData?.city || "",
-              state: userData?.state || ""
-            })
-          }}
-          onLogout={handleLogout}
-        />
-
-        <ProfileTabs 
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-        />
+        <section className="profile-summary" aria-labelledby="profile-summary-title">
+          <div className="profile-section-title">
+            <span className="material-symbols-outlined" aria-hidden="true">eco</span>
+            <h2 id="profile-summary-title">Resumo da conta</h2>
+          </div>
+          <div className="profile-summary-grid">
+            <article>
+              <span className="material-symbols-outlined" aria-hidden="true">potted_plant</span>
+              <strong>{totalHectares ? totalHectares.replace(".", ",") : "--"}</strong>
+              <small>hectares</small>
+            </article>
+            <article>
+              <span className="material-symbols-outlined" aria-hidden="true">calendar_month</span>
+              <strong>{hasValidAge ? userAge : "--"}</strong>
+              <small>anos</small>
+            </article>
+            <article className="farm-stat">
+              <span className="material-symbols-outlined" aria-hidden="true">home_work</span>
+              <strong>{farmCount ?? "--"}</strong>
+              <small>{farmCount === 1 ? "fazenda" : "fazendas"}</small>
+            </article>
+          </div>
+        </section>
 
         <AlertMessage type={alertMessage.type} text={alertMessage.text} />
 
-      <div className="profile-content">
-  {!editing ? (
-    <>
-      {activeTab === "pessoal" && (
-        <PersonalInfoView 
-          userData={userData}
-          user={user}
-          formatDocument={formatDocument}
-        />
-      )}
+        <section className="profile-settings" aria-labelledby="profile-settings-title">
+          <div className="profile-section-title">
+            <span className="material-symbols-outlined" aria-hidden="true">settings</span>
+            <h2 id="profile-settings-title">Conta e configurações</h2>
+          </div>
+          <div className="profile-settings-list">
+            <div className={`profile-setting-item ${activeTab === "pessoal" ? "is-open" : ""}`}>
+              <button
+                type="button"
+                aria-expanded={activeTab === "pessoal"}
+                onClick={() => {
+                  if (editing) handleCancelEdit()
+                  setEditingFarm(false)
+                  setActiveTab(activeTab === "pessoal" ? null : "pessoal")
+                }}
+              >
+                <span className="profile-setting-icon material-symbols-outlined" aria-hidden="true">person</span>
+                <span><strong>Informações pessoais</strong><small>Seus dados e preferências da conta</small></span>
+                <span className="material-symbols-outlined" aria-hidden="true">
+                  {activeTab === "pessoal" ? "expand_more" : "chevron_right"}
+                </span>
+              </button>
+              {activeTab === "pessoal" && (
+                <section className="profile-expanded-content">
+                  <PersonalInfoView
+                    userData={userData}
+                    user={user}
+                    onEdit={openProfileEditor}
+                    onChangePassword={handlePasswordReset}
+                    passwordResetting={passwordResetting}
+                  />
+                </section>
+              )}
+            </div>
 
-      {activeTab === "fazenda" && !editingFarm && (
-        <FarmInfoView 
-          farmData={farmData}
-          onAddFarm={handleAddFarm}
-          onEditFarm={handleEditFarm}
-          formatPhone={formatPhone}
-        />
-      )}
+            <div className={`profile-setting-item ${activeTab === "fazenda" ? "is-open" : ""}`}>
+              <button
+                type="button"
+                aria-expanded={activeTab === "fazenda"}
+                onClick={() => {
+                  if (editing) handleCancelEdit()
+                  setEditingFarm(false)
+                  setActiveTab(activeTab === "fazenda" ? null : "fazenda")
+                }}
+              >
+                <span className="profile-setting-icon material-symbols-outlined" aria-hidden="true">agriculture</span>
+                <span><strong>Fazenda</strong><small>Consulte os dados da propriedade</small></span>
+                <span className="material-symbols-outlined" aria-hidden="true">
+                  {activeTab === "fazenda" ? "expand_more" : "chevron_right"}
+                </span>
+              </button>
+              {activeTab === "fazenda" && (
+                <section className="profile-expanded-content">
+                  {!editingFarm ? (
+                    <FarmInfoView farmData={farmData} onAddFarm={handleAddFarm} onEditFarm={handleEditFarm} formatPhone={formatPhone} />
+                  ) : (
+                    <FarmEditForm farmData={farmData} onSave={handleSaveFarm} onCancel={() => setEditingFarm(false)} saving={savingFarm} />
+                  )}
+                </section>
+              )}
+            </div>
 
-      {activeTab === "fazenda" && editingFarm && (
-        <FarmEditForm 
-          farmData={farmData}
-          onSave={handleSaveFarm}
-          onCancel={() => setEditingFarm(false)}
-          saving={savingFarm}
-        />
-      )}
-    </>
-  ) : (
-    <ProfileEditForm 
-      formData={formData}
-      onChange={handleChange}
-      onIconSelect={handleIconSelect}
-    />
-  )}
-</div>
+            <div className={`profile-setting-item ${editing ? "is-open" : ""}`}>
+              <button
+                type="button"
+                aria-expanded={editing}
+                onClick={() => {
+                  if (editing) {
+                    handleCancelEdit()
+                  } else {
+                    setEditing(true)
+                  }
+                  setEditingFarm(false)
+                  setActiveTab(null)
+                }}
+              >
+                <span className="profile-setting-icon material-symbols-outlined" aria-hidden="true">edit</span>
+                <span><strong>Editar perfil</strong><small>Atualize suas informações</small></span>
+                <span className="material-symbols-outlined" aria-hidden="true">
+                  {editing ? "expand_more" : "chevron_right"}
+                </span>
+              </button>
+              {editing && (
+                <section className="profile-expanded-content">
+                  <ProfileEditForm formData={formData} onChange={handleChange} onIconSelect={handleIconSelect} />
+                  <div className="profile-edit-actions">
+                    <button type="button" onClick={handleSave} disabled={saving}>
+                      <span className="material-symbols-outlined" aria-hidden="true">save</span>
+                      {saving ? "Salvando..." : "Salvar alterações"}
+                    </button>
+                    <button type="button" className="cancel" onClick={handleCancelEdit}>Cancelar</button>
+                  </div>
+                </section>
+              )}
+            </div>
+
+            <div className="profile-setting-item">
+              <button type="button" className="logout" onClick={handleLogout}>
+                <span className="profile-setting-icon material-symbols-outlined" aria-hidden="true">logout</span>
+                <span><strong>Sair</strong><small>Encerrar sessão nesta conta</small></span>
+                <span className="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+              </button>
+            </div>
+          </div>
+        </section>
       </div>
 
       <MenuBar />

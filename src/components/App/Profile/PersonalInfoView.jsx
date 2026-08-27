@@ -1,52 +1,70 @@
-// components/Profile/PersonalInfoView.jsx
-export default function PersonalInfoView({ userData, user, formatDocument }) {
-  const roleLabels = {
-    admin: "Administrador / Chefe",
-    employee: "Funcionário",
-    collaborator: "Colaborador",
-  }
+const ROLE_LABELS = {
+  admin: "Produtor / Gestor",
+  employee: "Funcionário",
+  collaborator: "Colaborador",
+}
+
+export default function PersonalInfoView({
+  userData,
+  user,
+  onEdit,
+  onChangePassword,
+  passwordResetting,
+}) {
+  const displayName = userData?.name || user?.displayName || "Nome não informado"
+  const initial = displayName === "Nome não informado"
+    ? "?"
+    : displayName.trim().charAt(0).toLocaleUpperCase("pt-BR")
+  const location = [userData?.city, userData?.state].filter(Boolean).join(" - ")
 
   const infoItems = [
-    { icon: "badge", label: "Nome", value: userData?.name },
-    { icon: "manage_accounts", label: "Tipo de conta", value: roleLabels[userData?.role] || "Administrador / Chefe", badge: true },
-    { icon: "cake", label: "Idade", value: userData?.age ? `${userData.age} anos` : null },
+    { icon: "person", label: "Nome completo", value: userData?.name },
+    { icon: "mail", label: "E-mail", value: user?.email },
     { icon: "call", label: "Telefone", value: userData?.phone },
-    { icon: "mail", label: "Email", value: user?.email, badge: true },
-    { 
-      icon: "assignment_ind", 
-      label: userData?.type === "CPF" ? "CPF" : "CNPJ", 
-      value: userData?.document ? formatDocument(userData.document) : null,
-      show: userData?.document
-    }
+    { icon: "location_on", label: "Localização", value: location },
+    { icon: "badge", label: "Função", value: ROLE_LABELS[userData?.role] },
   ]
 
   return (
-    <div className="profile-card glass">
-      <div className="card-corner"></div>
-      <div className="card-header">
-        <div className="header-icon">
-          <span className="material-symbols-outlined">person</span>
-          <div className="icon-glow"></div>
+    <div className="personal-details">
+      <div className="personal-account-summary">
+        <div className="personal-account-avatar" aria-hidden="true">{initial}</div>
+        <div className="personal-account-copy">
+          <strong>{displayName}</strong>
+          <span className={user?.emailVerified ? "is-verified" : "is-pending"}>
+            <span className="material-symbols-outlined" aria-hidden="true">
+              {user?.emailVerified ? "verified_user" : "info"}
+            </span>
+            {user?.emailVerified ? "Conta verificada" : "E-mail não verificado"}
+          </span>
         </div>
-        <h3 className="personal-info-title">Informações Pessoais</h3>
-        <div className="header-line"></div>
       </div>
-      
-      <div className="card-content">
-        {infoItems.map((item, index) => (
-          item.value && (
-            <div key={index} className="info-item-tech">
-              <div className="info-label">
-                <span className="material-symbols-outlined">{item.icon}</span>
-                <span>{item.label}</span>
-              </div>
-              <div className={`info-value ${item.badge ? 'badge' : ''}`}>
-                {item.value}
-                <div className="value-glow"></div>
-              </div>
-            </div>
-          )
+
+      <div className="personal-data-list">
+        {infoItems.map((item) => (
+          <button type="button" className="personal-data-row" key={item.label} onClick={onEdit}>
+            <span className="personal-data-icon material-symbols-outlined" aria-hidden="true">{item.icon}</span>
+            <span className="personal-data-copy">
+              <small>{item.label}</small>
+              <strong>{item.value || "Não informado"}</strong>
+            </span>
+            <span className="personal-data-action material-symbols-outlined" aria-hidden="true">edit</span>
+          </button>
         ))}
+
+        <button
+          type="button"
+          className="personal-data-row password-row"
+          onClick={onChangePassword}
+          disabled={passwordResetting}
+        >
+          <span className="personal-data-icon material-symbols-outlined" aria-hidden="true">shield</span>
+          <span className="personal-data-copy">
+            <small>Segurança</small>
+            <strong>{passwordResetting ? "Enviando e-mail..." : "Alterar senha"}</strong>
+          </span>
+          <span className="personal-data-action material-symbols-outlined" aria-hidden="true">chevron_right</span>
+        </button>
       </div>
     </div>
   )

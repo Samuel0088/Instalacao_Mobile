@@ -52,11 +52,21 @@ const FarmInfoView = ({ farmData, onAddFarm, onEditFarm, formatPhone }) => {
           <span className="material-symbols-outlined">agriculture</span>
           <div className="icon-glow"></div>
         </div>
-        <h3>{farmData.name || "Fazenda"}</h3>
+        <h3 className="personal-info-title">Informações da Fazenda</h3>
         <div className="header-line"></div>
       </div>
 
       <div className="farm-info-grid">
+        {farmData.name && (
+          <div className="info-item-tech">
+            <div className="info-label">
+              <span className="material-symbols-outlined">agriculture</span>
+              <span>Nome</span>
+            </div>
+            <div className="info-value">{farmData.name}</div>
+          </div>
+        )}
+
         {/* Área Total */}
         <div className="info-item-tech highlight">
           <div className="info-label">

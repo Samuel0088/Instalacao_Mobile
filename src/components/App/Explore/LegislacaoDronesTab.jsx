@@ -55,22 +55,10 @@ const checklist = [
   }
 ]
 
-const agencies = [
-  {
-    name: "ANAC",
-    role: "Define regras civis para aeronaves não tripuladas, cadastro, classes operacionais, responsabilidades do piloto remoto e condições gerais para operar com segurança.",
-    icon: "assignment"
-  },
-  {
-    name: "DECEA",
-    role: "Gerencia o acesso ao espaço aéreo. Pelo SARPAS, o operador informa local, horário, altura e finalidade do voo para obter autorização quando necessária.",
-    icon: "public"
-  },
-  {
-    name: "Anatel",
-    role: "Cuida da homologação dos equipamentos de telecomunicação, como controle remoto, transmissão de vídeo, telemetria e módulos de comunicação.",
-    icon: "cell_tower"
-  }
+const quickTips = [
+  { icon: "cloud", text: "Consulte o clima antes do voo" },
+  { icon: "visibility", text: "Planeje a rota e o objetivo" },
+  { icon: "groups", text: "Respeite a privacidade e propriedades" }
 ]
 
 export default function LegislacaoDronesTab() {
@@ -91,10 +79,10 @@ export default function LegislacaoDronesTab() {
         target="_blank"
         rel="noreferrer"
       >
-        <span className="drone-law-featured-icon material-symbols-outlined" aria-hidden="true">contract_edit</span>
+        <span className="drone-law-featured-icon material-symbols-outlined" aria-hidden="true">verified_user</span>
         <span>
-          <strong>Voar com segurança e dentro da lei</strong>
-          <small>Acesse orientações oficiais para operar drones na agricultura.</small>
+          <strong>Voar com segurança é legal.</strong>
+          <small>Conheça regras e boas práticas para operar drones na agricultura.</small>
         </span>
         <span className="drone-law-featured-action">
           Saiba mais
@@ -144,7 +132,11 @@ export default function LegislacaoDronesTab() {
       <section className="drone-law-documents" aria-labelledby="drone-law-documents-title">
         <div className="drone-law-section-heading">
           <span className="material-symbols-outlined" aria-hidden="true">description</span>
-          <h2 id="drone-law-documents-title">Canais oficiais</h2>
+          <h2 id="drone-law-documents-title">Documentos oficiais</h2>
+          <a href={officialLinks[1].href} target="_blank" rel="noreferrer">
+            Ver todos
+            <span className="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+          </a>
         </div>
 
         <div className="drone-law-links">
@@ -164,15 +156,14 @@ export default function LegislacaoDronesTab() {
       <section className="drone-law-agencies-section" aria-labelledby="drone-law-agencies-title">
         <div className="drone-law-section-heading">
           <span className="material-symbols-outlined" aria-hidden="true">lightbulb</span>
-          <h2 id="drone-law-agencies-title">Órgãos responsáveis</h2>
+          <h2 id="drone-law-agencies-title">Dicas rápidas</h2>
         </div>
 
-        <div className="drone-law-agencies">
-          {agencies.map((agency) => (
-            <article className="drone-law-agency" key={agency.name}>
-              <span className="material-symbols-outlined" aria-hidden="true">{agency.icon}</span>
-              <strong>{agency.name}</strong>
-              <p>{agency.role}</p>
+        <div className="drone-law-quick-tips">
+          {quickTips.map((tip) => (
+            <article key={tip.text}>
+              <span className="material-symbols-outlined" aria-hidden="true">{tip.icon}</span>
+              <p>{tip.text}</p>
             </article>
           ))}
         </div>
@@ -181,11 +172,12 @@ export default function LegislacaoDronesTab() {
       <aside className="drone-law-responsibility">
         <span className="material-symbols-outlined" aria-hidden="true">balance</span>
         <div>
-          <strong>Consulte os órgãos responsáveis em caso de dúvida</strong>
-          <p>Confirme as regras vigentes antes de cada voo e opere com responsabilidade.</p>
+          <strong>Dúvidas sobre legislação?</strong>
+          <p>Consulte os órgãos responsáveis e confirme as regras vigentes.</p>
         </div>
         <a href={officialLinks[1].href} target="_blank" rel="noreferrer" aria-label="Abrir portal oficial do DECEA">
-          <span className="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+          Órgãos responsáveis
+          <span className="material-symbols-outlined" aria-hidden="true">chevron_right</span>
         </a>
       </aside>
 
