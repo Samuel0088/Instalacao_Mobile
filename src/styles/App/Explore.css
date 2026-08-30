@@ -1915,7 +1915,17 @@ body {
 .explore-container--clima {
   height: 100dvh;
   min-height: 100dvh;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  scrollbar-width: none;
+}
+
+.explore-container--clima::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 :is(.explore-container--monitoramento, .explore-container--clima, .explore-container--diario, .explore-container--mapa, .explore-container--estoque, .explore-container--atividades, .explore-container--legislacao) .explore-tabs-header {

@@ -1554,3 +1554,19 @@
   }
 }
 
+/* Mantem a pagina de clima rolavel no app instalado. */
+.explore-container--clima .climate-dashboard {
+  min-height: 100dvh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  scrollbar-width: none;
+}
+
+.explore-container--clima .climate-dashboard::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+

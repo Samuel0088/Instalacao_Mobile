@@ -755,6 +755,6 @@ header::after {
   }
 
   .home-app-header .home-user-heading {
-    transform: translateY(10px);
+    transform: translateY(28px);
   }
 }

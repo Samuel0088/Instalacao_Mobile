@@ -1162,10 +1162,11 @@
   --planting-gutter: 20px;
   position: relative;
   max-width: 680px;
-  min-height: calc(100dvh - 58px);
+  min-height: 100dvh;
   margin: 0 auto;
-  padding: 0 var(--planting-gutter) calc(104px + env(safe-area-inset-bottom, 0px));
-  overflow: hidden;
+  padding: 0 var(--planting-gutter) calc(128px + env(safe-area-inset-bottom, 0px));
+  overflow-x: hidden;
+  overflow-y: auto;
   background-color: #f4f9ef;
   background-image:
     linear-gradient(
@@ -1182,6 +1183,13 @@
   background-size: 100% 760px, auto 760px;
   background-repeat: no-repeat;
   color: #173326;
+  scrollbar-width: none;
+}
+
+.container::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 .hero {
@@ -1415,7 +1423,7 @@
   grid-template-columns: 38px minmax(0, 1fr) 18px;
   align-items: center;
   gap: 9px;
-  margin: 0 auto 12px;
+  margin: 0 auto 18px;
   padding: 8px 10px;
   border: 1px solid rgba(45, 97, 64, 0.1);
   border-radius: 8px;
