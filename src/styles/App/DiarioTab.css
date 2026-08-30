@@ -467,3 +467,49 @@
     transition: none;
   }
 }
+
+@media (min-width: 390px) and (max-width: 550px), (pointer: coarse) and (min-width: 390px) and (max-width: 900px) {
+  .diario-container {
+    gap: 14px;
+  }
+
+  .diario-hero {
+    min-height: 218px;
+    padding-top: 34px;
+  }
+
+  .diario-header h2 {
+    font-size: 1.9rem;
+  }
+
+  .diario-header p {
+    font-size: 0.78rem;
+  }
+
+  .diario-add-btn {
+    min-height: 58px;
+    font-size: 0.9rem;
+  }
+
+  .diario-card {
+    grid-template-columns: 58px minmax(0, 1fr) 34px;
+    min-height: 112px;
+    padding: 13px;
+  }
+
+  .diario-card-icon,
+  .type-icon {
+    width: 52px;
+    height: 52px;
+  }
+
+  .diario-card-title {
+    font-size: 0.86rem;
+  }
+
+  .diario-card-description,
+  .diario-card-date,
+  .diario-card-time {
+    font-size: 0.64rem;
+  }
+}

@@ -2151,3 +2151,66 @@
     grid-template-columns: minmax(0, 1fr) 88px;
   }
 }
+
+@media (min-width: 390px) and (max-width: 550px), (pointer: coarse) and (min-width: 390px) and (max-width: 900px) {
+  .explore-container--diagnostico .diagnostic-hero {
+    min-height: 252px;
+  }
+
+  .explore-container--diagnostico .diagnostico-title {
+    font-size: 2.15rem;
+  }
+
+  .explore-container--diagnostico .diagnostic-header p {
+    font-size: 0.78rem;
+  }
+
+  .explore-container--diagnostico .options-grid {
+    gap: 12px;
+  }
+
+  .explore-container--diagnostico .option-card {
+    min-height: 168px;
+    padding: 18px 12px;
+  }
+
+  .explore-container--diagnostico .option-icon {
+    width: 58px;
+    height: 58px;
+  }
+
+  .explore-container--diagnostico .option-icon span {
+    font-size: 29px;
+  }
+
+  .explore-container--diagnostico .option-card h3 {
+    font-size: 0.9rem;
+  }
+
+  .explore-container--diagnostico .option-card p {
+    font-size: 0.67rem;
+  }
+
+  .explore-container--diagnostico .history-section {
+    padding: 13px;
+  }
+
+  .explore-container--diagnostico .history-item {
+    min-height: 62px;
+    padding-block: 9px;
+  }
+
+  .explore-container--diagnostico .history-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .explore-container--diagnostico .history-name {
+    font-size: 0.72rem;
+  }
+
+  .explore-container--diagnostico .history-date,
+  .explore-container--diagnostico .confidence-value {
+    font-size: 0.58rem;
+  }
+}

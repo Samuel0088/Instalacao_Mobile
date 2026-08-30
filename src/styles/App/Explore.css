@@ -3571,3 +3571,132 @@ span[style*="color: var(--primary)"] {
   min-width: 98px;
   background: #2d6140;
 }
+
+/* Escala maior para telas mobile largas nas paginas do Explore. */
+@media (min-width: 390px) and (max-width: 550px), (pointer: coarse) and (min-width: 390px) and (max-width: 900px) {
+  :is(.explore-container--monitoramento, .explore-container--clima, .explore-container--diario, .explore-container--mapa, .explore-container--estoque, .explore-container--atividades, .explore-container--legislacao, .explore-container--diagnostico) .explore-tab {
+    min-height: 42px;
+    padding: 0 15px;
+    gap: 7px;
+    font-size: 0.68rem;
+  }
+
+  :is(.explore-container--monitoramento, .explore-container--clima, .explore-container--diario, .explore-container--mapa, .explore-container--estoque, .explore-container--atividades, .explore-container--legislacao, .explore-container--diagnostico) .explore-tab .material-symbols-outlined {
+    font-size: 19px;
+  }
+
+  .drone-law-container.drone-law-dashboard {
+    gap: 15px;
+  }
+
+  .drone-law-dashboard .drone-law-hero {
+    height: 196px;
+  }
+
+  .drone-law-dashboard .drone-law-hero-copy {
+    top: 62px;
+  }
+
+  .drone-law-dashboard .drone-law-hero h1 {
+    font-size: 1.92rem;
+  }
+
+  .drone-law-dashboard .drone-law-hero p {
+    max-width: 250px;
+    font-size: 0.72rem;
+  }
+
+  .drone-law-dashboard .drone-law-featured {
+    grid-template-columns: 46px minmax(0, 1fr) auto;
+    min-height: 84px;
+    padding: 12px;
+  }
+
+  .drone-law-dashboard .drone-law-featured-icon {
+    width: 46px;
+    height: 46px;
+    font-size: 24px;
+  }
+
+  .drone-law-dashboard .drone-law-featured strong {
+    font-size: 0.78rem;
+  }
+
+  .drone-law-dashboard .drone-law-featured small {
+    font-size: 0.58rem;
+  }
+
+  .drone-law-dashboard .drone-law-featured-action {
+    min-height: 34px;
+    font-size: 0.58rem;
+  }
+
+  .drone-law-dashboard .drone-law-section-heading h2 {
+    font-size: 0.78rem;
+  }
+
+  .drone-law-dashboard .drone-law-section-heading > span {
+    font-size: 18px;
+  }
+
+  .drone-law-dashboard .drone-law-card {
+    min-height: 92px;
+    gap: 8px;
+    padding: 10px 6px;
+  }
+
+  .drone-law-dashboard .drone-law-card-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 20px !important;
+  }
+
+  .drone-law-dashboard .drone-law-card strong {
+    font-size: 0.57rem;
+  }
+
+  .drone-law-dashboard .drone-law-links a {
+    grid-template-columns: 46px minmax(0, 1fr) 20px;
+    min-height: 66px;
+    padding: 10px 11px;
+  }
+
+  .drone-law-dashboard .drone-law-agency-label {
+    width: 46px;
+    height: 40px;
+    font-size: 0.52rem;
+  }
+
+  .drone-law-dashboard .drone-law-link-copy strong {
+    font-size: 0.69rem;
+  }
+
+  .drone-law-dashboard .drone-law-link-copy small {
+    font-size: 0.54rem;
+  }
+
+  .drone-law-dashboard .drone-law-quick-tips article {
+    min-height: 78px;
+  }
+
+  .drone-law-dashboard .drone-law-quick-tips span {
+    font-size: 21px;
+  }
+
+  .drone-law-dashboard .drone-law-quick-tips p {
+    font-size: 0.53rem;
+  }
+
+  .drone-law-dashboard .drone-law-responsibility {
+    min-height: 70px;
+    padding: 12px;
+  }
+
+  .drone-law-dashboard .drone-law-responsibility strong {
+    font-size: 0.64rem;
+  }
+
+  .drone-law-dashboard .drone-law-responsibility p {
+    font-size: 0.53rem;
+  }
+}

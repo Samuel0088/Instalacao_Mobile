@@ -1486,3 +1486,71 @@
   }
 }
 
+@media (min-width: 390px) and (max-width: 550px), (pointer: coarse) and (min-width: 390px) and (max-width: 900px) {
+  .climate-hero {
+    aspect-ratio: 1 / 1.05;
+    padding-top: 26px;
+  }
+
+  .climate-location h1 {
+    font-size: 1.55rem;
+  }
+
+  .climate-location p {
+    font-size: 0.72rem;
+  }
+
+  .climate-overview-card {
+    width: 74%;
+    min-height: 164px;
+  }
+
+  .climate-temperature strong {
+    font-size: 4.65rem;
+  }
+
+  .climate-temperature span {
+    font-size: 1.45rem;
+  }
+
+  .climate-stats {
+    gap: 10px;
+  }
+
+  .climate-stat-card {
+    aspect-ratio: 1.7;
+    padding: 10px;
+  }
+
+  .climate-stat-card .material-symbols-outlined {
+    font-size: 22px;
+  }
+
+  .climate-stat-card small {
+    font-size: 0.58rem;
+  }
+
+  .climate-stat-card strong {
+    font-size: 0.8rem;
+  }
+
+  .climate-recommendations {
+    padding: 16px;
+    aspect-ratio: 2.9;
+  }
+
+  .climate-recommendations h2,
+  .climate-recommendation strong {
+    font-size: 0.82rem;
+  }
+
+  .climate-recommendation {
+    min-height: 76px;
+  }
+
+  .climate-recommendation p,
+  .climate-recommendation-details-button {
+    font-size: 0.64rem;
+  }
+}
+
