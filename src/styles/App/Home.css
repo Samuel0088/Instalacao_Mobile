@@ -4123,14 +4123,19 @@ body:has(.home-shell),
 @media (max-width: 550px) {
   .home-shell {
     --home-side-gutter: var(--app-content-gutter);
+    width: 100%;
+    max-width: none;
+    margin-inline: auto;
   }
 
   .home-shell .home-container {
-    padding-inline: var(--home-side-gutter) !important;
+    width: 100%;
+    max-width: none;
+    padding-inline: 15px !important;
   }
 
-  .home-shell .home-weather-hero {
-    padding-inline: 0 !important;
+  .home-shell .home-app-header .header-top {
+    padding-inline: 15px !important;
   }
 
   .home-shell .weather-hero-top {
@@ -4145,7 +4150,7 @@ body:has(.home-shell),
   .home-shell .weather-illustration {
     position: absolute;
     top: 15px;
-    right: calc(50% - 50vw - 7px);
+    right: -17px;
     width: 224px;
     height: 168px;
     margin-inline: 0;
