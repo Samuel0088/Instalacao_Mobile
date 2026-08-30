@@ -4123,19 +4123,14 @@ body:has(.home-shell),
 @media (max-width: 550px) {
   .home-shell {
     --home-side-gutter: var(--app-content-gutter);
-    width: 100%;
-    max-width: none;
+    width: min(calc(100vw - 52px), 430px);
+    max-width: 430px;
     margin-inline: auto;
   }
 
   .home-shell .home-container {
     width: 100%;
     max-width: none;
-    padding-inline: 15px !important;
-  }
-
-  .home-shell .home-app-header .header-top {
-    padding-inline: 15px !important;
   }
 
   .home-shell .weather-hero-top {
@@ -4150,7 +4145,7 @@ body:has(.home-shell),
   .home-shell .weather-illustration {
     position: absolute;
     top: 15px;
-    right: -17px;
+    right: calc(50% - 50vw - 7px);
     width: 224px;
     height: 168px;
     margin-inline: 0;
@@ -4158,6 +4153,25 @@ body:has(.home-shell),
 
   .home-shell .weather-illustration img {
     transform: scale(1.22);
+  }
+}
+
+@media (max-width: 550px) {
+  html:has(.home-shell),
+  body:has(.home-shell),
+  #root:has(.home-shell),
+  .app-route-transition:has(.home-shell) {
+    background: #141615 !important;
+  }
+
+  .home-shell,
+  .home-shell .home-app-header,
+  .home-shell .home-container {
+    background: var(--app-page-bg) !important;
+  }
+
+  body:has(.home-shell) .nav {
+    width: min(calc(100vw - 84px), 346px);
   }
 }
 
