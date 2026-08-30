@@ -3333,3 +3333,241 @@ span[style*="color: var(--primary)"] {
     justify-self: start;
   }
 }
+
+/* Legislação: refinamento visual mais sóbrio e operacional. */
+.drone-law-container.drone-law-dashboard {
+  gap: 12px;
+  padding-inline: var(--app-content-gutter) !important;
+  background:
+    linear-gradient(180deg, #f5f9f1 0%, #f7faf4 44%, #f4f8f0 100%);
+  color: #173d28;
+}
+
+.drone-law-dashboard .drone-law-hero {
+  width: calc(100% + (var(--app-content-gutter) * 2));
+  height: 172px;
+  margin-inline: calc(var(--app-content-gutter) * -1);
+  background-image: url("/assets/image/imagem-fundo-alinhamento-mobile-2026.png");
+  background-position: center 43%;
+  background-size: cover;
+}
+
+.drone-law-dashboard .drone-law-hero::before {
+  background:
+    linear-gradient(180deg, #f5f9f1 0%, rgba(245, 249, 241, 0.5) 18%, rgba(245, 249, 241, 0) 46%, #f5f9f1 100%),
+    linear-gradient(90deg, rgba(10, 47, 25, 0.76) 0%, rgba(18, 56, 32, 0.54) 35%, rgba(18, 56, 32, 0.14) 58%, rgba(18, 56, 32, 0) 100%),
+    linear-gradient(0deg, rgba(19, 70, 32, 0.16), rgba(19, 70, 32, 0.16));
+}
+
+.drone-law-dashboard .drone-law-hero-copy {
+  top: 56px;
+  left: var(--app-content-gutter);
+  width: min(62%, 290px);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.drone-law-dashboard .drone-law-hero h1 {
+  margin-bottom: 6px;
+  color: #ffffff;
+  font-size: 1.58rem;
+  font-weight: 760;
+  line-height: 0.98;
+}
+
+.drone-law-dashboard .drone-law-hero p {
+  max-width: 220px;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.62rem;
+  font-weight: 560;
+  line-height: 1.35;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.28);
+}
+
+.drone-law-dashboard .drone-law-featured {
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  gap: 10px;
+  min-height: 72px;
+  margin-top: -42px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(25, 75, 43, 0.98), rgba(31, 91, 53, 0.96));
+  box-shadow: 0 10px 22px rgba(23, 61, 40, 0.16);
+}
+
+.drone-law-dashboard .drone-law-featured-icon {
+  width: 38px;
+  height: 38px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #246036;
+  font-size: 21px;
+}
+
+.drone-law-dashboard .drone-law-featured strong {
+  margin-bottom: 3px;
+  font-size: 0.67rem;
+  font-weight: 720;
+}
+
+.drone-law-dashboard .drone-law-featured small {
+  max-width: 190px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.5rem;
+}
+
+.drone-law-dashboard .drone-law-featured-action {
+  min-height: 28px;
+  padding-inline: 9px 6px;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 0.5rem;
+}
+
+.drone-law-dashboard .drone-law-section-heading {
+  margin-bottom: 7px;
+}
+
+.drone-law-dashboard .drone-law-section-heading > span {
+  color: #4c795b;
+  font-size: 15px;
+}
+
+.drone-law-dashboard .drone-law-section-heading h2 {
+  color: #2d5439;
+  font-size: 0.67rem;
+  font-weight: 740;
+}
+
+.drone-law-dashboard .drone-law-section-heading > a {
+  color: #4d765c;
+  font-size: 0.49rem;
+}
+
+.drone-law-dashboard .drone-law-grid {
+  gap: 6px;
+}
+
+.drone-law-dashboard .drone-law-card {
+  min-height: 78px;
+  gap: 6px;
+  padding: 8px 5px;
+  border-color: rgba(26, 67, 41, 0.09);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 3px 10px rgba(28, 68, 42, 0.04);
+}
+
+.drone-law-dashboard .drone-law-card.active {
+  border-color: rgba(42, 91, 55, 0.28);
+  background: #edf5e9;
+}
+
+.drone-law-dashboard .drone-law-card-icon {
+  width: 29px;
+  height: 29px;
+  background: #eef5eb;
+  color: #386d47;
+  font-size: 17px !important;
+}
+
+.drone-law-dashboard .drone-law-card strong {
+  color: #375541;
+  font-size: 0.49rem;
+  font-weight: 690;
+  line-height: 1.22;
+}
+
+.drone-law-dashboard .drone-law-topic-detail {
+  padding: 10px;
+  border-color: rgba(26, 67, 41, 0.1);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 4px 12px rgba(28, 68, 42, 0.04);
+}
+
+.drone-law-dashboard .drone-law-topic-detail h3 {
+  color: #21452e;
+  font-size: 0.64rem;
+}
+
+.drone-law-dashboard .drone-law-topic-detail p {
+  color: #5e6d64;
+  font-size: 0.53rem;
+}
+
+.drone-law-dashboard .drone-law-links {
+  border-color: rgba(26, 67, 41, 0.1);
+  background: rgba(255, 255, 255, 0.93);
+  box-shadow: 0 5px 14px rgba(28, 68, 42, 0.045);
+}
+
+.drone-law-dashboard .drone-law-links a {
+  grid-template-columns: 38px minmax(0, 1fr) 17px;
+  min-height: 55px;
+  gap: 9px;
+  padding: 8px 9px;
+  border-bottom-color: rgba(26, 67, 41, 0.08);
+}
+
+.drone-law-dashboard .drone-law-agency-label {
+  width: 38px;
+  height: 34px;
+  border-radius: 7px;
+  background: #5d8663;
+  font-size: 0.45rem;
+}
+
+.drone-law-dashboard .drone-law-link-copy strong {
+  color: #294b34;
+  font-size: 0.59rem;
+  font-weight: 720;
+}
+
+.drone-law-dashboard .drone-law-link-copy small {
+  color: #7a857e;
+  font-size: 0.47rem;
+}
+
+.drone-law-dashboard .drone-law-quick-tips {
+  border-color: rgba(26, 67, 41, 0.08);
+  background: rgba(237, 245, 233, 0.82);
+}
+
+.drone-law-dashboard .drone-law-quick-tips article {
+  min-height: 65px;
+}
+
+.drone-law-dashboard .drone-law-quick-tips span {
+  color: #467657;
+  font-size: 18px;
+}
+
+.drone-law-dashboard .drone-law-quick-tips p {
+  color: #465c4d;
+  font-size: 0.47rem;
+}
+
+.drone-law-dashboard .drone-law-responsibility {
+  padding: 10px;
+  border-color: rgba(26, 67, 41, 0.08);
+  background: rgba(237, 245, 233, 0.9);
+}
+
+.drone-law-dashboard .drone-law-responsibility strong {
+  color: #294b34;
+  font-size: 0.56rem;
+}
+
+.drone-law-dashboard .drone-law-responsibility p {
+  color: #65746a;
+  font-size: 0.48rem;
+}
+
+.drone-law-dashboard .drone-law-responsibility a {
+  min-width: 98px;
+  background: #2d6140;
+}

@@ -34,22 +34,22 @@ const officialLinks = [
 
 const checklist = [
   {
-    title: "Cadastro e identificação",
+    title: "Cadastro ANAC",
     text: "No Brasil, drones usados como RPAS/VANT precisam seguir as regras da ANAC. Em geral, aeronaves acima de 250 g devem ser cadastradas e identificadas com o número de registro visível no equipamento. O cadastro ajuda a vincular a aeronave ao operador responsável.",
     icon: "badge"
   },
   {
-    title: "Homologação Anatel",
+    title: "Homologação",
     text: "O drone, o rádio controle e módulos de transmissão usam radiofrequência. Por isso, o equipamento deve ser homologado pela Anatel antes do uso, evitando interferências e problemas legais na operação.",
     icon: "verified"
   },
   {
-    title: "Autorização de voo",
+    title: "Autorização",
     text: "Antes de decolar, o operador deve verificar o espaço aéreo pelo SARPAS/DECEA. Isso é essencial perto de aeroportos, helipontos, áreas militares, cidades, linhas de transmissão e locais com restrições temporárias.",
     icon: "approval"
   },
   {
-    title: "Segurança operacional",
+    title: "Operação segura",
     text: "Mesmo em área rural, planeje altitude, rota, vento, bateria, linha visual, distância de pessoas e animais, obstáculos e ponto de pouso. Se aparecer aeronave tripulada, a prioridade é sempre dela.",
     icon: "health_and_safety"
   }
@@ -69,7 +69,7 @@ export default function LegislacaoDronesTab() {
       <div className="drone-law-hero">
         <div className="drone-law-hero-copy">
           <h1>Legislação</h1>
-          <p>Informações e orientações sobre o uso de drones na agricultura</p>
+          <p>Regras e documentos para operar drones na agricultura</p>
         </div>
       </div>
 
@@ -81,11 +81,11 @@ export default function LegislacaoDronesTab() {
       >
         <span className="drone-law-featured-icon material-symbols-outlined" aria-hidden="true">verified_user</span>
         <span>
-          <strong>Voar com segurança é legal.</strong>
-          <small>Conheça regras e boas práticas para operar drones na agricultura.</small>
+          <strong>Checklist antes do voo</strong>
+          <small>Revise cadastro, homologação, autorização e segurança operacional.</small>
         </span>
         <span className="drone-law-featured-action">
-          Saiba mais
+          Abrir
           <span className="material-symbols-outlined" aria-hidden="true">chevron_right</span>
         </span>
       </a>

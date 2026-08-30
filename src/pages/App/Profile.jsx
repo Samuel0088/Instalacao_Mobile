@@ -1,5 +1,5 @@
 // Profile.jsx - Versão Tecnológica com Componentes
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { auth, db } from "../../services/firebase"
 import { doc, getDoc, updateDoc, collection, query, where, getDocs } from "firebase/firestore"
 import { useNavigate } from "react-router-dom"
@@ -31,6 +31,7 @@ export default function Profile() {
   const [editingFarm, setEditingFarm] = useState(false)
   const [savingFarm, setSavingFarm] = useState(false)
   const [passwordResetting, setPasswordResetting] = useState(false)
+  const editSectionRef = useRef(null)
   const [formData, setFormData] = useState({
     name: "",
     age: "",
@@ -61,6 +62,25 @@ export default function Profile() {
 
     return () => unsubscribe()
   }, [navigate])
+
+  useEffect(() => {
+    if (!editing) return
+
+    const scrollToEditForm = window.setTimeout(() => {
+      editSectionRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      })
+
+      window.setTimeout(() => {
+        editSectionRef.current
+          ?.querySelector("input, select, textarea")
+          ?.focus({ preventScroll: true })
+      }, 350)
+    }, 80)
+
+    return () => window.clearTimeout(scrollToEditForm)
+  }, [editing])
 
   const loadUserData = async (uid) => {
     try {
@@ -312,6 +332,7 @@ export default function Profile() {
   const totalHectares = getTotalHectares()
   const userAge = Number(userData?.age)
   const hasValidAge = Number.isInteger(userAge) && userAge > 0
+  const locationLabel = [userData?.city, userData?.state].filter(Boolean).join(" - ") || farmData?.municipio || "Localização não informada"
 
   if (loading) {
     return <ProfileLoadingScreen />
@@ -320,37 +341,46 @@ export default function Profile() {
   return (
     <>
       <div className="profile-container-tech profile-redesign" data-system-bar-color="#f4f9ef">
-        <header className="profile-overview-hero">
-          <div>
-            <h1>Perfil</h1>
-            <p>Sua conta e propriedades</p>
+        <header className="profile-mobile-shell">
+          <div className="profile-mobile-top">
+            <div className="profile-photo-wrap">
+              {user?.photoURL ? (
+                <img src={user.photoURL} alt="" />
+              ) : (
+                <span>{profileInitial}</span>
+              )}
+              <span className="profile-photo-status material-symbols-outlined" aria-hidden="true">verified</span>
+            </div>
+
+            <div className="profile-quick-actions" aria-label="Ações rápidas do perfil">
+              <button type="button" onClick={openProfileEditor}>
+                <span className="material-symbols-outlined" aria-hidden="true">edit</span>
+                Editar perfil
+              </button>
+              <button type="button" onClick={handlePasswordReset} disabled={passwordResetting}>
+                <span className="material-symbols-outlined" aria-hidden="true">lock_reset</span>
+                {passwordResetting ? "Enviando..." : "Alterar senha"}
+              </button>
+            </div>
+          </div>
+
+          <div className="profile-mobile-name">
+            <h1>{displayName}</h1>
+            <p>{roleLabels[userData?.role] || "Conta pessoal"}</p>
           </div>
         </header>
 
-        <section className="profile-identity-card" aria-label="Resumo da conta">
-          <div className="profile-identity-avatar" aria-hidden="true">
-            <span>{profileInitial}</span>
-            <span className="profile-identity-verified material-symbols-outlined">verified</span>
+        <section className="profile-dark-card" aria-label="Resumo da propriedade">
+          <span className="profile-dark-icon material-symbols-outlined" aria-hidden="true">agriculture</span>
+          <div>
+            <strong>{farmData?.name || "Propriedade"}</strong>
+            <small>{locationLabel}</small>
           </div>
-          <div className="profile-identity-copy">
-            <h2>{displayName}</h2>
-            <p>
-              <span className="material-symbols-outlined" aria-hidden="true">eco</span>
-              {membershipTime ? `Membro há ${membershipTime}` : "Data de cadastro não informada"}
-            </p>
-            <span className="profile-account-type">
-              <span className="material-symbols-outlined" aria-hidden="true">person</span>
-              {roleLabels[userData?.role] || "Conta pessoal"}
-            </span>
-          </div>
-          <span className="profile-identity-leaf material-symbols-outlined" aria-hidden="true">eco</span>
+          <span className="profile-dark-action material-symbols-outlined" aria-hidden="true">chevron_right</span>
         </section>
 
-        <section className="profile-summary" aria-labelledby="profile-summary-title">
-          <div className="profile-section-title">
-            <span className="material-symbols-outlined" aria-hidden="true">eco</span>
-            <h2 id="profile-summary-title">Resumo da conta</h2>
-          </div>
+        <section className="profile-summary profile-summary-compact" aria-labelledby="profile-summary-title">
+          <h2 id="profile-summary-title">Resumo</h2>
           <div className="profile-summary-grid">
             <article>
               <span className="material-symbols-outlined" aria-hidden="true">potted_plant</span>
@@ -374,8 +404,7 @@ export default function Profile() {
 
         <section className="profile-settings" aria-labelledby="profile-settings-title">
           <div className="profile-section-title">
-            <span className="material-symbols-outlined" aria-hidden="true">settings</span>
-            <h2 id="profile-settings-title">Conta e configurações</h2>
+            <h2 id="profile-settings-title">Configurações</h2>
           </div>
           <div className="profile-settings-list">
             <div className={`profile-setting-item ${activeTab === "pessoal" ? "is-open" : ""}`}>
@@ -442,10 +471,8 @@ export default function Profile() {
                   if (editing) {
                     handleCancelEdit()
                   } else {
-                    setEditing(true)
+                    openProfileEditor()
                   }
-                  setEditingFarm(false)
-                  setActiveTab(null)
                 }}
               >
                 <span className="profile-setting-icon material-symbols-outlined" aria-hidden="true">edit</span>
@@ -455,14 +482,13 @@ export default function Profile() {
                 </span>
               </button>
               {editing && (
-                <section className="profile-expanded-content">
+                <section className="profile-expanded-content profile-edit-target" ref={editSectionRef}>
                   <ProfileEditForm formData={formData} onChange={handleChange} onIconSelect={handleIconSelect} />
                   <div className="profile-edit-actions">
+                    <button type="button" className="cancel" onClick={handleCancelEdit}>Cancelar</button>
                     <button type="button" onClick={handleSave} disabled={saving}>
-                      <span className="material-symbols-outlined" aria-hidden="true">save</span>
                       {saving ? "Salvando..." : "Salvar alterações"}
                     </button>
-                    <button type="button" className="cancel" onClick={handleCancelEdit}>Cancelar</button>
                   </div>
                 </section>
               )}
