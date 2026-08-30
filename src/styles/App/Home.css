@@ -4358,3 +4358,116 @@ body:has(.home-shell),
   border-color: rgba(45, 97, 64, 0.24);
   background: #ffffff;
 }
+
+/* Escala visual para celulares com resolução/largura maior, mantendo as margens atuais. */
+@media (min-width: 390px) and (max-width: 550px), (pointer: coarse) and (min-width: 390px) and (max-width: 900px) {
+  .home-shell .home-weather-hero {
+    min-height: 318px;
+    padding-top: calc(env(safe-area-inset-top, 0px) + 30px);
+  }
+
+  .home-shell .weather-hero-top {
+    min-height: 224px;
+  }
+
+  .home-shell .weather-location h1 {
+    font-size: 1.56rem;
+  }
+
+  .home-shell .weather-location p {
+    font-size: 0.72rem;
+  }
+
+  .home-shell .weather-main-value strong {
+    font-size: 4.8rem;
+  }
+
+  .home-shell .weather-main-value span {
+    font-size: 1.7rem;
+  }
+
+  .home-shell .home-weather-hero p,
+  .home-shell .weather-farm-label {
+    font-size: 0.75rem;
+  }
+
+  .home-shell .weather-condition-art {
+    width: 46px;
+    height: 46px;
+  }
+
+  .home-shell .weather-illustration {
+    top: 28px;
+    width: 270px;
+    height: 202px;
+  }
+
+  .home-shell .weather-stat-grid {
+    gap: 10px;
+  }
+
+  .home-shell .weather-stat-pill {
+    min-height: 64px;
+    padding: 9px 8px;
+  }
+
+  .home-shell .weather-stat-pill > .material-symbols-outlined {
+    width: 31px;
+    height: 31px;
+    font-size: 18px;
+  }
+
+  .home-shell .weather-stat-pill small {
+    font-size: 0.54rem;
+  }
+
+  .home-shell .weather-stat-pill strong {
+    font-size: 0.74rem;
+  }
+
+  .field-card {
+    min-height: 218px;
+    padding: 13px;
+  }
+
+  .field-card h3,
+  .home-quick-summary h2,
+  .section-title h2 {
+    font-size: 1.18rem;
+  }
+
+  .field-card p,
+  .quick-summary-card p,
+  .activity-description,
+  .activity-time {
+    font-size: 0.72rem;
+  }
+
+  .quick-summary-card {
+    min-height: 74px;
+    padding: 10px;
+  }
+
+  .activity-card {
+    min-height: 116px;
+    padding: 13px;
+  }
+
+  .quick-summary-heading .material-symbols-outlined,
+  .activity-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 19px;
+  }
+
+  .quick-summary-card strong,
+  .activity-title {
+    font-size: 0.8rem;
+  }
+
+  .action-primary,
+  .install-app-trigger {
+    min-height: 64px;
+    font-size: 0.9rem;
+  }
+}

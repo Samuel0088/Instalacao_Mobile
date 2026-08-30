@@ -656,3 +656,50 @@ body:has(.home-shell) .nav {
 .nav--create-open .nav__item-btn--primary .material-symbols-outlined {
   transform: rotate(45deg);
 }
+
+@media (min-width: 390px) and (max-width: 550px), (pointer: coarse) and (min-width: 390px) and (max-width: 900px) {
+  .nav,
+  body:has(.home-shell) .nav {
+    min-height: 70px;
+    width: min(calc(100vw - var(--app-content-gutter) - var(--app-content-gutter)), 402px);
+  }
+
+  .nav__items {
+    min-height: 70px;
+    padding: 7px 12px;
+  }
+
+  .nav__item-btn {
+    width: 58px;
+    max-width: 58px;
+    height: 56px;
+  }
+
+  .nav__item-btn .material-symbols-outlined {
+    font-size: 23px;
+  }
+
+  .nav__label {
+    width: 58px;
+    max-width: 58px;
+    font-size: 9.5px;
+  }
+
+  .nav__item-btn--primary,
+  .nav__item-btn--primary:hover,
+  .nav__item-btn--primary.nav__item-btn--active {
+    width: 54px;
+    height: 54px;
+    min-width: 54px;
+    max-width: 54px;
+    min-height: 54px;
+    max-height: 54px;
+  }
+
+  .nav__item-btn--primary .material-symbols-outlined {
+    width: 31px;
+    height: 31px;
+    font-size: 31px;
+    line-height: 31px;
+  }
+}
