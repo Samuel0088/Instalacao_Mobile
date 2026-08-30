@@ -4123,14 +4123,21 @@ body:has(.home-shell),
 @media (max-width: 550px) {
   .home-shell {
     --home-side-gutter: var(--app-content-gutter);
-    width: min(calc(100vw - 52px), 430px);
-    max-width: 430px;
+    width: 100%;
+    max-width: none;
     margin-inline: auto;
   }
 
   .home-shell .home-container {
-    width: 100%;
-    max-width: none;
+    width: min(calc(100vw - 20px), 430px);
+    max-width: 430px;
+    margin-inline: auto;
+  }
+
+  .home-shell .home-app-header .header-top {
+    width: min(calc(100vw - 20px), 430px);
+    max-width: 430px;
+    margin-inline: auto;
   }
 
   .home-shell .weather-hero-top {
@@ -4161,17 +4168,25 @@ body:has(.home-shell),
   body:has(.home-shell),
   #root:has(.home-shell),
   .app-route-transition:has(.home-shell) {
-    background: #141615 !important;
-  }
-
-  .home-shell,
-  .home-shell .home-app-header,
-  .home-shell .home-container {
     background: var(--app-page-bg) !important;
   }
 
-  body:has(.home-shell) .nav {
-    width: min(calc(100vw - 84px), 346px);
+  .home-shell {
+    background: var(--app-page-bg) !important;
+  }
+
+  .home-shell .home-app-header,
+  .home-shell .home-container {
+    background: transparent !important;
+  }
+
+  .home-shell::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: var(--app-page-bg) !important;
   }
 }
 
