@@ -4126,7 +4126,11 @@ body:has(.home-shell),
   }
 
   .home-shell .home-container {
-    padding-inline: var(--home-side-gutter);
+    padding-inline: var(--home-side-gutter) !important;
+  }
+
+  .home-shell .home-weather-hero {
+    padding-inline: 0 !important;
   }
 
   .home-shell .weather-hero-top {
