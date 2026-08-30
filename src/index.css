@@ -1,7 +1,7 @@
 :root {
   --app-content-gutter: clamp(14px, 3.9vw, 16px);
-  --app-mobile-canvas-width: 360px;
-  --app-mobile-nav-width: 332px;
+  --app-mobile-canvas-width: 430px;
+  --app-mobile-nav-width: 386px;
   --g0: #0a1a0f;
   --g1: #0f2318;
   --g2: #163020;
