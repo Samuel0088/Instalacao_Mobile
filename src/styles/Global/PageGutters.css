@@ -1,5 +1,19 @@
 /* Recuo externo único para todas as páginas do app em celulares. */
 @media (max-width: 550px), (pointer: coarse) and (max-width: 900px) {
+  .home-shell,
+  .explore-container,
+  .profile-container-tech,
+  .team-page,
+  .plans-page,
+  .employee-work-page {
+    width: 100%;
+    max-width: var(--app-mobile-canvas-width) !important;
+    min-height: 100dvh;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    overflow-x: hidden;
+  }
+
   .home-shell {
     --home-side-gutter: var(--app-content-gutter);
   }
