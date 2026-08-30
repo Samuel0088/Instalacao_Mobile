@@ -2859,3 +2859,253 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* Perfil: rolagem propria e escala maior em celulares com viewport largo. */
+.profile-container-tech.profile-redesign {
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  scrollbar-width: none;
+}
+
+.profile-container-tech.profile-redesign::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+@media (min-width: 390px) and (max-width: 550px), (pointer: coarse) and (min-width: 390px) and (max-width: 900px) {
+  .profile-container-tech.profile-redesign {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 24px) !important;
+    padding-bottom: calc(130px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .profile-redesign .profile-mobile-shell {
+    min-height: 152px;
+    margin-bottom: 16px;
+  }
+
+  .profile-redesign .profile-mobile-top {
+    grid-template-columns: 102px minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .profile-redesign .profile-photo-wrap {
+    width: 102px;
+    height: 102px;
+    font-size: 2.55rem;
+  }
+
+  .profile-redesign .profile-photo-status {
+    width: 23px;
+    height: 23px;
+    font-size: 13px;
+  }
+
+  .profile-redesign .profile-quick-actions {
+    gap: 10px;
+    width: min(100%, 212px);
+  }
+
+  .profile-redesign .profile-quick-actions button {
+    min-height: 44px;
+    padding-inline: 12px;
+    gap: 8px;
+    font-size: 0.68rem;
+  }
+
+  .profile-redesign .profile-quick-actions button span {
+    font-size: 19px;
+  }
+
+  .profile-redesign .profile-mobile-name {
+    margin-top: 10px;
+  }
+
+  .profile-redesign .profile-mobile-name h1 {
+    font-size: 1.08rem;
+  }
+
+  .profile-redesign .profile-mobile-name p {
+    font-size: 0.66rem;
+  }
+
+  .profile-redesign .profile-dark-card {
+    grid-template-columns: 52px minmax(0, 1fr) 32px;
+    min-height: 86px;
+    margin-bottom: 18px;
+    padding: 15px 16px;
+    gap: 13px;
+  }
+
+  .profile-redesign .profile-dark-icon {
+    width: 52px;
+    height: 52px;
+    font-size: 27px;
+  }
+
+  .profile-redesign .profile-dark-card strong {
+    font-size: 0.92rem;
+  }
+
+  .profile-redesign .profile-dark-card small {
+    font-size: 0.64rem;
+  }
+
+  .profile-redesign .profile-dark-action {
+    font-size: 26px;
+  }
+
+  .profile-redesign .profile-summary-compact {
+    margin-bottom: 18px;
+  }
+
+  .profile-redesign .profile-summary-compact > h2,
+  .profile-redesign .profile-section-title h2 {
+    margin-bottom: 12px;
+    font-size: 0.78rem;
+  }
+
+  .profile-redesign .profile-summary-grid {
+    gap: 10px;
+  }
+
+  .profile-redesign .profile-summary-grid article {
+    min-height: 102px;
+    padding: 12px 8px 13px;
+  }
+
+  .profile-redesign .profile-summary-grid article > span {
+    margin-bottom: 7px;
+    font-size: 26px;
+  }
+
+  .profile-redesign .profile-summary-grid strong {
+    font-size: 1.4rem;
+  }
+
+  .profile-redesign .profile-summary-grid small {
+    font-size: 0.6rem;
+  }
+
+  .profile-redesign .profile-settings-list {
+    gap: 11px;
+  }
+
+  .profile-redesign .profile-setting-item > button,
+  .profile-redesign .profile-setting-item.is-open > button {
+    grid-template-columns: 42px minmax(0, 1fr) 24px;
+    min-height: 70px;
+    padding: 12px 14px;
+    gap: 12px;
+  }
+
+  .profile-redesign .profile-settings-list .profile-setting-icon {
+    width: 42px;
+    height: 42px;
+    font-size: 22px;
+  }
+
+  .profile-redesign .profile-settings-list strong {
+    margin-bottom: 4px;
+    font-size: 0.78rem;
+  }
+
+  .profile-redesign .profile-settings-list small {
+    font-size: 0.6rem;
+  }
+
+  .profile-redesign .profile-setting-item > button > span:last-child {
+    font-size: 22px;
+  }
+
+  .profile-redesign .personal-details {
+    padding: 15px;
+  }
+
+  .profile-redesign .personal-account-summary {
+    grid-template-columns: 58px minmax(0, 1fr);
+    gap: 12px;
+    padding-bottom: 15px;
+  }
+
+  .profile-redesign .personal-account-avatar {
+    width: 58px;
+    height: 58px;
+    font-size: 1.25rem;
+  }
+
+  .profile-redesign .personal-account-copy > strong {
+    font-size: 0.84rem;
+  }
+
+  .profile-redesign .personal-account-copy > span {
+    font-size: 0.58rem;
+  }
+
+  .profile-redesign .personal-data-list {
+    gap: 8px;
+  }
+
+  .profile-redesign .personal-data-row {
+    grid-template-columns: 36px minmax(0, 1fr) 22px;
+    min-height: 54px;
+    padding: 9px 11px;
+    gap: 10px;
+  }
+
+  .profile-redesign .personal-data-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 19px;
+  }
+
+  .profile-redesign .personal-data-copy small {
+    font-size: 0.54rem;
+  }
+
+  .profile-redesign .personal-data-copy strong {
+    font-size: 0.7rem;
+  }
+
+  .profile-redesign .personal-data-action {
+    font-size: 19px;
+  }
+
+  .profile-redesign .profile-expanded-content .profile-card,
+  .profile-redesign .profile-expanded-content .empty-state-tech {
+    padding: 16px;
+  }
+
+  .profile-redesign .profile-expanded-content .card-header h3,
+  .profile-redesign .profile-expanded-content .card-header h3.personal-info-title {
+    font-size: 0.92rem;
+  }
+
+  .profile-redesign .profile-expanded-content .info-label,
+  .profile-redesign .profile-expanded-content .input-label,
+  .profile-redesign .profile-expanded-content .icon-selector-tech label,
+  .profile-redesign .profile-expanded-content .info-value,
+  .profile-redesign .profile-expanded-content .info-item-tech.highlight .info-value,
+  .profile-redesign .profile-expanded-content .tech-input,
+  .profile-redesign .profile-expanded-content .tech-select {
+    font-size: 0.76rem;
+  }
+
+  .profile-redesign .profile-expanded-content .info-item-tech {
+    padding-block: 14px;
+  }
+
+  .profile-redesign .profile-edit-target .edit-card .tech-input,
+  .profile-redesign .profile-edit-target .edit-card .tech-select {
+    min-height: 48px;
+  }
+
+  .profile-redesign .profile-edit-target .profile-edit-actions button {
+    min-height: 56px;
+    font-size: 0.78rem;
+  }
+}
