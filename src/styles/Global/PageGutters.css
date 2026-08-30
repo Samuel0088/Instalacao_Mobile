@@ -7,7 +7,7 @@
   .plans-page,
   .employee-work-page {
     width: 100%;
-    max-width: var(--app-mobile-canvas-width) !important;
+    max-width: 100% !important;
     min-height: 100dvh;
     margin-left: auto !important;
     margin-right: auto !important;
