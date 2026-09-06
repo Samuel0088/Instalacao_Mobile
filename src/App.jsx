@@ -46,13 +46,16 @@ function AccessibilityGate() {
 function RouteChangeLoader() {
   const location = useLocation()
   const firstRenderRef = useRef(true)
+  const currentRouteKey = `${location.pathname}${location.hash}`
+  const previousRouteRef = useRef(currentRouteKey)
   const previousPathRef = useRef(location.pathname)
   const [showRouteLoading, setShowRouteLoading] = useState(false)
-  const internalRoutes = ["/home", "/profile", "/explore", "/plans"]
+  const internalRoutes = ["/home", "/profile", "/explore", "/plans", "/admin/team", "/funcionarios"]
 
   useEffect(() => {
     if (firstRenderRef.current) {
       firstRenderRef.current = false
+      previousRouteRef.current = currentRouteKey
       previousPathRef.current = location.pathname
       sessionStorage.removeItem("zenithShowWhiteLoaderOnce")
       sessionStorage.removeItem("zenithSkipWhiteLoaderOnce")
@@ -60,6 +63,8 @@ function RouteChangeLoader() {
     }
 
     const previousPath = previousPathRef.current
+    const previousRoute = previousRouteRef.current
+    previousRouteRef.current = currentRouteKey
     previousPathRef.current = location.pathname
     const requestedWhiteLoader =
       sessionStorage.getItem("zenithShowWhiteLoaderOnce") === "true"
@@ -70,8 +75,13 @@ function RouteChangeLoader() {
 
     sessionStorage.removeItem("zenithShowWhiteLoaderOnce")
 
+    const isInternalNavigation =
+      previousRoute !== currentRouteKey &&
+      internalRoutes.includes(previousPath) &&
+      internalRoutes.includes(location.pathname)
+
     const shouldShowLoader =
-      requestedWhiteLoader &&
+      (requestedWhiteLoader || isInternalNavigation) &&
       !isWhiteLoaderBlocked &&
       internalRoutes.includes(previousPath) &&
       internalRoutes.includes(location.pathname)
@@ -85,14 +95,32 @@ function RouteChangeLoader() {
     }
 
     setShowRouteLoading(true)
-    const timer = setTimeout(() => setShowRouteLoading(false), 420)
+    const timer = setTimeout(() => setShowRouteLoading(false), 620)
 
     return () => clearTimeout(timer)
-  }, [location.pathname])
+  }, [currentRouteKey, location.pathname])
 
   if (!showRouteLoading) return null
 
-  return <ProfileLoadingScreen message="Carregando..." />
+  return (
+    <AnimatePresence>
+      <motion.div
+        className="route-page-loader"
+        role="status"
+        aria-live="polite"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.18, ease: "easeOut" }}
+      >
+        <div className="route-page-loader__mark" aria-hidden="true">
+          <span className="material-symbols-outlined">eco</span>
+          <i aria-hidden="true" />
+        </div>
+        <strong>Zenith</strong>
+      </motion.div>
+    </AnimatePresence>
+  )
 }
 
 function ProtectedRoute({ allowedRoles, children }) {

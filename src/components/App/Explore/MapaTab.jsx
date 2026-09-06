@@ -1,10 +1,16 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useMemo, useRef } from "react"
+import { collection, getDocs } from "firebase/firestore"
 import { useFarm } from "./hooks/useFarm"
+import { formatDiagnosisName } from "./Diagnostico/diagnosisLabels"
+import { auth, db } from "../../../services/firebase"
+import { ACCOUNT_ROLES } from "../../../services/accessControl"
 import "../../../styles/App/MapaTab.css"
 
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
 import * as turf from "@turf/turf"
+
+const MOBILE_MAP_QUERY = "(max-width: 767px), (pointer: coarse)"
 
 // corrigir ícones
 delete L.Icon.Default.prototype._getIconUrl
@@ -53,39 +59,104 @@ function matchesAreaFilter(area, filter) {
   return getAreaStatusTone(area?.status) === filter
 }
 
-function generateZones(points) {
-  if (!points || points.length < 3) return []
-
-  const center = points.reduce(
-    (acc, point) => ({
-      lat: acc.lat + point.lat / points.length,
-      lng: acc.lng + point.lng / points.length,
-    }),
-    { lat: 0, lng: 0 }
-  )
-  const split = Math.max(1, Math.ceil(points.length / 2))
-  const firstEdge = points.slice(0, split + 1)
-  const secondEdge = [...points.slice(split), points[0]]
-
-  return [
-    {
-      coordinates: [center, ...firstEdge].map(p => [p.lat, p.lng]),
-      color: "#2196F3",
-      status: "Precisa de água"
-    },
-    {
-      coordinates: [center, ...secondEdge].map(p => [p.lat, p.lng]),
-      color: "#FF5722",
-      status: "Solo fraco"
-    }
-  ]
-}
-
 function getAreaStatusTone(status = "") {
   const normalized = status.toLowerCase()
   if (normalized.includes("crítico")) return "critical"
   if (normalized.includes("atenção")) return "warning"
   return "healthy"
+}
+
+function readStoredList(key) {
+  try {
+    const value = JSON.parse(localStorage.getItem(key) || "[]")
+    return Array.isArray(value) ? value : []
+  } catch {
+    return []
+  }
+}
+
+function getDiagnosticAreaId(item) {
+  return item?.fieldAreaId ?? item?.areaId ?? item?.farmAreaId ?? item?.area?.id ?? null
+}
+
+function getDiagnosticTalhaoId(item) {
+  return item?.talhaoId ?? item?.fieldBlockId ?? item?.plotId ?? item?.talhao?.id ?? null
+}
+
+function getDiagnosticEmployeeId(item) {
+  return item?.employeeId ?? item?.responsibleId ?? item?.userId ?? item?.authorId ?? null
+}
+
+function getDiagnosticConfidence(item) {
+  const value = item?.confidence ?? item?.confianca ?? item?.confianca_media ?? item?.score
+  const number = Number(value)
+  return Number.isFinite(number) ? Math.max(0, Math.min(100, Math.round(number))) : null
+}
+
+function getDiagnosticTitle(item) {
+  return formatDiagnosisName(item?.disease || item?.resultado || item?.doenca || "Análise recebida")
+}
+
+function getTalhaoTone(score) {
+  if (score == null) return "pending"
+  if (score >= 90) return "healthy"
+  if (score >= 75) return "warning"
+  return "critical"
+}
+
+function getTalhaoStatus(score) {
+  if (score == null) return "Aguardando análise"
+  if (score >= 90) return "Ótimo"
+  if (score >= 75) return "Atenção"
+  return "Crítico"
+}
+
+function getTalhaoColor(score) {
+  const tone = getTalhaoTone(score)
+  if (tone === "healthy") return "#3ba55d"
+  if (tone === "warning") return "#e49a1f"
+  if (tone === "critical") return "#d4443f"
+  return "#7fa66b"
+}
+
+function getTalhaoDiagnostics(area, talhao, diagnostics) {
+  return diagnostics.filter((item) => {
+    const areaId = getDiagnosticAreaId(item)
+    const talhaoId = getDiagnosticTalhaoId(item)
+    const employeeId = getDiagnosticEmployeeId(item)
+    if (talhaoId != null) return String(talhaoId) === String(talhao.id)
+    return (
+      areaId != null &&
+      talhao.employeeId &&
+      employeeId != null &&
+      String(areaId) === String(area.id) &&
+      String(employeeId) === String(talhao.employeeId)
+    )
+  })
+}
+
+function buildTalhaoView(area, talhao, diagnostics) {
+  const linkedDiagnostics = getTalhaoDiagnostics(area, talhao, diagnostics)
+  const scores = linkedDiagnostics
+    .map(getDiagnosticConfidence)
+    .filter((score) => score != null)
+  const score = scores.length
+    ? Math.round(scores.reduce((sum, value) => sum + value, 0) / scores.length)
+    : null
+  const latest = linkedDiagnostics
+    .slice()
+    .sort((a, b) => Number(new Date(b.submittedAt || b.date || b.id || 0)) - Number(new Date(a.submittedAt || a.date || a.id || 0)))[0]
+
+  return {
+    ...talhao,
+    score,
+    status: getTalhaoStatus(score),
+    tone: getTalhaoTone(score),
+    color: getTalhaoColor(score),
+    diagnosticsCount: linkedDiagnostics.length,
+    latestTitle: latest ? getDiagnosticTitle(latest) : "Sem imagens enviadas",
+    employeeName: latest?.employeeName || talhao.employeeName || "Sem responsável",
+  }
 }
 
 function getAreaMetrics(area) {
@@ -872,6 +943,7 @@ export default function MapaTab() {
   const lineRef = useRef(null)
   const tooltipRef = useRef(null)
   const markersRef = useRef([])
+  const searchMarkerRef = useRef(null)
 
   const [areas, setAreas] = useState([])
   const [selectedAreaId, setSelectedAreaId] = useState(null)
@@ -887,11 +959,15 @@ export default function MapaTab() {
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [areaFilter, setAreaFilter] = useState("all")
   const [openAreaMenuId, setOpenAreaMenuId] = useState(null)
+  const [selectedTalhaoId, setSelectedTalhaoId] = useState(null)
+  const [diagnosticHistory, setDiagnosticHistory] = useState([])
+  const [employees, setEmployees] = useState([])
   const [isMobileMap, setIsMobileMap] = useState(() => (
-    typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches
+    typeof window !== "undefined" && window.matchMedia(MOBILE_MAP_QUERY).matches
   ))
 
   const [isDrawing, setIsDrawing] = useState(false)
+  const [drawingMode, setDrawingMode] = useState("area")
   const [currentPoints, setCurrentPoints] = useState([])
   const [currentArea, setCurrentArea] = useState(0)
 
@@ -903,13 +979,20 @@ export default function MapaTab() {
   const visibleAreas = filteredAreas.slice(0, visibleAreasCount)
   const hasMoreAreas = visibleAreasCount < filteredAreas.length
   const selectedArea = areas.find(area => area.id === selectedAreaId) || areas[areas.length - 1] || null
+  const selectedAreaTalhoes = useMemo(() => {
+    if (!selectedArea?.talhoes?.length) return []
+    return selectedArea.talhoes
+      .filter((talhao) => talhao.coordinates?.length >= 3)
+      .map((talhao) => buildTalhaoView(selectedArea, talhao, diagnosticHistory))
+  }, [selectedArea, diagnosticHistory])
+  const selectedTalhao = selectedAreaTalhoes.find((talhao) => talhao.id === selectedTalhaoId) || selectedAreaTalhoes[0] || null
   const selectedWebODM = isMobileMap ? null : webodmAnalysis
   const webodmConfigured = !isMobileMap
     && Boolean(webodmConfig)
     && Boolean(webodmServiceRef.current?.hasWebODMConfig(webodmConfig))
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 767px)")
+    const mediaQuery = window.matchMedia(MOBILE_MAP_QUERY)
     const updateViewportMode = (event) => setIsMobileMap(event.matches)
 
     setIsMobileMap(mediaQuery.matches)
@@ -943,6 +1026,73 @@ export default function MapaTab() {
   useEffect(() => {
     isDrawingRef.current = isDrawing
   }, [isDrawing])
+
+  useEffect(() => {
+    setDiagnosticHistory(readStoredList("diagnosticHistory"))
+
+    const handleStorage = (event) => {
+      if (event.key === "diagnosticHistory") {
+        setDiagnosticHistory(readStoredList("diagnosticHistory"))
+      }
+    }
+
+    window.addEventListener("storage", handleStorage)
+    return () => window.removeEventListener("storage", handleStorage)
+  }, [])
+
+  useEffect(() => {
+    let active = true
+
+    async function loadEmployees() {
+      try {
+        const ownerId = auth.currentUser?.uid
+        if (!ownerId) {
+          if (active) setEmployees([])
+          return
+        }
+
+        const usersSnap = await getDocs(collection(db, "users"))
+        const nextEmployees = usersSnap.docs
+          .filter((docSnap) => {
+            const data = docSnap.data()
+            return (
+              (data.role === ACCOUNT_ROLES.EMPLOYEE || data.role === ACCOUNT_ROLES.COLLABORATOR) &&
+              (data.ownerId === ownerId || data.teamId === ownerId)
+            )
+          })
+          .map((docSnap) => {
+            const data = docSnap.data()
+            return {
+              id: docSnap.id,
+              name: data.name || data.email || "Funcionário",
+            }
+          })
+
+        if (active) setEmployees(nextEmployees)
+      } catch (error) {
+        console.error("Erro ao carregar funcionários para os talhões:", error)
+        if (active) setEmployees([])
+      }
+    }
+
+    loadEmployees()
+
+    return () => {
+      active = false
+    }
+  }, [])
+
+  useEffect(() => {
+    const validTalhoes = selectedArea?.talhoes?.filter((talhao) => talhao.coordinates?.length >= 3) || []
+
+    if (!validTalhoes.length) {
+      setSelectedTalhaoId(null)
+      return
+    }
+
+    const exists = validTalhoes.some((talhao) => talhao.id === selectedTalhaoId)
+    if (!exists) setSelectedTalhaoId(validTalhoes[0].id)
+  }, [selectedArea?.id, selectedArea?.talhoes, selectedTalhaoId])
 
   useEffect(() => {
     currentPointsRef.current = currentPoints
@@ -1002,6 +1152,44 @@ export default function MapaTab() {
     localStorage.setItem("farmPolygons", JSON.stringify(newAreas))
   }
 
+  const startTalhaoDrawing = () => {
+    if (!selectedArea) return
+
+    setDrawingMode("talhao")
+    setIsDrawing(true)
+    setCurrentPoints([])
+    currentPointsRef.current = []
+    setCurrentArea(0)
+    window.setTimeout(() => {
+      document.querySelector(".mapa-workspace")?.scrollIntoView({ behavior: "smooth", block: "start" })
+    }, 0)
+  }
+
+  const assignEmployeeToTalhao = (talhaoId, employeeId) => {
+    if (!selectedArea) return
+
+    const employee = employees.find((item) => item.id === employeeId)
+    const nextAreas = areas.map((area) => {
+      if (area.id !== selectedArea.id) return area
+
+      return {
+        ...area,
+        talhoes: (area.talhoes || []).map((talhao) => (
+          talhao.id === talhaoId
+            ? {
+                ...talhao,
+                employeeId,
+                employeeName: employee?.name || "",
+              }
+            : talhao
+        )),
+      }
+    })
+
+    saveAreas(nextAreas)
+    setSelectedTalhaoId(talhaoId)
+  }
+
   // deletar área
   const deleteArea = (id) => {
     const confirmDelete = window.confirm("Tem certeza que deseja excluir essa área?")
@@ -1038,6 +1226,7 @@ export default function MapaTab() {
     }
 
     setIsDrawing(false)
+    setDrawingMode("area")
     setCurrentPoints([])
     currentPointsRef.current = []
     setCurrentArea(0)
@@ -1054,36 +1243,6 @@ export default function MapaTab() {
 
     areas.forEach(area => {
       if (!matchesAreaFilter(area, areaFilter)) return
-      // 🔥 ZONAS INTERNAS
-      if (area.zones && area.zones.length > 0) {
-        area.zones.forEach(zone => {
-          const zonePolygon = L.polygon(zone.coordinates, {
-            color: zone.color,
-            fillColor: zone.color,
-            fillOpacity: 0.5,
-            weight: 1
-          }).addTo(mapInstanceRef.current)
-          zoneLayersRef.current.push(zonePolygon)
-
-          zonePolygon.on("click", () => {
-            const center = zonePolygon.getBounds().getCenter()
-
-            L.popup()
-              .setLatLng(center)
-              .setContent(`
-                <div style="
-                  background:${zone.color};
-                  padding:8px;
-                  border-radius:10px;
-                  color:#fff;
-                ">
-                  ${zone.status}
-                </div>
-              `)
-              .openOn(mapInstanceRef.current)
-          })
-        })
-      }
       
       if (!area.coordinates || area.coordinates.length < 3) return
 
@@ -1140,8 +1299,35 @@ export default function MapaTab() {
 
       polygon.addTo(mapInstanceRef.current)
       polygonsRef.current[area.id] = polygon
+
+      const talhoes = area.talhoes?.filter((talhao) => talhao.coordinates?.length >= 3) || []
+      talhoes.forEach((talhao) => {
+        const talhaoView = buildTalhaoView(area, talhao, diagnosticHistory)
+        const isSelected = selectedTalhaoId === talhao.id
+        const talhaoPolygon = L.polygon(talhao.coordinates, {
+          color: talhaoView.color,
+          fillColor: talhaoView.color,
+          fillOpacity: isSelected ? 0.36 : 0.22,
+          weight: isSelected ? 3 : 2,
+          dashArray: talhaoView.score == null ? "6 6" : null,
+        }).addTo(mapInstanceRef.current)
+
+        talhaoPolygon.on("click", (event) => {
+          if (event.originalEvent) L.DomEvent.stopPropagation(event.originalEvent)
+          setSelectedAreaId(area.id)
+          setSelectedTalhaoId(talhao.id)
+        })
+
+        talhaoPolygon.bindTooltip(talhao.label, {
+          permanent: true,
+          direction: "center",
+          className: "talhao-map-label",
+        })
+
+        zoneLayersRef.current.push(talhaoPolygon)
+      })
     })
-  }, [areas, areaFilter])
+  }, [areas, areaFilter, diagnosticHistory, selectedTalhaoId])
 
   // destaque
   useEffect(() => {
@@ -1343,6 +1529,7 @@ export default function MapaTab() {
   }
 
   const startDrawing = () => {
+    setDrawingMode("area")
     setIsDrawing(true)
     setCurrentPoints([])
     currentPointsRef.current = []
@@ -1357,18 +1544,46 @@ export default function MapaTab() {
       return
     }
 
-    const statusData = getAreaStatus()
+    if (drawingMode === "talhao") {
+      if (!selectedArea) {
+        alert("Selecione uma área antes de demarcar um talhão.")
+        return
+      }
 
-    const newArea = {
-      id: Date.now(),
-      coordinates: points.map(p => [p.lat, p.lng]),
-      areaHa: calculateArea(points),
-      status: statusData.label,
-      color: statusData.color,
-      zones: generateZones(points) // 🔥 AQUI
+      const existingTalhoes = selectedArea.talhoes?.filter((talhao) => talhao.coordinates?.length >= 3) || []
+      const talhaoIndex = existingTalhoes.length + 1
+      const newTalhao = {
+        id: `${selectedArea.id}-talhao-${Date.now()}`,
+        label: `Talhão ${String(talhaoIndex).padStart(2, "0")}`,
+        crop: "Soja",
+        coordinates: points.map(p => [p.lat, p.lng]),
+        areaHa: calculateArea(points),
+        employeeId: "",
+        employeeName: "",
+        createdAt: new Date().toISOString(),
+      }
+
+      saveAreas(areas.map((area) => (
+        area.id === selectedArea.id
+          ? { ...area, talhoes: [...existingTalhoes, newTalhao] }
+          : area
+      )))
+      setSelectedTalhaoId(newTalhao.id)
+    } else {
+      const statusData = getAreaStatus()
+
+      const newArea = {
+        id: Date.now(),
+        coordinates: points.map(p => [p.lat, p.lng]),
+        areaHa: calculateArea(points),
+        status: statusData.label,
+        color: statusData.color,
+        talhoes: [],
+      }
+
+      saveAreas([...areas, newArea])
+      setSelectedAreaId(newArea.id)
     }
-
-    saveAreas([...areas, newArea])
 
     markersRef.current.forEach(m => m.remove())
     markersRef.current = []
@@ -1384,8 +1599,10 @@ export default function MapaTab() {
     }
 
     setIsDrawing(false)
+    setDrawingMode("area")
     setCurrentPoints([])
     currentPointsRef.current = []
+    setCurrentArea(0)
   }
 
   const handleSearch = async (e) => {
@@ -1395,21 +1612,26 @@ export default function MapaTab() {
     setSearching(true)
 
     try {
-      let lat, lng
+      let lat, lng, addressLabel
 
       if (/^\d{8}$/.test(searchAddress.replace("-", ""))) {
         const cep = searchAddress.replace("-", "")
 
         const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`)
         const data = await res.json()
+        if (data.erro) throw new Error("CEP não encontrado")
 
-        const fullAddress = `${data.logradouro}, ${data.localidade}, ${data.uf}`
+        const fullAddress = [data.logradouro, data.bairro, data.localidade, data.uf]
+          .filter(Boolean)
+          .join(", ")
+        addressLabel = fullAddress || `${data.localidade}, ${data.uf}`
 
         const geo = await fetch(
-          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(fullAddress)}&format=json&limit=1`
+          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(addressLabel)}&format=json&limit=1`
         )
 
         const geoData = await geo.json()
+        if (!geoData.length) throw new Error("Endereço não encontrado")
 
         lat = parseFloat(geoData[0].lat)
         lng = parseFloat(geoData[0].lon)
@@ -1419,12 +1641,28 @@ export default function MapaTab() {
         )
 
         const data = await response.json()
+        if (!data.length) throw new Error("Endereço não encontrado")
+
         lat = parseFloat(data[0].lat)
         lng = parseFloat(data[0].lon)
+        addressLabel = data[0].display_name?.split(",").slice(0, 3).join(",") || searchAddress.trim()
       }
 
       mapInstanceRef.current.setView([lat, lng], 16)
-      L.marker([lat, lng]).addTo(mapInstanceRef.current)
+
+      if (searchMarkerRef.current) {
+        searchMarkerRef.current.remove()
+      }
+
+      searchMarkerRef.current = L.marker([lat, lng])
+        .addTo(mapInstanceRef.current)
+        .bindTooltip(addressLabel, {
+          permanent: true,
+          direction: "top",
+          offset: [0, -34],
+          className: "cep-address-tooltip",
+        })
+        .openTooltip()
 
     } catch {
       alert("Erro ao buscar localização")
@@ -1576,7 +1814,7 @@ export default function MapaTab() {
       {isDrawing && (
         <div className="drawing-controls">
           <div className="drawing-info">
-            <span className="info-badge">Modo desenho</span>
+            <span className="info-badge">{drawingMode === "talhao" ? "Demarcando talhão" : "Demarcando área"}</span>
             <span className="info-points">{currentPoints.length} pontos</span>
             <strong className="info-area">{formatArea(currentArea)}</strong>
           </div>
@@ -1654,6 +1892,24 @@ export default function MapaTab() {
         <div className="mapa-area">
           <div ref={mapContainerRef} className="map-container"></div>
 
+          {isDrawing && (
+            <div className="map-drawing-actions" aria-label="Ações da demarcação">
+              <button
+                type="button"
+                onClick={finishDrawing}
+                className="map-drawing-finish"
+                disabled={currentPoints.length < 3}
+              >
+                <span className="material-symbols-outlined" aria-hidden="true">check</span>
+                Finalizar
+              </button>
+              <button type="button" onClick={cancelDrawing} className="map-drawing-cancel">
+                <span className="material-symbols-outlined" aria-hidden="true">close</span>
+                Cancelar
+              </button>
+            </div>
+          )}
+
           <div className="map-quick-controls" aria-label="Controles rápidos do mapa">
             <button type="button" onClick={locateUser} title="Minha localização" aria-label="Ir para minha localização">
               <span className="material-symbols-outlined" aria-hidden="true">my_location</span>
@@ -1709,13 +1965,94 @@ export default function MapaTab() {
           <button
             type="button"
             disabled={!selectedArea}
-            onClick={() => document.querySelector(".areas-grid")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+            onClick={selectedAreaTalhoes.length > 0
+              ? () => document.querySelector(".talhoes-section")?.scrollIntoView({ behavior: "smooth", block: "start" })
+              : startTalhaoDrawing}
           >
-            Ver detalhes
+            {selectedAreaTalhoes.length > 0 ? "Ver talhões" : "Adicionar talhão"}
             <span className="material-symbols-outlined" aria-hidden="true">chevron_right</span>
           </button>
         </div>
       </section>
+
+      {selectedArea && (
+        <section className="talhoes-section" aria-label="Talhões da área selecionada">
+          <div className="talhoes-header">
+            <div>
+              <span>Talhões</span>
+              <strong>{selectedAreaTalhoes.length > 0 ? `${formatArea(selectedArea.areaHa)} total` : "Área ainda não dividida"}</strong>
+            </div>
+            <button type="button" onClick={startTalhaoDrawing}>
+              <span className="material-symbols-outlined" aria-hidden="true">add_location_alt</span>
+              Adicionar talhão
+            </button>
+          </div>
+
+          {selectedAreaTalhoes.length === 0 ? (
+            <div className="talhoes-empty-card">
+              <span className="material-symbols-outlined" aria-hidden="true">grid_view</span>
+              <div>
+                <strong>Separe esta área em talhões</strong>
+                <p>Toque em Adicionar talhão, marque os pontos no mapa e finalize a demarcação manualmente.</p>
+              </div>
+            </div>
+          ) : (
+            <div className="talhoes-cards">
+              {selectedAreaTalhoes.map((talhao) => (
+                <article
+                  key={talhao.id}
+                  className={`talhao-card ${selectedTalhao?.id === talhao.id ? "is-selected" : ""} ${talhao.tone}`}
+                  style={{ "--talhao-color": talhao.color }}
+                  onClick={() => setSelectedTalhaoId(talhao.id)}
+                  tabIndex={0}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault()
+                      setSelectedTalhaoId(talhao.id)
+                    }
+                  }}
+                >
+                  <div className="talhao-card-main">
+                    <div>
+                      <strong>{talhao.label}</strong>
+                      <span>{talhao.crop} · {formatArea(talhao.areaHa)}</span>
+                    </div>
+                    <em>{talhao.status}</em>
+                  </div>
+
+                  <div className="talhao-card-meta">
+                    <span>{talhao.employeeName}</span>
+                    <span>{talhao.latestTitle}</span>
+                  </div>
+
+                  <label className="talhao-assignee">
+                    <span>Responsável</span>
+                    <select
+                      value={talhao.employeeId || ""}
+                      onClick={(event) => event.stopPropagation()}
+                      onChange={(event) => assignEmployeeToTalhao(talhao.id, event.target.value)}
+                    >
+                      <option value="">Selecionar funcionário</option>
+                      {employees.map((employee) => (
+                        <option key={employee.id} value={employee.id}>{employee.name}</option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <div className="talhao-card-progress">
+                    <span style={{ width: `${talhao.score ?? 0}%` }}></span>
+                  </div>
+
+                  <div className="talhao-card-footer">
+                    <small>{talhao.diagnosticsCount > 0 ? `${talhao.diagnosticsCount} imagem(ns) analisada(s)` : "Aguardando envio de imagens"}</small>
+                    <b>{talhao.score == null ? "--" : `${talhao.score}%`}</b>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
       {!isMobileMap && (
         <WebODMPanel

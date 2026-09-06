@@ -2278,24 +2278,77 @@ input,
 .mapa-dashboard .drawing-buttons {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  gap: 10px;
   width: 100%;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
 .mapa-dashboard .drawing-buttons button {
-  min-height: 40px;
+  min-height: 46px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  padding: 8px 10px;
-  border-radius: 9px;
-  font-size: 0.72rem;
+  gap: 7px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  font-weight: 850;
+  letter-spacing: 0;
+  box-shadow: none;
+}
+
+.mapa-dashboard .finish-draw-btn {
+  border: 1px solid rgba(33, 91, 56, 0.16);
+  background:
+    linear-gradient(180deg, rgba(76, 151, 96, 0.96), rgba(41, 107, 65, 0.98));
+  color: #ffffff;
+  box-shadow:
+    0 10px 20px rgba(35, 91, 56, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24);
+}
+
+.mapa-dashboard .cancel-draw-btn {
+  border: 1px solid rgba(219, 83, 83, 0.22);
+  background:
+    linear-gradient(180deg, rgba(255, 246, 246, 0.98), rgba(255, 235, 235, 0.94));
+  color: #d95757;
+  box-shadow:
+    0 8px 18px rgba(125, 47, 47, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
 }
 
 .mapa-dashboard .drawing-buttons .material-symbols-outlined {
-  font-size: 17px;
+  font-size: 18px;
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 700,
+    "GRAD" 0,
+    "opsz" 24;
+}
+
+.mapa-dashboard .finish-draw-btn:hover,
+.mapa-dashboard .cancel-draw-btn:hover {
+  transform: translateY(-1px);
+}
+
+.mapa-dashboard .finish-draw-btn:hover {
+  background:
+    linear-gradient(180deg, rgba(82, 163, 105, 0.98), rgba(38, 101, 61, 1));
+  box-shadow:
+    0 12px 24px rgba(35, 91, 56, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.26);
+}
+
+.mapa-dashboard .cancel-draw-btn:hover {
+  border-color: rgba(219, 83, 83, 0.34);
+  background:
+    linear-gradient(180deg, rgba(255, 250, 250, 1), rgba(255, 229, 229, 0.98));
+  color: #c84848;
+}
+
+.mapa-dashboard .finish-draw-btn:active,
+.mapa-dashboard .cancel-draw-btn:active {
+  transform: translateY(0);
 }
 
 .mapa-dashboard .mapa-workspace {
@@ -2452,6 +2505,57 @@ input,
   background: #dfe8da;
 }
 
+.mapa-dashboard .map-drawing-actions {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  z-index: 700;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 8px;
+  padding: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 14px 30px rgba(22, 49, 31, 0.22);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.mapa-dashboard .map-drawing-actions button {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 10px;
+  border-radius: 9px;
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
+.mapa-dashboard .map-drawing-actions .material-symbols-outlined {
+  font-size: 17px;
+}
+
+.mapa-dashboard .map-drawing-finish {
+  border: 1px solid rgba(37, 101, 61, 0.18);
+  background: linear-gradient(180deg, #3f9a62, #286842);
+  color: #ffffff;
+}
+
+.mapa-dashboard .map-drawing-finish:disabled {
+  opacity: 0.52;
+  filter: saturate(0.7);
+}
+
+.mapa-dashboard .map-drawing-cancel {
+  border: 1px solid rgba(219, 83, 83, 0.24);
+  background: linear-gradient(180deg, #fff8f8, #ffe8e8);
+  color: #d95757;
+}
+
 .mapa-dashboard .leaflet-control-zoom {
   overflow: hidden;
   border: 0;
@@ -2462,6 +2566,27 @@ input,
 .mapa-dashboard .leaflet-control-zoom a {
   color: #29483a;
   border-color: #edf2eb;
+}
+
+.mapa-dashboard .cep-address-tooltip {
+  max-width: min(250px, calc(100vw - 92px));
+  padding: 8px 11px;
+  border: 1px solid rgba(36, 96, 58, 0.14);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #1f4d34;
+  box-shadow: 0 10px 24px rgba(15, 42, 27, 0.2);
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.25;
+  white-space: normal;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.mapa-dashboard .cep-address-tooltip::before {
+  border-top-color: rgba(255, 255, 255, 0.94);
 }
 
 .mapa-dashboard .map-quick-controls {
@@ -2589,6 +2714,232 @@ input,
 
 .mapa-dashboard .mapa-selection-summary > button .material-symbols-outlined {
   font-size: 16px;
+}
+
+.mapa-dashboard .talhao-map-label {
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(24, 61, 40, 0.82);
+  color: #ffffff;
+  box-shadow: 0 6px 16px rgba(14, 40, 24, 0.2);
+  font-size: 0.66rem;
+  font-weight: 900;
+}
+
+.mapa-dashboard .talhao-map-label::before {
+  display: none;
+}
+
+.mapa-dashboard .talhoes-section {
+  position: relative;
+  z-index: 2;
+  margin-top: 12px;
+}
+
+.mapa-dashboard .talhoes-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.mapa-dashboard .talhoes-header div {
+  display: grid;
+  gap: 2px;
+}
+
+.mapa-dashboard .talhoes-header span {
+  color: #609062;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.mapa-dashboard .talhoes-header strong {
+  color: #254b36;
+  font-size: 0.82rem;
+  font-weight: 850;
+}
+
+.mapa-dashboard .talhoes-header button {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 10px;
+  border: 1px solid rgba(45, 97, 64, 0.13);
+  border-radius: 8px;
+  background: #e9f5e7;
+  color: #285c3b;
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+
+.mapa-dashboard .talhoes-header button .material-symbols-outlined {
+  font-size: 16px;
+}
+
+.mapa-dashboard .talhoes-empty-card {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding: 14px;
+  border: 1px dashed rgba(45, 97, 64, 0.22);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.78);
+  color: #31513d;
+}
+
+.mapa-dashboard .talhoes-empty-card > .material-symbols-outlined {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #e7f3e8;
+  color: #34724a;
+  font-size: 22px;
+}
+
+.mapa-dashboard .talhoes-empty-card strong {
+  display: block;
+  color: #254b36;
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.mapa-dashboard .talhoes-empty-card p {
+  margin: 3px 0 0;
+  color: #728173;
+  font-size: 0.62rem;
+  line-height: 1.35;
+}
+
+.mapa-dashboard .talhoes-cards {
+  display: grid;
+  gap: 10px;
+}
+
+.mapa-dashboard .talhao-card {
+  width: 100%;
+  display: grid;
+  gap: 10px;
+  padding: 13px 14px 12px;
+  border: 1px solid rgba(45, 97, 64, 0.13);
+  border-left: 4px solid var(--talhao-color);
+  border-radius: 12px;
+  background: #ffffff;
+  color: #31513d;
+  text-align: left;
+  box-shadow: 0 8px 18px rgba(35, 79, 49, 0.08);
+  cursor: pointer;
+}
+
+.mapa-dashboard .talhao-card.is-selected {
+  border-color: color-mix(in srgb, var(--talhao-color) 55%, rgba(45, 97, 64, 0.13));
+  border-left-color: var(--talhao-color);
+  box-shadow: 0 10px 22px rgba(35, 79, 49, 0.13);
+}
+
+.mapa-dashboard .talhao-card-main,
+.mapa-dashboard .talhao-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.mapa-dashboard .talhao-card-main strong {
+  display: block;
+  color: #183d28;
+  font-size: 0.86rem;
+  font-weight: 900;
+}
+
+.mapa-dashboard .talhao-card-main span,
+.mapa-dashboard .talhao-card-meta,
+.mapa-dashboard .talhao-card-footer small {
+  color: #677869;
+  font-size: 0.62rem;
+  font-weight: 650;
+}
+
+.mapa-dashboard .talhao-card-main em {
+  flex: 0 0 auto;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--talhao-color) 12%, #ffffff);
+  color: var(--talhao-color);
+  font-size: 0.62rem;
+  font-style: normal;
+  font-weight: 850;
+}
+
+.mapa-dashboard .talhao-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+}
+
+.mapa-dashboard .talhao-assignee {
+  display: grid;
+  gap: 5px;
+}
+
+.mapa-dashboard .talhao-assignee span {
+  color: #5f7765;
+  font-size: 0.58rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.mapa-dashboard .talhao-assignee select {
+  width: 100%;
+  min-height: 34px;
+  padding: 7px 30px 7px 10px;
+  border: 1px solid rgba(45, 97, 64, 0.14);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, #ffffff, #f7fbf4);
+  color: #294a36;
+  font: inherit;
+  font-size: 0.66rem;
+  font-weight: 750;
+  outline: none;
+  cursor: pointer;
+}
+
+.mapa-dashboard .talhao-assignee select:focus {
+  border-color: color-mix(in srgb, var(--talhao-color) 58%, #2d6140);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--talhao-color) 14%, transparent);
+}
+
+.mapa-dashboard .talhao-card-progress {
+  height: 5px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #dcebcf;
+}
+
+.mapa-dashboard .talhao-card-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--talhao-color);
+}
+
+.mapa-dashboard .talhao-card.pending .talhao-card-progress span {
+  width: 0 !important;
+}
+
+.mapa-dashboard .talhao-card-footer b {
+  color: var(--talhao-color);
+  font-size: 0.72rem;
+  font-weight: 900;
 }
 
 .mapa-dashboard > .webodm-panel,

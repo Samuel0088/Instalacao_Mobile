@@ -328,6 +328,7 @@ export default function Profile() {
 
   const displayName = userData?.name || user?.displayName || "Agricultor"
   const profileInitial = displayName.trim().charAt(0).toLocaleUpperCase("pt-BR") || "A"
+  const profilePhotoIcon = editing ? formData.profileIcon : userData?.profileIcon
   const membershipTime = calculateMemberTime()
   const totalHectares = getTotalHectares()
   const userAge = Number(userData?.age)
@@ -344,7 +345,9 @@ export default function Profile() {
         <header className="profile-mobile-shell">
           <div className="profile-mobile-top">
             <div className="profile-photo-wrap">
-              {user?.photoURL ? (
+              {profilePhotoIcon ? (
+                <span className="profile-photo-icon">{profilePhotoIcon}</span>
+              ) : user?.photoURL ? (
                 <img src={user.photoURL} alt="" />
               ) : (
                 <span>{profileInitial}</span>

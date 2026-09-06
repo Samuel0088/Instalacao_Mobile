@@ -466,8 +466,10 @@
 }
 
 .alertBanner_ok {
-  background: var(--n-primary-soft);
-  border-color: var(--n-border-glow);
+  background: rgba(31, 101, 57, 0.95);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  box-shadow: 0 10px 24px rgba(20, 66, 37, 0.24);
 }
 
 .alertBannerIcon {
@@ -486,7 +488,14 @@
 
 .alertBanner_perigo .alertBannerText { color: rgba(255, 180, 180, 0.9); }
 .alertBanner_aviso  .alertBannerText { color: rgba(255, 210, 100, 0.9); }
-.alertBanner_ok     .alertBannerText { color: rgba(86, 168, 112, 0.85); }
+.alertBanner_ok .alertBannerIcon,
+.alertBanner_ok .alertBannerText {
+  color: #ffffff;
+}
+
+.alertBanner_ok .alertBannerText {
+  font-weight: 700;
+}
 
 /* ============================================================
    LAYOUT DE RESULTADOS
@@ -1342,6 +1351,25 @@
   box-shadow: 0 0 15px rgba(134, 220, 131, 0.24);
 }
 
+.alignmentRetry {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 46px;
+  padding: 0;
+  border: 2px solid #86dc83;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  box-shadow: 0 0 15px rgba(134, 220, 131, 0.24);
+}
+
+.alignmentRetry .material-symbols-outlined {
+  color: inherit;
+  font-size: 25px;
+}
+
 .alignmentCard_loading .alignmentResult > .material-symbols-outlined {
   animation: alignmentSpin 0.9s linear infinite;
 }
@@ -1467,11 +1495,363 @@
   font-size: 17px;
 }
 
+.plantingHistorySection {
+  position: relative;
+  z-index: 3;
+  width: min(500px, 100%);
+  margin: 18px auto 0;
+}
+
+.plantingHistoryHeader {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 3px;
+}
+
+.plantingHistoryHeader > div {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.plantingHistoryHeader .material-symbols-outlined {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #2d6140;
+  color: #ffffff;
+  font-size: 16px;
+}
+
+.plantingHistoryHeader h3 {
+  margin: 0;
+  color: #254734;
+  font-size: 0.9rem;
+  font-weight: 850;
+  letter-spacing: 0;
+}
+
+.plantingHistorySummary > span {
+  color: #728077;
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+
+.plantingHistorySummary {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.plantingHistorySummary > button {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 32px;
+  padding: 0;
+  border: 1px solid rgba(45, 97, 64, 0.16);
+  border-radius: 8px;
+  background: #ffffff;
+  color: #2d6140;
+  box-shadow: 0 5px 12px rgba(35, 79, 49, 0.07);
+}
+
+.plantingHistoryHeader .plantingHistorySummary > button .material-symbols-outlined {
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 18px;
+}
+
+.plantingHistoryEmpty {
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 13px;
+  border: 1px solid rgba(45, 97, 64, 0.1);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 7px 18px rgba(35, 79, 49, 0.07);
+}
+
+.plantingHistoryEmpty > .material-symbols-outlined {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 42px;
+  border-radius: 50%;
+  background: #edf5e9;
+  color: #4a8557;
+  font-size: 22px;
+}
+
+.plantingHistoryEmpty strong,
+.plantingHistoryEmpty p {
+  display: block;
+}
+
+.plantingHistoryEmpty strong {
+  color: #284b37;
+  font-size: 0.75rem;
+  font-weight: 850;
+}
+
+.plantingHistoryEmpty p {
+  margin: 3px 0 0;
+  color: #7b8980;
+  font-size: 0.59rem;
+  line-height: 1.35;
+}
+
+.plantingHistoryList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.plantingHistoryCard {
+  padding: 12px;
+  border: 1px solid rgba(45, 97, 64, 0.1);
+  border-left: 3px solid #55a86e;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 7px 18px rgba(35, 79, 49, 0.07);
+}
+
+.plantingHistoryCardTop {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.plantingHistoryIcon {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 40px;
+  border-radius: 50%;
+  background: #edf5e9;
+  color: #4a8557;
+  font-size: 21px;
+}
+
+.plantingHistoryInfo {
+  min-width: 0;
+  flex: 1;
+}
+
+.plantingHistoryInfo > div {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.plantingHistoryInfo strong {
+  color: #284b37;
+  font-size: 0.76rem;
+  font-weight: 850;
+}
+
+.plantingHistoryInfo > small {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 5px;
+  color: #87938b;
+  font-size: 0.56rem;
+}
+
+.plantingHistoryInfo > small .material-symbols-outlined {
+  color: #5f9e70;
+  font-size: 13px;
+}
+
+.plantingHistoryStatus {
+  min-height: 21px;
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 7px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  font-size: 0.52rem;
+  font-weight: 800;
+}
+
+.plantingHistoryStatusHealthy {
+  border-color: #abdcb6;
+  background: #e9f8eb;
+  color: #2f7d49;
+}
+
+.plantingHistoryStatusWarning {
+  border-color: #ffd08a;
+  background: #fff6df;
+  color: #9a6200;
+}
+
+.plantingHistoryStatusCritical {
+  border-color: #ffb0b0;
+  background: #fff0f0;
+  color: #c13d3d;
+}
+
+.plantingHistoryDelete {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 32px;
+  padding: 0;
+  border: 1px solid #ffadad;
+  border-radius: 8px;
+  background: #fff0f0;
+  color: #ef5d5d;
+}
+
+.plantingHistoryDelete .material-symbols-outlined {
+  color: inherit;
+  font-size: 16px;
+}
+
+.plantingHistoryMetrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin-top: 10px;
+  overflow: hidden;
+  border: 1px solid #e7eee6;
+  border-radius: 7px;
+  background: #e7eee6;
+}
+
+.plantingHistoryMetrics > span {
+  min-width: 0;
+  min-height: 43px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 3px;
+  background: #f8fbf6;
+  text-align: center;
+}
+
+.plantingHistoryMetrics small {
+  overflow: hidden;
+  width: 100%;
+  color: #78867d;
+  font-size: 0.5rem;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+}
+
+.plantingHistoryMetrics strong {
+  margin-top: 3px;
+  color: #315940;
+  font-size: 0.7rem;
+  font-weight: 850;
+}
+
+.plantingHistoryMore {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 1px solid rgba(45, 97, 64, 0.1);
+  border-radius: 8px;
+  background: #ffffff;
+  color: #31523d;
+  font-size: 0.68rem;
+  font-weight: 750;
+}
+
+.plantingHistoryMore .material-symbols-outlined {
+  color: inherit;
+  font-size: 17px;
+}
+
 .loadingContainer,
 .erroContainer,
 .resultados {
   position: relative;
   z-index: 4;
+  width: min(500px, 100%);
+  margin: 0 auto 14px;
+  scroll-margin-top: 76px;
+}
+
+.resultados:first-of-type {
+  margin-top: -48px;
+}
+
+.loadingContainer {
+  gap: 8px;
+  min-height: 124px;
+  padding: 18px;
+  border: 1px solid rgba(45, 97, 64, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 8px 20px rgba(35, 79, 49, 0.08);
+}
+
+.loadingContainer .spinner {
+  width: 42px;
+  height: 42px;
+  border-width: 3px;
+}
+
+.loadingContainer .loadingTexto {
+  color: #294b37;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.loadingContainer .loadingDica {
+  color: #758279;
+  font-size: 0.62rem;
+}
+
+.erroContainer {
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #ffc0c0;
+  border-radius: 8px;
+  background: #fff4f4;
+  box-shadow: 0 8px 20px rgba(143, 48, 48, 0.07);
+}
+
+.erroTitulo {
+  color: #a73535;
+  font-size: 0.73rem;
+}
+
+.erroMensagem {
+  color: #b55353;
+  font-size: 0.62rem;
+  line-height: 1.35;
+}
+
+.botaoTentar {
+  min-height: 34px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #a73535;
+  font-size: 0.62rem;
 }
 
 @media (max-width: 480px) {

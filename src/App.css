@@ -31,3 +31,99 @@ html, body {
   background-attachment: fixed;
   will-change: opacity;
 }
+
+.route-page-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 13px;
+  background: rgba(244, 248, 239, 0.94);
+  color: #18432c;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: routeLoaderIn 0.18s ease-out both;
+  pointer-events: auto;
+}
+
+.route-page-loader__mark {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #cee0ca;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 18px 45px rgba(31, 76, 43, 0.14);
+}
+
+.route-page-loader__mark::before,
+.route-page-loader__mark::after {
+  content: "";
+  position: absolute;
+  border: 2px solid transparent;
+  border-top-color: #3c8556;
+  border-radius: 50%;
+  animation: routeOrbit 1s linear infinite;
+  transform-origin: center;
+  will-change: transform;
+}
+
+.route-page-loader__mark::before {
+  inset: -8px;
+}
+
+.route-page-loader__mark::after {
+  inset: 7px;
+  border-top-color: #91bd89;
+  animation-direction: reverse;
+  animation-duration: 1.5s;
+}
+
+.route-page-loader__mark .material-symbols-outlined {
+  color: #2e6f46;
+  font-size: 31px;
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 500,
+    "GRAD" 0,
+    "opsz" 40;
+}
+
+.route-page-loader__mark i {
+  display: none;
+}
+
+.route-page-loader > strong {
+  color: #18432c;
+  font: 800 0.78rem/1.2 Arial, sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.route-page-loader > strong::after {
+  content: " · preparando página";
+  color: #718078;
+  font-weight: 650;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+@keyframes routeLoaderIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes routeOrbit {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 760px) {
+  .route-page-loader > strong::after {
+    content: "";
+  }
+}

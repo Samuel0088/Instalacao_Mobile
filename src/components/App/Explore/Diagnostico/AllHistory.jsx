@@ -292,18 +292,28 @@ export default function AllHistory({ onBack }) {
           </div>
 
           <div className="filter-buttons">
-            <button className={`filter-btn ${filterType === "all" ? "active" : ""}`} onClick={() => setFilterType("all")}>Todos</button>
-            <button className={`filter-btn high ${filterType === "high" ? "active" : ""}`} onClick={() => setFilterType("high")}>Alta confiança</button>
-            <button className={`filter-btn medium ${filterType === "medium" ? "active" : ""}`} onClick={() => setFilterType("medium")}>Média confiança</button>
-            <button className={`filter-btn low ${filterType === "low" ? "active" : ""}`} onClick={() => setFilterType("low")}>Baixa confiança</button>
+            <button aria-pressed={filterType === "all"} className={`filter-btn ${filterType === "all" ? "active" : ""}`} onClick={() => setFilterType("all")}>Todos</button>
+            <button aria-pressed={filterType === "high"} className={`filter-btn high ${filterType === "high" ? "active" : ""}`} onClick={() => setFilterType("high")}>Alta confiança</button>
+            <button aria-pressed={filterType === "medium"} className={`filter-btn medium ${filterType === "medium" ? "active" : ""}`} onClick={() => setFilterType("medium")}>Média confiança</button>
+            <button aria-pressed={filterType === "low"} className={`filter-btn low ${filterType === "low" ? "active" : ""}`} onClick={() => setFilterType("low")}>Baixa confiança</button>
           </div>
 
           <div className="sort-buttons">
             <span>Ordenar por:</span>
-            <button className={`sort-btn ${sortBy === "date" ? "active" : ""}`} onClick={() => setSortBy("date")}>Data</button>
-            <button className={`sort-btn ${sortBy === "confidence" ? "active" : ""}`} onClick={() => setSortBy("confidence")}>Confiança</button>
-            <button className={`sort-btn ${sortBy === "name" ? "active" : ""}`} onClick={() => setSortBy("name")}>Nome</button>
+            <button aria-pressed={sortBy === "date"} className={`sort-btn ${sortBy === "date" ? "active" : ""}`} onClick={() => setSortBy("date")}>Data</button>
+            <button aria-pressed={sortBy === "confidence"} className={`sort-btn ${sortBy === "confidence" ? "active" : ""}`} onClick={() => setSortBy("confidence")}>Confiança</button>
+            <button aria-pressed={sortBy === "name"} className={`sort-btn ${sortBy === "name" ? "active" : ""}`} onClick={() => setSortBy("name")}>Nome</button>
           </div>
+        </div>
+      )}
+
+      {history.length > 0 && (
+        <div className="history-results-heading">
+          <div>
+            <span className="material-symbols-outlined" aria-hidden="true">history</span>
+            <h2>Diagnósticos</h2>
+          </div>
+          <span>{filteredHistory.length} {filteredHistory.length === 1 ? "resultado" : "resultados"}</span>
         </div>
       )}
 

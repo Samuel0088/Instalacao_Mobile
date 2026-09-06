@@ -3004,25 +3004,25 @@ body:has(.home-shell)::-webkit-scrollbar {
 }
 
 body:has(.home-shell) .accessibility-widget {
-  top: 86px;
+  top: 92px;
   right: max(18px, calc((100vw - 430px) / 2 + 18px));
 }
 
 body:has(.home-shell) .accessibility-toggle {
-  width: 44px;
-  min-width: 44px;
-  max-width: 44px;
-  height: 44px;
-  min-height: 44px;
-  max-height: 44px;
+  width: 40px;
+  min-width: 40px;
+  max-width: 40px;
+  height: 40px;
+  min-height: 40px;
+  max-height: 40px;
   aspect-ratio: 1;
   padding: 0;
   box-sizing: border-box;
-  flex: 0 0 44px;
+  flex: 0 0 40px;
 }
 
 body:has(.home-shell) .accessibility-toggle .material-symbols-outlined {
-  font-size: 25px;
+  font-size: 23px;
 }
 
 .home-quick-summary {
@@ -4318,12 +4318,19 @@ body:has(.home-shell),
 .install-app-trigger__icon {
   width: 40px;
   height: 40px;
-  display: grid;
-  place-items: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 10px;
   background: var(--g4);
   color: #ffffff;
   font-size: 22px;
+  line-height: 1;
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 650,
+    "GRAD" 0,
+    "opsz" 24;
 }
 
 .install-app-trigger__text {
@@ -4362,12 +4369,18 @@ body:has(.home-shell),
 /* Escala visual para celulares com resolução/largura maior, mantendo as margens atuais. */
 @media (min-width: 390px) and (max-width: 550px), (pointer: coarse) and (min-width: 390px) and (max-width: 900px) {
   .home-shell .home-weather-hero {
-    min-height: 318px;
+    min-height: 264px;
     padding-top: calc(env(safe-area-inset-top, 0px) + 30px);
   }
 
   .home-shell .weather-hero-top {
-    min-height: 224px;
+    min-height: 168px;
+    align-items: start;
+    padding-top: 6px;
+  }
+
+  .home-shell .weather-hero-top > :first-child {
+    transform: translateY(-8px);
   }
 
   .home-shell .weather-location h1 {
@@ -4397,13 +4410,14 @@ body:has(.home-shell),
   }
 
   .home-shell .weather-illustration {
-    top: 28px;
+    top: -10px;
     width: 270px;
-    height: 202px;
+    height: 190px;
   }
 
   .home-shell .weather-stat-grid {
     gap: 10px;
+    margin-top: -4px;
   }
 
   .home-shell .weather-stat-pill {

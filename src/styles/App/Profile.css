@@ -1813,6 +1813,65 @@ body {
   gap: 5px;
 }
 
+.profile-redesign .farm-details {
+  display: grid;
+  gap: 10px;
+}
+
+.profile-redesign .farm-account-summary {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 2px 2px 6px;
+}
+
+.profile-redesign .farm-account-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border: 3px solid #edf5e8;
+  border-radius: 50%;
+  background: #2d6140;
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 750;
+}
+
+.profile-redesign .farm-account-copy {
+  min-width: 0;
+}
+
+.profile-redesign .farm-account-copy strong,
+.profile-redesign .farm-account-copy span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-redesign .farm-account-copy strong {
+  color: #254932;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.profile-redesign .farm-account-copy span {
+  margin-top: 3px;
+  color: #718078;
+  font-size: 0.55rem;
+  font-weight: 550;
+  line-height: 1.2;
+}
+
+.profile-redesign .farm-data-list {
+  display: grid;
+  gap: 5px;
+}
+
 .profile-redesign .personal-data-row {
   display: grid;
   grid-template-columns: 28px minmax(0, 1fr) 18px;
@@ -2006,6 +2065,16 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.profile-redesign .profile-photo-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 2rem;
+  line-height: 1;
 }
 
 .profile-redesign .profile-photo-status {

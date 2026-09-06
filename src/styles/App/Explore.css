@@ -1912,6 +1912,7 @@ body {
   background: var(--diagnostic-surface);
 }
 
+.explore-container--monitoramento,
 .explore-container--clima {
   height: 100dvh;
   min-height: 100dvh;
@@ -1922,6 +1923,7 @@ body {
   scrollbar-width: none;
 }
 
+.explore-container--monitoramento::-webkit-scrollbar,
 .explore-container--clima::-webkit-scrollbar {
   width: 0;
   height: 0;

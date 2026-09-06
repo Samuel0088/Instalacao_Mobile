@@ -9,7 +9,7 @@ const adminItems = [
   { path: "/home", icon: "home", label: "Início" },
   { path: "/admin/team", icon: "groups", label: "Equipe" },
   { action: "create", icon: "add", label: "Adicionar", isPrimary: true },
-  { path: "/explore", hash: "#mapa", icon: "grid_view", label: "Mapa" },
+  { path: "/explore", hash: "#mapa", icon: "grid_view", label: "Explore" },
   { path: "/profile", icon: "person", label: "Perfil" },
 ]
 

@@ -219,7 +219,6 @@ export default function AppHeader({
           <button className="home-user-heading" onClick={() => goToInternalPage("/home")}>
             <span>
               Olá, <strong>{userName || "Agricultor"}</strong>
-              <span className="home-user-leaf material-symbols-outlined" aria-hidden="true">eco</span>
             </span>
             <small>
               <span className="material-symbols-outlined">location_on</span>

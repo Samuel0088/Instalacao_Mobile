@@ -7,14 +7,6 @@ export default function ProfileEditForm({ formData, onChange, onIconSelect }) {
   return (
     <div className="profile-card glass edit-card">
       <div className="card-corner"></div>
-      <div className="card-header">
-        <div className="header-icon">
-          <span className="material-symbols-outlined">edit</span>
-          <div className="icon-glow"></div>
-        </div>
-        <h3 className="personal-info-title">Editar Perfil</h3>
-        <div className="header-line"></div>
-      </div>
       
       <div className="card-content">
         {/* Icon Selector */}

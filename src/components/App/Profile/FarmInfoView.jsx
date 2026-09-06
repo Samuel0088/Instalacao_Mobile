@@ -34,187 +34,89 @@ const FarmInfoView = ({ farmData, onAddFarm, onEditFarm, formatPhone }) => {
   }
 
   const formatArea = (area) => {
-    if (!area) return "0"
-    return parseFloat(area).toFixed(1).replace('.', ',')
+    if (!area) return "Não informado"
+    return `${parseFloat(area).toFixed(1).replace('.', ',')} ha`
   }
+
+  const farmInitial = (farmData.name || "F").trim().charAt(0).toLocaleUpperCase("pt-BR") || "F"
+  const location = [farmData.municipio, farmData.uf].filter(Boolean).join(" - ") || "Não informado"
+  const farmRows = [
+    {
+      icon: "agriculture",
+      label: "Nome",
+      value: farmData.name || "Não informado",
+    },
+    {
+      icon: "square_foot",
+      label: "Área total",
+      value: formatArea(farmData.area_total),
+    },
+    {
+      icon: "grass",
+      label: "Cultura",
+      value: farmData.plantacao || "Não informado",
+    },
+    {
+      icon: "location_on",
+      label: "Localização",
+      value: location,
+    },
+    {
+      icon: "map",
+      label: "Bairro/Distrito",
+      value: farmData.bairro || "Não informado",
+    },
+    {
+      icon: "mail",
+      label: "CEP",
+      value: farmData.cep || "Não informado",
+    },
+    {
+      icon: "call",
+      label: "Telefone",
+      value: farmData.telefone ? formatPhone(farmData.telefone) : "Não informado",
+    },
+    {
+      icon: "calendar_month",
+      label: "Aquisição",
+      value: farmData.data_aquisicao ? formatDate(farmData.data_aquisicao) : "Não informado",
+    },
+    {
+      icon: "badge",
+      label: "Vínculo",
+      value: farmData.tipo_proprietario || "Não informado",
+    },
+  ]
 
   return (
     <motion.div 
-      className="profile-card"
+      className="profile-card farm-details"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
       <div className="card-corner"></div>
-      
-      <div className="card-header">
-        <div className="header-icon">
-          <span className="material-symbols-outlined">agriculture</span>
-          <div className="icon-glow"></div>
+
+      <div className="farm-account-summary">
+        <span className="farm-account-avatar">{farmInitial}</span>
+        <div className="farm-account-copy">
+          <strong>{farmData.name || "Fazenda"}</strong>
+          <span>{location}</span>
         </div>
-        <h3 className="personal-info-title">Informações da Fazenda</h3>
-        <div className="header-line"></div>
       </div>
 
-      <div className="farm-info-grid">
-        {farmData.name && (
-          <div className="info-item-tech">
-            <div className="info-label">
-              <span className="material-symbols-outlined">agriculture</span>
-              <span>Nome</span>
-            </div>
-            <div className="info-value">{farmData.name}</div>
-          </div>
-        )}
-
-        {/* Área Total */}
-        <div className="info-item-tech highlight">
-          <div className="info-label">
-            <span className="material-symbols-outlined">square_foot</span>
-            <span>Área total</span>
-          </div>
-          <div className="info-value badge">
-            {formatArea(farmData.area_total)} ha
-            <div className="value-glow"></div>
-          </div>
-        </div>
-
-        {/* Cultura */}
-        {farmData.plantacao && (
-          <div className="info-item-tech">
-            <div className="info-label">
-              <span className="material-symbols-outlined">grass</span>
-              <span>Cultura</span>
-            </div>
-            <div className="info-value">{farmData.plantacao}</div>
-          </div>
-        )}
-
-        {/* Localização */}
-        {(farmData.municipio || farmData.uf) && (
-          <div className="info-item-tech">
-            <div className="info-label">
-              <span className="material-symbols-outlined">location_on</span>
-              <span>Localização</span>
-            </div>
-            <div className="info-value">
-              {farmData.municipio}{farmData.uf ? ` - ${farmData.uf}` : ''}
-            </div>
-          </div>
-        )}
-
-        {/* Bairro */}
-        {farmData.bairro && (
-          <div className="info-item-tech">
-            <div className="info-label">
-              <span className="material-symbols-outlined">map</span>
-              <span>Bairro/Distrito</span>
-            </div>
-            <div className="info-value">{farmData.bairro}</div>
-          </div>
-        )}
-
-        {/* CEP */}
-        {farmData.cep && (
-          <div className="info-item-tech">
-            <div className="info-label">
-              <span className="material-symbols-outlined">mail</span>
-              <span>CEP</span>
-            </div>
-            <div className="info-value">{farmData.cep}</div>
-          </div>
-        )}
-
-        {/* Telefone */}
-        {farmData.telefone && (
-          <div className="info-item-tech">
-            <div className="info-label">
-              <span className="material-symbols-outlined">call</span>
-              <span>Telefone</span>
-            </div>
-            <div className="info-value">{formatPhone(farmData.telefone)}</div>
-          </div>
-        )}
-
-        {/* Data de Aquisição */}
-        {farmData.data_aquisicao && (
-          <div className="info-item-tech">
-            <div className="info-label">
-              <span className="material-symbols-outlined">calendar_month</span>
-              <span>Aquisição</span>
-            </div>
-            <div className="info-value">{formatDate(farmData.data_aquisicao)}</div>
-          </div>
-        )}
-
-        {/* Tipo de Proprietário */}
-        {farmData.tipo_proprietario && (
-          <div className="info-item-tech">
-            <div className="info-label">
-              <span className="material-symbols-outlined">badge</span>
-              <span>Vínculo</span>
-            </div>
-            <div className="info-value">{farmData.tipo_proprietario}</div>
-          </div>
-        )}
+      <div className="farm-data-list">
+        {farmRows.map((row) => (
+          <button type="button" className="personal-data-row farm-data-row" onClick={onEditFarm} key={row.label}>
+            <span className="personal-data-icon material-symbols-outlined" aria-hidden="true">{row.icon}</span>
+            <span className="personal-data-copy">
+              <small>{row.label}</small>
+              <strong>{row.value}</strong>
+            </span>
+            <span className="personal-data-action material-symbols-outlined" aria-hidden="true">edit</span>
+          </button>
+        ))}
       </div>
-
-      <button className="edit-farm-btn" onClick={onEditFarm}>
-        <span className="material-symbols-outlined">edit</span>
-        Editar informações da fazenda
-        <div className="btn-glow"></div>
-      </button>
-
-      <style jsx>{`
-        .farm-info-grid {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-        
-        .info-item-tech.highlight {
-          background: #f7f5f0;
-          box-shadow: 0 10px 30px var(--primary-glow);
-          border-radius: 16px;
-          margin: -4px;
-          padding: 4px;
-        }
-        
-        .info-item-tech.highlight .info-value {
-          background: #f7f5f0;
-          box-shadow: 0 10px 30px var(--primary-glow);
-          border-color: var(--primary);
-          font-weight: 700;
-          font-size: 16px;
-        }
-        
-        .edit-farm-btn {
-          position: relative;
-          width: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          padding: 16px;
-          margin-top: 24px;
-          background: #f7f5f0;
-          box-shadow: 0 10px 30px var(--primary-glow);
-          border: 1px solid rgba(86, 168, 112, 0.3);
-          border-radius: 30px;
-          color: var(--primary);
-          font-size: 14px;
-          font-weight: 600;
-          cursor: pointer;
-          overflow: hidden;
-          transition: all 0.3s ease;
-        }
-        
-        .edit-farm-btn:hover {
-          border-color: var(--primary);
-          transform: translateY(-2px);
-          box-shadow: 0 10px 30px var(--primary-glow);
-        }
-      `}</style>
     </motion.div>
   )
 }

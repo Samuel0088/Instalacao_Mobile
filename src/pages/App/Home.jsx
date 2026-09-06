@@ -476,7 +476,9 @@ export default function Home({ onInstallRequest, isInstalled = false }) {
         </section>
 
         {hasFarm && (
-          <FlightActionButton onNavigate={() => navigate("/novo-voo")} />
+          <FlightActionButton
+            onNavigate={() => goToInternalPage("/explore", { state: { activeTab: "diagnostico" } })}
+          />
         )}
 
         {!isInstalled && onInstallRequest && (
